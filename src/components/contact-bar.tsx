@@ -1,0 +1,47 @@
+"use client";
+
+import { MessageCircle, Phone } from "lucide-react";
+import { phoneDigits } from "@/lib/format";
+
+/** Sticky contact buttons at the bottom of the screen on phones. */
+export function ContactBar({
+  price,
+  phone,
+  whatsapp,
+  title,
+  listingUrl,
+}: {
+  price: string;
+  phone: string | null;
+  whatsapp: string | null;
+  title: string;
+  listingUrl: string;
+}) {
+  if (!phone && !whatsapp) return null;
+  const message = encodeURIComponent(`Hi! Is "${title}" still available? (seen on Pacific Listing: ${listingUrl})`);
+  return (
+    <div className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden">
+      <div className="flex items-center gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-display text-lg leading-tight font-bold text-ink">{price}</p>
+          <p className="truncate text-xs text-muted">{title}</p>
+        </div>
+        {phone && (
+          <a href={`tel:${phone.replace(/\s/g, "")}`} className="btn-secondary h-11 w-11 p-0" aria-label="Call seller">
+            <Phone className="h-5 w-5" />
+          </a>
+        )}
+        {whatsapp && (
+          <a
+            href={`https://wa.me/${phoneDigits(whatsapp)}?text=${message}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn h-11 bg-[#25D366] px-5 text-white shadow-md shadow-[#25D366]/30 hover:bg-[#1ebe5b]"
+          >
+            <MessageCircle className="h-5 w-5" /> WhatsApp
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}

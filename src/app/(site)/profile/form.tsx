@@ -50,7 +50,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
         </div>
         <div>
           <label className="label" htmlFor="email">Email</label>
-          <input id="email" value={email} disabled className="input bg-slate-50 text-slate-500" />
+          <input id="email" value={email} disabled className="input bg-subtle text-muted" />
         </div>
         <div>
           <label className="label" htmlFor="phone">Phone</label>
@@ -75,7 +75,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
         </div>
       </div>
       <div>
-        <label className="label" htmlFor="bio">About you <span className="font-normal text-slate-400">(shown on your seller page)</span></label>
+        <label className="label" htmlFor="bio">About you <span className="font-normal text-faint">(shown on your seller page)</span></label>
         <textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={profile.bio ?? ""} className="input" />
       </div>
       <div className="flex justify-end">

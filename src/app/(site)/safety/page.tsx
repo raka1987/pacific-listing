@@ -22,8 +22,8 @@ export default function SafetyPage() {
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
               <Icon className="h-5 w-5" />
             </span>
-            <h2 className="mt-3 font-bold text-slate-900">{title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{text}</p>
+            <h2 className="mt-3 font-bold text-ink">{title}</h2>
+            <p className="mt-1 text-sm text-ink-2">{text}</p>
           </div>
         ))}
       </div>

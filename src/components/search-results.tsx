@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "./empty-state";
 import { ListingGrid } from "./listing-card";
 import { Pagination } from "./pagination";
+import { SearchBar } from "./search-bar";
 import { SearchFiltersPanel, SortSelect } from "./search-filters";
+import { Suspense } from "react";
 
 export async function SearchResults({
   filters,
@@ -46,14 +48,19 @@ export async function SearchResults({
   if (filters.condition) chips.push({ label: filters.condition === "new" ? "New" : "Used", remove: { condition: undefined } });
 
   return (
-    <div className="container-page py-8">
+    <div className="container-page py-5 sm:py-8">
+      <div className="mb-4 md:hidden">
+        <Suspense>
+          <SearchBar />
+        </Suspense>
+      </div>
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <SearchFiltersPanel filters={filters} basePath={basePath} lockCategory={lockCategory} />
         <div className="min-w-0">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-ocean-900">{title}</h1>
-              <p className="text-sm text-slate-500">
+              <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">{title}</h1>
+              <p className="text-sm text-muted">
                 {total.toLocaleString()} {total === 1 ? "result" : "results"}
               </p>
             </div>
@@ -67,7 +74,7 @@ export async function SearchResults({
                 <Link
                   key={c.label}
                   href={qs({ ...c.remove, page: undefined })}
-                  className="badge bg-lagoon-50 py-1.5 pr-2 pl-3 text-lagoon-800 ring-1 ring-lagoon-200 hover:bg-lagoon-100"
+                  className="chip border-lagoon-200 bg-lagoon-50 py-1.5 pr-2.5 text-lagoon-800"
                 >
                   {c.label} <X className="h-3.5 w-3.5" />
                 </Link>

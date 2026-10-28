@@ -54,7 +54,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
         <span className="label">Price</span>
         <div className="flex items-center gap-2">
           <input name="min" type="number" min={0} inputMode="numeric" defaultValue={filters.min} className="input" placeholder="Min" aria-label="Minimum price" />
-          <span className="text-slate-400">–</span>
+          <span className="text-faint">–</span>
           <input name="max" type="number" min={0} inputMode="numeric" defaultValue={filters.max} className="input" placeholder="Max" aria-label="Maximum price" />
         </div>
       </div>
@@ -64,7 +64,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
           {[["", "Any"], ["new", "New"], ["used", "Used"]].map(([v, l]) => (
             <label key={v} className="cursor-pointer">
               <input type="radio" name="condition" value={v} defaultChecked={(filters.condition ?? "") === v} className="peer sr-only" />
-              <span className="block rounded-xl border border-slate-200 bg-white py-2 text-center text-sm font-medium text-slate-600 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-700 peer-focus-visible:ring-2 peer-focus-visible:ring-lagoon-400">
+              <span className="block rounded-xl border border-line bg-surface py-2 text-center text-sm font-medium text-ink-2 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-700 peer-focus-visible:ring-2 peer-focus-visible:ring-lagoon-400">
                 {l}
               </span>
             </label>
@@ -83,17 +83,18 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="btn-secondary lg:hidden">
+      <button onClick={() => setOpen(true)} className="btn-secondary w-fit lg:hidden">
         <SlidersHorizontal className="h-4 w-4" /> Filters
       </button>
-      <aside className="card hidden h-fit p-5 lg:sticky lg:top-24 lg:block">
-        <h2 className="mb-4 font-bold text-slate-900">Filters</h2>
+      <aside className="card hidden h-fit p-6 lg:sticky lg:top-24 lg:block">
+        <h2 className="mb-4 font-bold text-ink">Filters</h2>
         {form}
       </aside>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Filters">
           <div className="absolute inset-0 bg-slate-900/40" onClick={() => setOpen(false)} />
-          <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-3xl bg-white p-5 pb-8">
+          <div className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-[2rem] bg-surface p-5 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+            <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-line" />
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Filters</h2>
               <button onClick={() => setOpen(false)} className="btn-ghost p-2" aria-label="Close filters">
@@ -111,7 +112,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
 export function SortSelect({ value }: { value?: string }) {
   const router = useRouter();
   return (
-    <label className="flex items-center gap-2 text-sm text-slate-500">
+    <label className="flex items-center gap-2 text-sm text-muted">
       <span className="hidden sm:inline">Sort</span>
       <select
         value={value ?? ""}
@@ -122,7 +123,7 @@ export function SortSelect({ value }: { value?: string }) {
           url.searchParams.delete("page");
           router.push(url.pathname + url.search);
         }}
-        className="rounded-xl border border-slate-200 bg-white py-2 pr-8 pl-3 text-sm font-medium text-slate-700"
+        className="rounded-full border border-line bg-surface py-2 pr-8 pl-4 text-sm font-medium text-ink-2"
       >
         <option value="">Newest first</option>
         <option value="price_asc">Price: low to high</option>

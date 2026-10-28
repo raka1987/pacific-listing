@@ -1,6 +1,8 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { InstallBanner } from "@/components/install-app";
 import { MobileNav } from "@/components/mobile-nav";
+import { RegisterServiceWorker } from "@/components/register-sw";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -10,12 +12,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <div className="flex min-h-screen flex-col">
       {settings?.announcement && (
-        <div className="bg-ocean-900 px-4 py-2 text-center text-sm text-lagoon-100">{settings.announcement}</div>
+        <div className="bg-gradient-to-r from-lagoon-700 to-ocean-800 px-4 py-2 text-center text-sm font-medium text-white">{settings.announcement}</div>
       )}
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
       <MobileNav />
+      <InstallBanner />
+      <RegisterServiceWorker />
     </div>
   );
 }

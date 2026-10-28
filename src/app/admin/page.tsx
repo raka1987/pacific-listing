@@ -47,54 +47,54 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-slate-900">Dashboard</h1>
+      <h1 className="text-2xl font-extrabold text-ink">Dashboard</h1>
 
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         {cards.map(({ label, value, sub, icon: Icon, href, alert }) => (
           <Link key={label} href={href} className="card p-5 transition hover:shadow-md">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-500">{label}</span>
+              <span className="text-sm font-medium text-muted">{label}</span>
               <span className={`flex h-9 w-9 items-center justify-center rounded-xl ${alert ? "bg-coral-500/10 text-coral-600" : "bg-lagoon-50 text-lagoon-700"}`}>
                 <Icon className="h-4 w-4" />
               </span>
             </div>
-            <p className="mt-2 text-3xl font-extrabold text-slate-900">{value.toLocaleString()}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{sub}</p>
+            <p className="mt-2 text-3xl font-extrabold text-ink">{value.toLocaleString()}</p>
+            <p className="mt-0.5 text-xs text-muted">{sub}</p>
           </Link>
         ))}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
         <section className="card p-5">
-          <h2 className="flex items-center gap-2 font-bold text-slate-900">
+          <h2 className="flex items-center gap-2 font-bold text-ink">
             <TrendingUp className="h-4 w-4 text-lagoon-600" /> New ads, last 14 days
           </h2>
           <div className="mt-6 flex h-44 items-end gap-1.5">
             {s.by_day.map((d) => (
               <div key={d.day} className="group flex flex-1 flex-col items-center gap-1.5">
-                <span className="text-[10px] font-semibold text-slate-500 opacity-0 group-hover:opacity-100">{d.n}</span>
+                <span className="text-[10px] font-semibold text-muted opacity-0 group-hover:opacity-100">{d.n}</span>
                 <div
                   className="w-full rounded-t-md bg-lagoon-500 transition group-hover:bg-lagoon-600"
                   style={{ height: `${Math.max(3, (d.n / maxDay) * 140)}px` }}
                   title={`${d.day}: ${d.n}`}
                 />
-                <span className="text-[10px] text-slate-400">{new Date(d.day).getDate()}</span>
+                <span className="text-[10px] text-faint">{new Date(d.day).getDate()}</span>
               </div>
             ))}
           </div>
         </section>
         <section className="card p-5">
-          <h2 className="font-bold text-slate-900">Live ads by category</h2>
+          <h2 className="font-bold text-ink">Live ads by category</h2>
           <ul className="mt-4 space-y-2.5">
             {CATEGORIES.map((c) => {
               const n = s.by_category[c.slug] ?? 0;
               return (
                 <li key={c.slug} className="text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-600">{c.name}</span>
-                    <span className="font-semibold text-slate-900">{n}</span>
+                    <span className="text-ink-2">{c.name}</span>
+                    <span className="font-semibold text-ink">{n}</span>
                   </div>
-                  <div className="mt-1 h-1.5 rounded-full bg-slate-100">
+                  <div className="mt-1 h-1.5 rounded-full bg-subtle">
                     <div className="h-full rounded-full bg-lagoon-500" style={{ width: `${(n / maxCat) * 100}%` }} />
                   </div>
                 </li>
@@ -110,10 +110,10 @@ export default async function AdminDashboard() {
             <li key={l.id}>
               <Link href={`/listing/${l.id}`} className="flex items-center gap-3 py-2.5 hover:text-lagoon-700">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                {l.images[0] ? <img src={l.images[0]} alt="" className="h-10 w-12 rounded-lg object-cover" /> : <span className="h-10 w-12 rounded-lg bg-slate-100" />}
+                {l.images[0] ? <img src={l.images[0]} alt="" className="h-10 w-12 rounded-lg object-cover" /> : <span className="h-10 w-12 rounded-lg bg-subtle" />}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{l.title}</span>
-                  <span className="text-xs text-slate-500">{formatPrice(l.price, l.price_type, l.country)} · {timeAgo(l.created_at)}</span>
+                  <span className="text-xs text-muted">{formatPrice(l.price, l.price_type, l.country)} · {timeAgo(l.created_at)}</span>
                 </span>
               </Link>
             </li>
@@ -127,7 +127,7 @@ export default async function AdminDashboard() {
                 <Flag className="h-4 w-4 shrink-0 text-red-500" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">{listing?.title ?? "Deleted listing"}</span>
-                  <span className="text-xs text-slate-500">{r.reason} · {timeAgo(r.created_at)}</span>
+                  <span className="text-xs text-muted">{r.reason} · {timeAgo(r.created_at)}</span>
                 </span>
               </li>
             );
@@ -148,10 +148,10 @@ function Panel({ title, href, empty, children }: { title: string; href: string; 
   return (
     <section className="card p-5">
       <div className="flex items-center justify-between">
-        <h2 className="font-bold text-slate-900">{title}</h2>
+        <h2 className="font-bold text-ink">{title}</h2>
         <Link href={href} className="text-sm font-semibold text-lagoon-700 hover:underline">View all</Link>
       </div>
-      {children.length ? <ul className="mt-2 divide-y divide-slate-100">{children}</ul> : <p className="mt-4 text-sm text-slate-500">{empty}</p>}
+      {children.length ? <ul className="mt-2 divide-y divide-line">{children}</ul> : <p className="mt-4 text-sm text-muted">{empty}</p>}
     </section>
   );
 }

@@ -49,9 +49,9 @@ export function FavoriteButton({
       disabled={pending}
       aria-pressed={saved}
       aria-label={saved ? "Remove from saved" : "Save listing"}
-      className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur transition hover:scale-105"
+      className="relative z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/85 shadow-sm backdrop-blur transition hover:scale-110 active:scale-95"
     >
-      <Heart className={`h-[18px] w-[18px] ${saved ? "fill-coral-500 text-coral-500" : "text-slate-600"}`} />
+      <Heart className={`h-[18px] w-[18px] ${saved ? "fill-coral-500 text-coral-500" : "text-ink-2"}`} />
     </button>
   );
 }

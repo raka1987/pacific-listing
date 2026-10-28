@@ -24,23 +24,23 @@ export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl
     };
   }, []);
 
-  const item = "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100";
+  const item = "flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-2 hover:bg-subtle";
   return (
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-full border border-slate-200 bg-white py-1 pr-2.5 pl-1 hover:bg-slate-50"
+        className="flex items-center gap-2 rounded-full border border-line bg-surface py-1 pr-2.5 pl-1 hover:bg-subtle"
         aria-expanded={open}
         aria-haspopup="menu"
       >
         <Avatar name={name} url={avatarUrl} size={30} />
         <span className="hidden max-w-28 truncate text-sm font-medium lg:block">{name.split(" ")[0] || "Account"}</span>
-        <ChevronDown className="h-4 w-4 text-slate-400" />
+        <ChevronDown className="h-4 w-4 text-faint" />
       </button>
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-2 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
+          className="absolute right-0 z-50 mt-2 w-56 rounded-2xl border border-line bg-surface p-2 shadow-xl"
         >
           <Link href="/my-ads" className={item} role="menuitem" onClick={() => setOpen(false)}>
             <List className="h-4 w-4" /> My ads
@@ -56,7 +56,7 @@ export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl
               <Shield className="h-4 w-4" /> Admin panel
             </Link>
           )}
-          <div className="my-1 border-t border-slate-100" />
+          <div className="my-1 border-t border-line" />
           <form action="/auth/signout" method="post">
             <button className={`${item} w-full`} role="menuitem">
               <LogOut className="h-4 w-4" /> Log out

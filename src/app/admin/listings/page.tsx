@@ -43,19 +43,19 @@ export default async function AdminListings({
     return `/admin/listings${p.size ? `?${p}` : ""}`;
   };
 
-  const iconBtn = "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50";
+  const iconBtn = "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface text-ink-2 hover:bg-subtle";
 
   return (
     <div>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Listings</h1>
-          <p className="text-sm text-slate-500">{(count ?? 0).toLocaleString()} ads</p>
+          <h1 className="text-2xl font-extrabold text-ink">Listings</h1>
+          <p className="text-sm text-muted">{(count ?? 0).toLocaleString()} ads</p>
         </div>
         <form className="flex flex-wrap gap-2">
           <input type="hidden" name="status" value={status} />
           <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-faint" />
             <input name="q" defaultValue={q} placeholder="Search titles…" className="input w-56 pl-9" />
           </div>
           <select name="category" defaultValue={category} className="input w-auto">
@@ -72,7 +72,7 @@ export default async function AdminListings({
             key={s}
             href={href({ status: s, page: undefined })}
             className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-semibold capitalize ${
-              status === s ? "bg-ocean-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"
+              status === s ? "bg-ink text-canvas" : "bg-surface text-ink-2 ring-1 ring-line"
             }`}
           >
             {s === "pending" ? "Needs review" : s}
@@ -82,7 +82,7 @@ export default async function AdminListings({
 
       <div className="card overflow-x-auto">
         <table className="w-full min-w-[860px] text-sm">
-          <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold tracking-wide text-slate-500 uppercase">
+          <thead className="border-b border-line bg-subtle text-left text-xs font-semibold tracking-wide text-muted uppercase">
             <tr>
               <th className="px-4 py-3">Ad</th>
               <th className="px-4 py-3">Seller</th>
@@ -92,12 +92,12 @@ export default async function AdminListings({
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-line">
             {rows.map((l) => (
               <tr key={l.id} className="align-middle">
                 <td className="px-4 py-3">
                   <Link href={`/listing/${l.id}`} className="flex items-center gap-3 hover:text-lagoon-700" target="_blank">
-                    <span className="h-11 w-14 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                    <span className="h-11 w-14 shrink-0 overflow-hidden rounded-lg bg-subtle">
                       {l.images[0] ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={l.images[0]} alt="" className="h-full w-full object-cover" />
@@ -107,7 +107,7 @@ export default async function AdminListings({
                     </span>
                     <span className="min-w-0">
                       <span className="block max-w-xs truncate font-medium">{l.title}</span>
-                      <span className="text-xs text-slate-500">{categoryBySlug(l.category)?.name} · {timeAgo(l.created_at)}</span>
+                      <span className="text-xs text-muted">{categoryBySlug(l.category)?.name} · {timeAgo(l.created_at)}</span>
                     </span>
                   </Link>
                 </td>
@@ -123,7 +123,7 @@ export default async function AdminListings({
                     {l.is_featured && <Sparkles className="h-4 w-4 text-coral-500" aria-label="Featured" />}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-slate-500">{l.views}</td>
+                <td className="px-4 py-3 text-muted">{l.views}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1.5">
                     {l.status !== "active" && l.status !== "sold" && (
@@ -133,7 +133,7 @@ export default async function AdminListings({
                     )}
                     {l.status === "pending" && (
                       <form action={adminSetListingStatus.bind(null, l.id, "rejected")} className="flex items-center gap-1">
-                        <input name="reason" placeholder="Reason" className="h-8 w-28 rounded-lg border border-slate-200 px-2 text-xs" />
+                        <input name="reason" placeholder="Reason" className="h-8 w-28 rounded-lg border border-line px-2 text-xs" />
                         <ActionButton className={`${iconBtn} text-red-600`} title="Reject"><X className="h-4 w-4" /></ActionButton>
                       </form>
                     )}
@@ -158,7 +158,7 @@ export default async function AdminListings({
             ))}
           </tbody>
         </table>
-        {!rows.length && <p className="p-8 text-center text-sm text-slate-500">No listings match.</p>}
+        {!rows.length && <p className="p-8 text-center text-sm text-muted">No listings match.</p>}
       </div>
       <Pagination page={page} totalPages={Math.ceil((count ?? 0) / PER_PAGE)} makeHref={(p) => href({ page: String(p) })} />
     </div>

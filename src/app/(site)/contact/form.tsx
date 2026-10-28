@@ -13,7 +13,7 @@ export function ContactForm({ name, email, subject }: { name?: string; email?: s
       <div className="card p-8 text-center">
         <CheckCircle2 className="mx-auto h-12 w-12 text-lagoon-600" />
         <h2 className="mt-3 text-lg font-bold">Message sent — vinaka!</h2>
-        <p className="mt-1 text-sm text-slate-500">We usually reply within one or two working days.</p>
+        <p className="mt-1 text-sm text-muted">We usually reply within one or two working days.</p>
       </div>
     );
   }

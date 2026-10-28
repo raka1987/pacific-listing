@@ -19,8 +19,8 @@ export default async function NoticesPage() {
           {notices.map((n) => (
             <article key={n.id} id={n.id} className="card scroll-mt-24 p-6">
               <p className="text-xs font-semibold tracking-wide text-lagoon-700 uppercase">{formatDate(n.created_at)}</p>
-              <h2 className="mt-1 text-lg font-bold text-slate-900">{n.title}</h2>
-              <p className="mt-2 whitespace-pre-line text-slate-600">{n.body}</p>
+              <h2 className="mt-1 text-lg font-bold text-ink">{n.title}</h2>
+              <p className="mt-2 whitespace-pre-line text-ink-2">{n.body}</p>
             </article>
           ))}
         </div>

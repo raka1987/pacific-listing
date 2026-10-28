@@ -20,7 +20,7 @@ export function ContactSeller({
 
   if (!phone && !whatsapp) {
     return (
-      <p className="rounded-xl bg-slate-50 p-3 text-sm text-slate-500">
+      <p className="rounded-xl bg-subtle p-3 text-sm text-muted">
         The seller hasn&apos;t added contact details to this ad.
       </p>
     );

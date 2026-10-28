@@ -47,7 +47,7 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
               key={t.key}
               href={t.key === "all" ? "/my-ads" : `/my-ads?tab=${t.key}`}
               className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold ${
-                tab === t.key ? "bg-ocean-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+                tab === t.key ? "bg-ink text-canvas" : "bg-surface text-ink-2 ring-1 ring-line hover:bg-subtle"
               }`}
             >
               {t.label} <span className="ml-1 opacity-60">{n}</span>
@@ -61,7 +61,7 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
           {listings.map((l) => (
             <li key={l.id} className="card flex flex-col gap-4 p-3 sm:flex-row sm:items-center">
               <Link href={`/listing/${l.id}`} className="flex min-w-0 flex-1 items-center gap-4">
-                <div className="h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+                <div className="h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-subtle">
                   {l.images[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={l.images[0]} alt="" className="h-full w-full object-cover" />
@@ -74,8 +74,8 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
                     <StatusBadge status={l.status} />
                     {l.is_featured && <span className="badge bg-coral-500 text-white">Featured</span>}
                   </div>
-                  <p className="mt-1 truncate font-semibold text-slate-900">{l.title}</p>
-                  <p className="text-sm text-slate-500">
+                  <p className="mt-1 truncate font-semibold text-ink">{l.title}</p>
+                  <p className="text-sm text-muted">
                     {formatPrice(l.price, l.price_type, l.country)} · {timeAgo(l.created_at)} ·{" "}
                     <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {l.views}</span>
                   </p>

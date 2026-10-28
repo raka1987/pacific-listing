@@ -29,17 +29,17 @@ export default async function AdminReports({ searchParams }: { searchParams: Pro
     .order("created_at", { ascending: false })
     .limit(100);
   const reports = (data ?? []) as unknown as Report[];
-  const btn = "inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50";
+  const btn = "inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-2 hover:bg-subtle";
 
   return (
     <div>
-      <h1 className="mb-5 text-2xl font-extrabold text-slate-900">Reported ads</h1>
+      <h1 className="mb-5 text-2xl font-extrabold text-ink">Reported ads</h1>
       <div className="mb-4 flex gap-2">
         {["open", "resolved", "dismissed"].map((s) => (
           <Link
             key={s}
             href={`/admin/reports?status=${s}`}
-            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold capitalize ${status === s ? "bg-ocean-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}
+            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold capitalize ${status === s ? "bg-ink text-canvas" : "bg-surface text-ink-2 ring-1 ring-line"}`}
           >
             {s}
           </Link>
@@ -54,9 +54,9 @@ export default async function AdminReports({ searchParams }: { searchParams: Pro
                   <Flag className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-900">{r.reason}</p>
-                  {r.details && <p className="mt-0.5 text-sm text-slate-600">“{r.details}”</p>}
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="font-semibold text-ink">{r.reason}</p>
+                  {r.details && <p className="mt-0.5 text-sm text-ink-2">“{r.details}”</p>}
+                  <p className="mt-1 text-xs text-muted">
                     {r.listing ? (
                       <Link href={`/listing/${r.listing.id}`} target="_blank" className="font-medium text-lagoon-700 hover:underline">{r.listing.title}</Link>
                     ) : (
@@ -95,7 +95,7 @@ export default async function AdminReports({ searchParams }: { searchParams: Pro
           ))}
         </ul>
       ) : (
-        <div className="card p-10 text-center text-sm text-slate-500">No {status} reports.</div>
+        <div className="card p-10 text-center text-sm text-muted">No {status} reports.</div>
       )}
     </div>
   );

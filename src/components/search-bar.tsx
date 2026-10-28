@@ -25,29 +25,32 @@ export function SearchBar({ size = "md", withCountry = false }: { size?: "md" | 
     <form
       onSubmit={submit}
       role="search"
-      className={`flex w-full items-center gap-2 rounded-2xl border border-slate-200 bg-white ${
-        lg ? "p-2 shadow-xl shadow-ocean-950/20" : "p-1 pl-1"
+      className={`flex w-full items-center gap-2 rounded-full border transition focus-within:ring-4 ${
+        lg
+          ? "border-white/40 bg-white/95 p-1.5 shadow-2xl shadow-ocean-950/30 focus-within:ring-white/30 dark:border-white/10 dark:bg-ocean-900/90"
+          : "border-line bg-subtle p-1 focus-within:border-lagoon-400 focus-within:bg-surface focus-within:ring-lagoon-500/15"
       }`}
     >
-      <label className="flex min-w-0 flex-1 items-center gap-2 pl-3">
-        <Search className={`shrink-0 text-slate-400 ${lg ? "h-5 w-5" : "h-4 w-4"}`} aria-hidden />
+      <label className="flex min-w-0 flex-1 items-center gap-2.5 pl-4">
+        <Search className={`shrink-0 text-faint ${lg ? "h-5 w-5" : "h-4 w-4"}`} aria-hidden />
         <span className="sr-only">Search listings</span>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={lg ? "What are you looking for?" : "Search cars, houses, jobs…"}
-          className={`w-full min-w-0 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none ${
-            lg ? "py-2 text-base" : "py-1.5 text-sm"
+          enterKeyHint="search"
+          className={`w-full min-w-0 bg-transparent placeholder:text-faint focus:outline-none ${
+            lg ? "py-2.5 text-base text-slate-900 dark:text-white" : "py-1.5 text-sm text-ink"
           }`}
         />
       </label>
       {withCountry && (
-        <label className="hidden border-l border-slate-200 pl-2 sm:block">
+        <label className="hidden border-l border-slate-200 pl-3 sm:block dark:border-white/10">
           <span className="sr-only">Country</span>
           <select
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="max-w-44 bg-transparent py-2 pr-2 text-sm font-medium text-slate-700 focus:outline-none"
+            className="max-w-44 bg-transparent py-2 pr-2 text-sm font-semibold text-slate-700 focus:outline-none dark:text-slate-200"
           >
             <option value="">All Pacific</option>
             {COUNTRIES.map((c) => (
@@ -58,8 +61,15 @@ export function SearchBar({ size = "md", withCountry = false }: { size?: "md" | 
           </select>
         </label>
       )}
-      <button type="submit" className={lg ? "btn-accent px-6 py-3 text-base" : "btn-primary px-3 py-2"}>
-        {lg ? "Search" : <Search className="h-4 w-4" aria-label="Search" />}
+      <button type="submit" className={lg ? "btn-accent h-12 w-12 p-0 text-base sm:w-auto sm:px-7" : "btn-primary h-9 w-9 p-0"}>
+        {lg ? (
+          <>
+            <Search className="h-5 w-5 sm:hidden" aria-label="Search" />
+            <span className="hidden sm:inline">Search</span>
+          </>
+        ) : (
+          <Search className="h-4 w-4" aria-label="Search" />
+        )}
       </button>
     </form>
   );

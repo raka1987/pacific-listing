@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-heading), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
   /* Lagoon: primary brand teal */
   --color-lagoon-50: #effcfa;
@@ -31,9 +34,124 @@
   --color-sand-100: #f3efe7;
 }
 
+
+/* Semantic surface/text tokens, swapped for dark mode */
+:root {
+  --canvas: #f6f7f9;
+  --surface: #ffffff;
+  --subtle: #f1f4f7;
+  --line: #e4e8ee;
+  --ink: #0b1b30;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --faint: #94a3b8;
+  --glass: rgb(255 255 255 / 0.72);
+  color-scheme: light;
+}
+.dark {
+  --canvas: #070f1c;
+  --surface: #0e1a2b;
+  --subtle: #15233a;
+  --line: rgb(255 255 255 / 0.08);
+  --ink: #eef3f8;
+  --ink-2: #c4cfdc;
+  --muted: #8d9bb0;
+  --faint: #64748b;
+  --glass: rgb(9 18 32 / 0.72);
+  color-scheme: dark;
+  --color-sky-50: color-mix(in oklab, var(--color-sky-500) 12%, transparent);
+  --color-sky-100: color-mix(in oklab, var(--color-sky-500) 20%, transparent);
+  --color-sky-200: color-mix(in oklab, var(--color-sky-500) 35%, transparent);
+  --color-sky-700: var(--color-sky-300);
+  --color-sky-800: var(--color-sky-300);
+  --color-sky-900: var(--color-sky-300);
+  --color-emerald-50: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
+  --color-emerald-100: color-mix(in oklab, var(--color-emerald-500) 20%, transparent);
+  --color-emerald-200: color-mix(in oklab, var(--color-emerald-500) 35%, transparent);
+  --color-emerald-700: var(--color-emerald-300);
+  --color-emerald-800: var(--color-emerald-300);
+  --color-emerald-900: var(--color-emerald-300);
+  --color-violet-50: color-mix(in oklab, var(--color-violet-500) 12%, transparent);
+  --color-violet-100: color-mix(in oklab, var(--color-violet-500) 20%, transparent);
+  --color-violet-200: color-mix(in oklab, var(--color-violet-500) 35%, transparent);
+  --color-violet-700: var(--color-violet-300);
+  --color-violet-800: var(--color-violet-300);
+  --color-violet-900: var(--color-violet-300);
+  --color-amber-50: color-mix(in oklab, var(--color-amber-500) 12%, transparent);
+  --color-amber-100: color-mix(in oklab, var(--color-amber-500) 20%, transparent);
+  --color-amber-200: color-mix(in oklab, var(--color-amber-500) 35%, transparent);
+  --color-amber-700: var(--color-amber-300);
+  --color-amber-800: var(--color-amber-300);
+  --color-amber-900: var(--color-amber-300);
+  --color-pink-50: color-mix(in oklab, var(--color-pink-500) 12%, transparent);
+  --color-pink-100: color-mix(in oklab, var(--color-pink-500) 20%, transparent);
+  --color-pink-200: color-mix(in oklab, var(--color-pink-500) 35%, transparent);
+  --color-pink-700: var(--color-pink-300);
+  --color-pink-800: var(--color-pink-300);
+  --color-pink-900: var(--color-pink-300);
+  --color-indigo-50: color-mix(in oklab, var(--color-indigo-500) 12%, transparent);
+  --color-indigo-100: color-mix(in oklab, var(--color-indigo-500) 20%, transparent);
+  --color-indigo-200: color-mix(in oklab, var(--color-indigo-500) 35%, transparent);
+  --color-indigo-700: var(--color-indigo-300);
+  --color-indigo-800: var(--color-indigo-300);
+  --color-indigo-900: var(--color-indigo-300);
+  --color-orange-50: color-mix(in oklab, var(--color-orange-500) 12%, transparent);
+  --color-orange-100: color-mix(in oklab, var(--color-orange-500) 20%, transparent);
+  --color-orange-200: color-mix(in oklab, var(--color-orange-500) 35%, transparent);
+  --color-orange-700: var(--color-orange-300);
+  --color-orange-800: var(--color-orange-300);
+  --color-orange-900: var(--color-orange-300);
+  --color-lime-50: color-mix(in oklab, var(--color-lime-500) 12%, transparent);
+  --color-lime-100: color-mix(in oklab, var(--color-lime-500) 20%, transparent);
+  --color-lime-200: color-mix(in oklab, var(--color-lime-500) 35%, transparent);
+  --color-lime-700: var(--color-lime-300);
+  --color-lime-800: var(--color-lime-300);
+  --color-lime-900: var(--color-lime-300);
+  --color-cyan-50: color-mix(in oklab, var(--color-cyan-500) 12%, transparent);
+  --color-cyan-100: color-mix(in oklab, var(--color-cyan-500) 20%, transparent);
+  --color-cyan-200: color-mix(in oklab, var(--color-cyan-500) 35%, transparent);
+  --color-cyan-700: var(--color-cyan-300);
+  --color-cyan-800: var(--color-cyan-300);
+  --color-cyan-900: var(--color-cyan-300);
+  --color-rose-50: color-mix(in oklab, var(--color-rose-500) 12%, transparent);
+  --color-rose-100: color-mix(in oklab, var(--color-rose-500) 20%, transparent);
+  --color-rose-200: color-mix(in oklab, var(--color-rose-500) 35%, transparent);
+  --color-rose-700: var(--color-rose-300);
+  --color-rose-800: var(--color-rose-300);
+  --color-rose-900: var(--color-rose-300);
+  --color-red-50: color-mix(in oklab, var(--color-red-500) 12%, transparent);
+  --color-red-100: color-mix(in oklab, var(--color-red-500) 20%, transparent);
+  --color-red-200: color-mix(in oklab, var(--color-red-500) 35%, transparent);
+  --color-red-700: var(--color-red-300);
+  --color-red-800: var(--color-red-300);
+  --color-red-900: var(--color-red-300);
+  --color-lagoon-50: color-mix(in oklab, var(--color-lagoon-500) 12%, transparent);
+  --color-lagoon-100: color-mix(in oklab, var(--color-lagoon-500) 20%, transparent);
+  --color-lagoon-200: color-mix(in oklab, var(--color-lagoon-500) 35%, transparent);
+  --color-lagoon-700: var(--color-lagoon-300);
+  --color-lagoon-800: var(--color-lagoon-300);
+  --color-lagoon-900: var(--color-lagoon-300);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-glass: var(--glass);
+}
+
 @layer base {
   body {
-    @apply bg-sand-50 text-slate-800 antialiased;
+    @apply bg-canvas text-ink-2 antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3 {
+    @apply text-ink;
   }
   ::selection {
     @apply bg-lagoon-200 text-lagoon-900;
@@ -46,61 +164,55 @@
 @utility container-page {
   @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
 }
-
+@utility font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60;
 }
-
 @utility btn-primary {
-  @apply btn bg-lagoon-600 text-white shadow-sm hover:bg-lagoon-700;
+  @apply btn bg-lagoon-600 text-white shadow-sm shadow-lagoon-600/20 hover:bg-lagoon-700 hover:shadow-md hover:shadow-lagoon-600/25;
 }
-
 @utility btn-accent {
-  @apply btn bg-coral-500 text-white shadow-sm hover:bg-coral-600;
+  @apply btn bg-gradient-to-b from-coral-400 to-coral-500 text-white shadow-md shadow-coral-500/25 hover:from-coral-500 hover:to-coral-600 hover:shadow-lg hover:shadow-coral-500/30;
 }
-
 @utility btn-secondary {
-  @apply btn border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50;
+  @apply btn border border-line bg-surface text-ink hover:bg-subtle;
 }
-
 @utility btn-ghost {
-  @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+  @apply btn text-ink-2 hover:bg-subtle hover:text-ink;
 }
-
 @utility btn-danger {
-  @apply btn border border-red-200 bg-white text-red-600 hover:bg-red-50;
+  @apply btn border border-red-200 bg-surface text-red-600 hover:bg-red-50;
 }
-
 @utility input {
-  @apply block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-lagoon-500 focus:ring-4 focus:ring-lagoon-100 focus:outline-none;
+  @apply block w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-faint transition focus:border-lagoon-500 focus:ring-4 focus:ring-lagoon-500/15 focus:outline-none;
 }
-
 @utility label {
-  @apply mb-1.5 block text-sm font-medium text-slate-700;
+  @apply mb-1.5 block text-sm font-semibold text-ink;
 }
-
 @utility card {
-  @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+  @apply rounded-3xl border border-line bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.08)];
 }
-
 @utility badge {
   @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+@utility glass {
+  @apply bg-glass backdrop-blur-xl backdrop-saturate-150;
+}
+@utility chip {
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink-2 transition hover:border-lagoon-300 hover:text-ink;
 }
 
 @layer components {
   .prose-simple h2 {
-    @apply mt-8 mb-3 text-xl font-bold text-slate-900;
+    @apply mt-8 mb-3 text-xl font-bold text-ink;
   }
-}
-
-@layer components {
   .prose-simple p,
   .prose-simple li {
-    @apply mb-3 leading-relaxed text-slate-600;
+    @apply mb-3 leading-relaxed text-ink-2;
   }
-}
-
-@layer components {
   .prose-simple ul {
     @apply list-disc pl-5;
   }
@@ -110,5 +222,34 @@
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@utility animate-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+@utility skeleton {
+  @apply relative overflow-hidden rounded-2xl bg-subtle;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.25), transparent);
+    animation: shimmer 1.4s infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

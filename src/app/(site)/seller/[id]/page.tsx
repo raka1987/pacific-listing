@@ -43,18 +43,18 @@ export default async function SellerPage({ params }: Props) {
       <div className="card mb-8 flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
         <Avatar name={name} url={seller.avatar_url} size={88} />
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-ocean-900">
+          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-ink">
             {name}
             {seller.is_verified && <BadgeCheck className="h-6 w-6 text-lagoon-600" aria-label="Verified seller" />}
           </h1>
-          <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-500">
+          <div className="mt-2 flex flex-wrap gap-4 text-sm text-muted">
             {seller.country && (
               <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {locationLabel(seller.country, seller.city)}</span>
             )}
             <span className="flex items-center gap-1"><CalendarDays className="h-4 w-4" /> Member since {formatDate(seller.created_at)}</span>
             <span className="flex items-center gap-1"><Store className="h-4 w-4" /> {listings.length} ads</span>
           </div>
-          {seller.bio && <p className="mt-3 max-w-2xl text-slate-600">{seller.bio}</p>}
+          {seller.bio && <p className="mt-3 max-w-2xl text-ink-2">{seller.bio}</p>}
         </div>
       </div>
       {listings.length ? (

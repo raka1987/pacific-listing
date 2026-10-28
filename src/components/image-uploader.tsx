@@ -62,7 +62,7 @@ export function ImageUploader({
     <div>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {value.map((url, i) => (
-          <div key={url} className="group relative aspect-square overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200">
+          <div key={url} className="group relative aspect-square overflow-hidden rounded-xl bg-subtle ring-1 ring-line">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={url} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
             {i === 0 ? (
@@ -71,7 +71,7 @@ export function ImageUploader({
               <button
                 type="button"
                 onClick={() => makeCover(url)}
-                className="badge absolute bottom-1.5 left-1.5 bg-white/90 text-slate-700 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                className="badge absolute bottom-1.5 left-1.5 bg-white/90 text-ink-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
               >
                 <Star className="h-3 w-3" /> Make cover
               </button>
@@ -87,7 +87,7 @@ export function ImageUploader({
           </div>
         ))}
         {Array.from({ length: uploading }).map((_, i) => (
-          <div key={`u${i}`} className="flex aspect-square items-center justify-center rounded-xl bg-slate-100">
+          <div key={`u${i}`} className="flex aspect-square items-center justify-center rounded-xl bg-subtle">
             <Loader2 className="h-6 w-6 animate-spin text-lagoon-600" />
           </div>
         ))}
@@ -95,7 +95,7 @@ export function ImageUploader({
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-300 bg-white text-slate-500 transition hover:border-lagoon-400 hover:bg-lagoon-50 hover:text-lagoon-700"
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line bg-surface text-muted transition hover:border-lagoon-400 hover:bg-lagoon-50 hover:text-lagoon-700"
           >
             <ImagePlus className="h-7 w-7" />
             <span className="text-xs font-semibold">Add photos</span>
@@ -110,7 +110,7 @@ export function ImageUploader({
         className="hidden"
         onChange={(e) => upload(e.target.files)}
       />
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-muted">
         {value.length}/{max} photos · The first photo is your cover. Clear, bright photos sell faster.
       </p>
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}

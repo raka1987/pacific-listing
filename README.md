@@ -61,6 +61,24 @@ Your domain is registered at **Namecheap**, but its DNS is currently managed by 
 
 ---
 
+## The mobile app
+
+The site is an installable web app (a "PWA"):
+
+- **Android (Chrome):** visitors see an **Install** banner, or can use the browser menu, then **Install app**.
+- **iPhone (Safari):** visitors tap **Share**, then **Add to Home Screen**. The site shows these steps when they tap "Add to iPhone".
+- Once installed it gets its own icon, opens full-screen with no browser bar, caches photos to save data, and shows a friendly page when there's no connection.
+
+### Getting into the App Store and Google Play (optional, later)
+The same site can be wrapped as a store app with [Capacitor](https://capacitorjs.com). You'll need:
+- **Google Play developer account:** US$25 one-time
+- **Apple developer account:** US$99 per year
+- A Mac with Xcode, or a cloud build service (for example Codemagic or Ionic Appflow), to build the iPhone version
+
+Apple can reject apps that are just a website in a frame. Adding native features such as push notifications ("someone saved your ad") and camera upload improves the chances of approval.
+
+---
+
 ## Using the admin panel (`/admin`)
 
 | Section | What you can do |

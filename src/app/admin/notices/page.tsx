@@ -12,12 +12,12 @@ export default async function AdminNotices() {
   const supabase = await createClient();
   const { data } = await supabase.from("notices").select("*").order("created_at", { ascending: false });
   const notices = (data ?? []) as Notice[];
-  const btn = "inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50";
+  const btn = "inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-2 hover:bg-subtle";
 
   return (
     <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
       <div>
-        <h1 className="mb-5 text-2xl font-extrabold text-slate-900">Notice board</h1>
+        <h1 className="mb-5 text-2xl font-extrabold text-ink">Notice board</h1>
         <form action={adminCreateNotice} className="card space-y-4 p-5">
           <h2 className="font-bold">New notice</h2>
           <div>
@@ -39,10 +39,10 @@ export default async function AdminNotices() {
           <div key={n.id} className="card p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-semibold text-slate-900">
-                  {n.title} {!n.is_published && <span className="badge ml-1 bg-slate-100 text-slate-500">Draft</span>}
+                <p className="font-semibold text-ink">
+                  {n.title} {!n.is_published && <span className="badge ml-1 bg-subtle text-muted">Draft</span>}
                 </p>
-                <p className="text-xs text-slate-500">{formatDate(n.created_at)}</p>
+                <p className="text-xs text-muted">{formatDate(n.created_at)}</p>
               </div>
               <div className="flex gap-1.5">
                 <form action={adminToggleNotice.bind(null, n.id, !n.is_published)}>
@@ -56,10 +56,10 @@ export default async function AdminNotices() {
                 </form>
               </div>
             </div>
-            {n.body && <p className="mt-2 whitespace-pre-line text-sm text-slate-600">{n.body}</p>}
+            {n.body && <p className="mt-2 whitespace-pre-line text-sm text-ink-2">{n.body}</p>}
           </div>
         ))}
-        {!notices.length && <div className="card p-10 text-center text-sm text-slate-500">No notices yet.</div>}
+        {!notices.length && <div className="card p-10 text-center text-sm text-muted">No notices yet.</div>}
       </div>
     </div>
   );

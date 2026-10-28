@@ -3,8 +3,8 @@ import type { ListingStatus } from "@/lib/types";
 const STYLES: Record<ListingStatus, string> = {
   active: "bg-emerald-100 text-emerald-700",
   pending: "bg-amber-100 text-amber-700",
-  sold: "bg-slate-200 text-slate-700",
-  hidden: "bg-slate-100 text-slate-500",
+  sold: "bg-subtle text-ink-2",
+  hidden: "bg-subtle text-muted",
   rejected: "bg-red-100 text-red-700",
 };
 

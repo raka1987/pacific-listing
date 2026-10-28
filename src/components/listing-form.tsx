@@ -58,7 +58,7 @@ export function ListingForm({
                 onChange={() => setCategory(c.slug)}
                 className="peer sr-only"
               />
-              <span className="flex h-full flex-col items-center gap-1.5 rounded-xl border border-slate-200 bg-white p-3 text-center text-xs font-semibold text-slate-600 transition peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800 peer-focus-visible:ring-2 peer-focus-visible:ring-lagoon-400 hover:border-slate-300">
+              <span className="flex h-full flex-col items-center gap-1.5 rounded-xl border border-line bg-surface p-3 text-center text-xs font-semibold text-ink-2 transition peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800 peer-focus-visible:ring-2 peer-focus-visible:ring-lagoon-400 hover:border-line">
                 <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${c.color}`}>
                   <CategoryIcon icon={c.icon} className="h-5 w-5" />
                 </span>
@@ -97,7 +97,7 @@ export function ListingForm({
                 {[["used", "Used"], ["new", "New"]].map(([v, l]) => (
                   <label key={v} className="flex-1 cursor-pointer">
                     <input type="radio" name="condition" value={v} defaultChecked={(listing?.condition ?? "used") === v} className="peer sr-only" />
-                    <span className="block rounded-xl border border-slate-200 bg-white py-2.5 text-center text-sm font-medium text-slate-600 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800">
+                    <span className="block rounded-xl border border-line bg-surface py-2.5 text-center text-sm font-medium text-ink-2 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800">
                       {l}
                     </span>
                   </label>
@@ -113,7 +113,7 @@ export function ListingForm({
           {[["fixed", "Fixed price"], ["negotiable", "Negotiable"], ["free", "Free"], ["contact", "Ask for price"]].map(([v, l]) => (
             <label key={v} className="cursor-pointer">
               <input type="radio" name="price_type" value={v} checked={priceType === v} onChange={() => setPriceType(v)} className="peer sr-only" />
-              <span className="block rounded-xl border border-slate-200 bg-white py-2.5 text-center text-sm font-medium text-slate-600 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800">
+              <span className="block rounded-xl border border-line bg-surface py-2.5 text-center text-sm font-medium text-ink-2 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800">
                 {l}
               </span>
             </label>
@@ -123,7 +123,7 @@ export function ListingForm({
           <div className="mt-4 max-w-xs">
             <label className="label" htmlFor="price">Price</label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-3.5 flex items-center text-sm font-semibold text-slate-500">{currency}</span>
+              <span className="absolute inset-y-0 left-3.5 flex items-center text-sm font-semibold text-muted">{currency}</span>
               <input
                 id="price"
                 name="price"
@@ -170,7 +170,7 @@ export function ListingForm({
       </Section>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-muted">
           By posting you agree to our <a href="/terms" className="underline">Terms</a> and confirm the item is legal to sell.
         </p>
         <SubmitButton className="btn-accent px-8 py-3 text-base" pendingText={listing ? "Saving…" : "Posting…"}>
@@ -184,8 +184,8 @@ export function ListingForm({
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
     <section className="card p-5 sm:p-6">
-      <h2 className="font-bold text-slate-900">{title}</h2>
-      {hint && <p className="mt-0.5 text-sm text-slate-500">{hint}</p>}
+      <h2 className="font-bold text-ink">{title}</h2>
+      {hint && <p className="mt-0.5 text-sm text-muted">{hint}</p>}
       <div className="mt-4">{children}</div>
     </section>
   );

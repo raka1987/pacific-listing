@@ -36,8 +36,8 @@ export default function AboutPage() {
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-lagoon-50 text-lagoon-700">
               <Icon className="h-5 w-5" />
             </span>
-            <h2 className="mt-3 font-bold text-slate-900">{title}</h2>
-            <p className="mt-1 text-sm text-slate-500">{text}</p>
+            <h2 className="mt-3 font-bold text-ink">{title}</h2>
+            <p className="mt-1 text-sm text-muted">{text}</p>
           </div>
         ))}
       </div>

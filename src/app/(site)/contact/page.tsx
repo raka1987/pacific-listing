@@ -23,7 +23,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           <div className="card p-5">
             <Clock className="h-5 w-5 text-lagoon-600" />
             <h2 className="mt-2 font-bold">Response time</h2>
-            <p className="text-sm text-slate-500">Usually within 1–2 working days.</p>
+            <p className="text-sm text-muted">Usually within 1–2 working days.</p>
           </div>
         </div>
       </div>

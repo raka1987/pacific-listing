@@ -31,17 +31,17 @@ export function SignupForm({ next }: { next: string }) {
           </select>
         </div>
         <div>
-          <label className="label" htmlFor="phone">Phone <span className="font-normal text-slate-400">(optional)</span></label>
+          <label className="label" htmlFor="phone">Phone <span className="font-normal text-faint">(optional)</span></label>
           <input id="phone" name="phone" type="tel" autoComplete="tel" className="input" placeholder="+679…" />
         </div>
       </div>
       <div>
         <label className="label" htmlFor="password">Password</label>
         <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required className="input" />
-        <p className="mt-1 text-xs text-slate-500">At least 8 characters.</p>
+        <p className="mt-1 text-xs text-muted">At least 8 characters.</p>
       </div>
       <SubmitButton className="btn-accent w-full py-3" pendingText="Creating account…">Create account</SubmitButton>
-      <p className="text-center text-xs text-slate-500">
+      <p className="text-center text-xs text-muted">
         By signing up you agree to our <a href="/terms" className="underline">Terms</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
       </p>
     </form>

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { AlertTriangle, BadgeCheck, CalendarDays, CheckCircle2, ChevronRight, Clock, Eye, MapPin, ShieldCheck, Tag } from "lucide-react";
 import { Avatar } from "@/components/avatar";
+import { ContactBar } from "@/components/contact-bar";
 import { ContactSeller } from "@/components/contact-seller";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ImageGallery } from "@/components/image-gallery";
@@ -97,11 +98,11 @@ export default async function ListingPage({ params, searchParams }: Props) {
   };
 
   return (
-    <div className="container-page py-6 sm:py-8">
+    <div className="container-page pt-4 pb-28 sm:py-8 lg:pb-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       {!isOwner && <ViewTracker listingId={listing.id} />}
 
-      <nav className="mb-4 flex items-center gap-1 text-sm text-slate-500" aria-label="Breadcrumb">
+      <nav className="mb-4 hidden items-center gap-1 text-sm text-muted sm:flex" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-lagoon-700">Home</Link>
         <ChevronRight className="h-4 w-4" />
         {category && (
@@ -110,7 +111,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             <ChevronRight className="h-4 w-4" />
           </>
         )}
-        <span className="truncate text-slate-700">{listing.title}</span>
+        <span className="truncate text-ink-2">{listing.title}</span>
       </nav>
 
       {(posted || updated) && (
@@ -141,18 +142,18 @@ export default async function ListingPage({ params, searchParams }: Props) {
           <ImageGallery images={listing.images} title={listing.title} />
 
           <section className="card p-5 sm:p-6">
-            <h2 className="text-lg font-bold text-slate-900">Details</h2>
-            <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <h2 className="font-display text-xl font-bold text-ink">Details</h2>
+            <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Detail icon={Tag} label="Category" value={category?.name ?? listing.category} />
               <Detail icon={MapPin} label="Location" value={locationLabel(listing.country, listing.city)} />
               {listing.condition && <Detail icon={BadgeCheck} label="Condition" value={listing.condition === "new" ? "New" : "Used"} />}
               <Detail icon={CalendarDays} label="Posted" value={formatDate(listing.created_at)} />
             </dl>
-            <h2 className="mt-8 text-lg font-bold text-slate-900">Description</h2>
-            <p className="mt-3 leading-relaxed whitespace-pre-line text-slate-600">
+            <h2 className="font-display mt-8 text-xl font-bold text-ink">Description</h2>
+            <p className="mt-3 leading-relaxed whitespace-pre-line text-ink-2">
               {listing.description || "No description provided."}
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4 text-sm text-slate-500">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-sm text-muted">
               <span className="flex items-center gap-4">
                 <span className="flex items-center gap-1"><Eye className="h-4 w-4" /> {listing.views.toLocaleString()} views</span>
                 <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {timeAgo(listing.created_at)}</span>
@@ -165,14 +166,14 @@ export default async function ListingPage({ params, searchParams }: Props) {
         <aside className="space-y-4 lg:sticky lg:top-24 lg:h-fit">
           <div className="card p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
-              <p className="text-3xl font-extrabold tracking-tight text-ocean-900">
+              <p className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
                 {formatPrice(listing.price, listing.price_type, listing.country)}
               </p>
               {listing.status !== "active" && <StatusBadge status={listing.status} />}
             </div>
             {listing.price_type === "negotiable" && <p className="mt-1 text-sm font-medium text-lagoon-700">Price negotiable</p>}
-            <h1 className="mt-3 text-xl font-bold text-slate-900">{listing.title}</h1>
-            <p className="mt-2 flex items-center gap-1 text-sm text-slate-500">
+            <h1 className="font-display mt-2 text-xl leading-snug font-bold text-ink sm:text-2xl">{listing.title}</h1>
+            <p className="mt-2 flex items-center gap-1 text-sm text-muted">
               <MapPin className="h-4 w-4" /> {locationLabel(listing.country, listing.city)}
             </p>
 
@@ -180,7 +181,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
               {isOwner ? (
                 <OwnerActions id={listing.id} status={listing.status} />
               ) : listing.status === "sold" ? (
-                <p className="rounded-xl bg-slate-100 p-3 text-center text-sm font-medium text-slate-600">This item has been sold.</p>
+                <p className="rounded-xl bg-subtle p-3 text-center text-sm font-medium text-ink-2">This item has been sold.</p>
               ) : (
                 <ContactSeller phone={phone} whatsapp={whatsapp} title={listing.title} listingUrl={url} />
               )}
@@ -195,17 +196,17 @@ export default async function ListingPage({ params, searchParams }: Props) {
             <Link href={`/seller/${listing.seller.id}`} className="card flex items-center gap-3 p-4 transition hover:shadow-md">
               <Avatar name={sellerName} url={listing.seller.avatar_url} size={48} />
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-1 font-semibold text-slate-900">
+                <p className="flex items-center gap-1 font-semibold text-ink">
                   <span className="truncate">{sellerName}</span>
                   {listing.seller.is_verified && <BadgeCheck className="h-4 w-4 shrink-0 text-lagoon-600" aria-label="Verified seller" />}
                 </p>
-                <p className="text-sm text-slate-500">Member since {formatDate(listing.seller.created_at)}</p>
+                <p className="text-sm text-muted">Member since {formatDate(listing.seller.created_at)}</p>
               </div>
-              <ChevronRight className="h-5 w-5 text-slate-400" />
+              <ChevronRight className="h-5 w-5 text-faint" />
             </Link>
           )}
 
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="rounded-3xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900">
             <p className="flex items-center gap-2 font-semibold"><ShieldCheck className="h-4 w-4" /> Stay safe</p>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-amber-800">
               <li>Meet in a busy public place.</li>
@@ -217,9 +218,19 @@ export default async function ListingPage({ params, searchParams }: Props) {
         </aside>
       </div>
 
+      {!isOwner && listing.status === "active" && (
+        <ContactBar
+          price={formatPrice(listing.price, listing.price_type, listing.country)}
+          phone={phone}
+          whatsapp={whatsapp}
+          title={listing.title}
+          listingUrl={url}
+        />
+      )}
+
       {similar && similar.length > 0 && (
         <section className="mt-14">
-          <h2 className="mb-5 text-xl font-extrabold text-ocean-900">Similar listings</h2>
+          <h2 className="font-display mb-6 text-2xl font-bold text-ink sm:text-3xl">Similar listings</h2>
           <ListingGrid listings={similar as ListingCardData[]} favoriteIds={favoriteIds} />
         </section>
       )}
@@ -229,11 +240,11 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
 function Detail({ icon: Icon, label, value }: { icon: typeof Tag; label: string; value: string }) {
   return (
-    <div>
-      <dt className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-slate-400 uppercase">
+    <div className="rounded-2xl bg-subtle p-3.5">
+      <dt className="flex items-center gap-1.5 text-xs font-medium tracking-wide text-faint uppercase">
         <Icon className="h-3.5 w-3.5" /> {label}
       </dt>
-      <dd className="mt-1 text-sm font-semibold text-slate-800">{value}</dd>
+      <dd className="mt-1 text-sm font-semibold text-ink">{value}</dd>
     </div>
   );
 }

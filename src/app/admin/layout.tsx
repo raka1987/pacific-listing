@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]);
 
   return (
-    <div className="min-h-screen bg-slate-100 lg:grid lg:grid-cols-[240px_1fr]">
+    <div className="min-h-screen bg-subtle lg:grid lg:grid-cols-[240px_1fr]">
       <aside className="bg-ocean-950 p-4 lg:sticky lg:top-0 lg:h-screen lg:p-5">
         <div className="mb-4 flex items-center justify-between lg:mb-8 lg:block">
           <Logo light />
@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <AdminNav counts={{ pending: pending.count ?? 0, reports: reports.count ?? 0, messages: messages.count ?? 0 }} />
         <div className="mt-8 hidden border-t border-white/10 pt-5 lg:block">
           <p className="truncate text-sm font-medium text-white">{profile?.full_name}</p>
-          <Link href="/" className="mt-2 flex items-center gap-1.5 text-sm text-slate-400 hover:text-white">
+          <Link href="/" className="mt-2 flex items-center gap-1.5 text-sm text-faint hover:text-white">
             <ArrowLeft className="h-4 w-4" /> Back to site
           </Link>
         </div>

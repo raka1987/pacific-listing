@@ -16,17 +16,17 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
   query = status === "archived" ? query.eq("status", "archived") : query.in("status", ["new", "read"]);
   const { data } = await query;
   const messages = (data ?? []) as Message[];
-  const btn = "inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50";
+  const btn = "inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-2 hover:bg-subtle";
 
   return (
     <div>
-      <h1 className="mb-5 text-2xl font-extrabold text-slate-900">Contact messages</h1>
+      <h1 className="mb-5 text-2xl font-extrabold text-ink">Contact messages</h1>
       <div className="mb-4 flex gap-2">
         {[["inbox", "Inbox"], ["archived", "Archived"]].map(([s, l]) => (
           <Link
             key={s}
             href={`/admin/messages?status=${s}`}
-            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${status === s ? "bg-ocean-900 text-white" : "bg-white text-slate-600 ring-1 ring-slate-200"}`}
+            className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${status === s ? "bg-ink text-canvas" : "bg-surface text-ink-2 ring-1 ring-line"}`}
           >
             {l}
           </Link>
@@ -38,10 +38,10 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
             <li key={m.id} className={`card p-5 ${m.status === "new" ? "border-l-4 border-l-coral-500" : ""}`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-ink">
                     {m.subject} {m.status === "new" && <span className="badge ml-1 bg-coral-500 text-white">New</span>}
                   </p>
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted">
                     {m.name} · <a href={`mailto:${m.email}`} className="text-lagoon-700 hover:underline">{m.email}</a> · {formatDate(m.created_at)}
                   </p>
                 </div>
@@ -64,12 +64,12 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
                   </form>
                 </div>
               </div>
-              <p className="mt-3 whitespace-pre-line text-sm text-slate-700">{m.message}</p>
+              <p className="mt-3 whitespace-pre-line text-sm text-ink-2">{m.message}</p>
             </li>
           ))}
         </ul>
       ) : (
-        <div className="card flex flex-col items-center p-10 text-center text-sm text-slate-500">
+        <div className="card flex flex-col items-center p-10 text-center text-sm text-muted">
           <Mail className="mb-2 h-8 w-8 text-slate-300" /> No messages.
         </div>
       )}

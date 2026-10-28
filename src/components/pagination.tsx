@@ -22,7 +22,7 @@ export function Pagination({
           <ChevronLeft className="h-4 w-4" /> Previous
         </span>
       )}
-      <span className="text-sm text-slate-500">
+      <span className="text-sm text-muted">
         Page {page} of {totalPages}
       </span>
       {page < totalPages ? (

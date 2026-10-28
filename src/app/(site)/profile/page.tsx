@@ -26,8 +26,8 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       <ProfileForm profile={profile} email={user.email ?? ""} />
       <div className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-5">
         <div>
-          <h2 className="font-bold text-slate-900">Password</h2>
-          <p className="text-sm text-slate-500">Change the password you use to log in.</p>
+          <h2 className="font-bold text-ink">Password</h2>
+          <p className="text-sm text-muted">Change the password you use to log in.</p>
         </div>
         <Link href="/update-password" className="btn-secondary">
           <KeyRound className="h-4 w-4" /> Change password

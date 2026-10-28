@@ -14,9 +14,9 @@ const ITEMS = [
 
 export function MobileNav() {
   const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
+  if (pathname.startsWith("/admin") || /^\/listing\/[^/]+$/.test(pathname)) return null;
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur sm:hidden">
+    <nav className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line pb-[env(safe-area-inset-bottom)] sm:hidden">
       <ul className="grid grid-cols-5">
         {ITEMS.map(({ href, label, icon: Icon, primary }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -24,16 +24,16 @@ export function MobileNav() {
             <li key={href}>
               <Link
                 href={href}
-                className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium ${
-                  active ? "text-lagoon-700" : "text-slate-500"
-                }`}
+                className={`flex flex-col items-center gap-1 pt-2 pb-1.5 text-[11px] font-semibold transition ${active ? "text-lagoon-600" : "text-muted"}`}
               >
                 {primary ? (
-                  <span className="-mt-5 flex h-11 w-11 items-center justify-center rounded-full bg-coral-500 text-white shadow-lg shadow-coral-500/30">
-                    <Icon className="h-5 w-5" />
+                  <span className="-mt-1 flex h-9 w-12 items-center justify-center rounded-2xl bg-gradient-to-b from-coral-400 to-coral-500 text-white shadow-md shadow-coral-500/30">
+                    <Icon className="h-5 w-5" strokeWidth={2.5} />
                   </span>
                 ) : (
-                  <Icon className="h-5 w-5" />
+                  <span className={`flex h-8 w-12 items-center justify-center rounded-2xl transition ${active ? "bg-lagoon-100" : ""}`}>
+                    <Icon className="h-5 w-5" strokeWidth={active ? 2.4 : 2} />
+                  </span>
                 )}
                 {label}
               </Link>
