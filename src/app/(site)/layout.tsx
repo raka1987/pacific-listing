@@ -1,0 +1,21 @@
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { MobileNav } from "@/components/mobile-nav";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const { data: settings } = await supabase.from("site_settings").select("announcement").eq("id", 1).maybeSingle();
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      {settings?.announcement && (
+        <div className="bg-ocean-900 px-4 py-2 text-center text-sm text-lagoon-100">{settings.announcement}</div>
+      )}
+      <Header />
+      <main className="flex-1">{children}</main>
+      <Footer />
+      <MobileNav />
+    </div>
+  );
+}

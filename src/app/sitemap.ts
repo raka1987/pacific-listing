@@ -1,0 +1,25 @@
+import type { MetadataRoute } from "next";
+import { createClient } from "@supabase/supabase-js";
+import { CATEGORIES, SITE } from "@/lib/constants";
+
+export const revalidate = 3600;
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const staticPages = ["", "/search", "/about", "/contact", "/safety", "/notices", "/terms", "/privacy"].map((path) => ({
+    url: `${SITE.url}${path}`,
+    changeFrequency: "daily" as const,
+    priority: path === "" ? 1 : 0.5,
+  }));
+  const categories = CATEGORIES.map((c) => ({ url: `${SITE.url}/category/${c.slug}`, changeFrequency: "hourly" as const, priority: 0.8 }));
+
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+  const { data } = await supabase
+    .from("listings")
+    .select("id, updated_at")
+    .eq("status", "active")
+    .order("updated_at", { ascending: false })
+    .limit(5000);
+  const listings = (data ?? []).map((l) => ({ url: `${SITE.url}/listing/${l.id}`, lastModified: l.updated_at, priority: 0.6 }));
+
+  return [...staticPages, ...categories, ...listings];
+}

@@ -1,0 +1,75 @@
+"use client";
+
+import { CheckCircle2, Flag, X } from "lucide-react";
+import { useState, useTransition } from "react";
+import { reportListing } from "@/app/actions";
+import { REPORT_REASONS } from "@/lib/constants";
+
+export function ReportDialog({ listingId }: { listingId: string }) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
+  const [details, setDetails] = useState("");
+  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reason) return setError("Choose a reason.");
+    startTransition(async () => {
+      const res = await reportListing(listingId, reason, details);
+      if (res.error) setError(res.error);
+      else setDone(true);
+    });
+  }
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-600">
+        <Flag className="h-4 w-4" /> Report this ad
+      </button>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Report ad">
+          <div className="absolute inset-0 bg-slate-900/50" onClick={() => setOpen(false)} />
+          <div className="relative w-full max-w-md rounded-t-3xl bg-white p-6 sm:rounded-3xl">
+            <button onClick={() => setOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600" aria-label="Close">
+              <X className="h-5 w-5" />
+            </button>
+            {done ? (
+              <div className="py-6 text-center">
+                <CheckCircle2 className="mx-auto h-12 w-12 text-lagoon-600" />
+                <h2 className="mt-3 text-lg font-bold">Thanks for letting us know</h2>
+                <p className="mt-1 text-sm text-slate-500">Our team will review this ad shortly.</p>
+                <button onClick={() => setOpen(false)} className="btn-primary mt-5">Close</button>
+              </div>
+            ) : (
+              <form onSubmit={submit}>
+                <h2 className="text-lg font-bold">Report this ad</h2>
+                <p className="mt-1 text-sm text-slate-500">Help keep Pacific Listing safe. Reports are anonymous.</p>
+                <div className="mt-4 space-y-2">
+                  {REPORT_REASONS.map((r) => (
+                    <label key={r} className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 px-3 py-2.5 text-sm has-[:checked]:border-lagoon-500 has-[:checked]:bg-lagoon-50">
+                      <input type="radio" name="reason" value={r} checked={reason === r} onChange={() => setReason(r)} className="accent-lagoon-600" />
+                      {r}
+                    </label>
+                  ))}
+                </div>
+                <textarea
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  placeholder="Anything else we should know? (optional)"
+                  rows={3}
+                  className="input mt-3"
+                />
+                {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+                <button disabled={pending} className="btn-primary mt-4 w-full">
+                  {pending ? "Sending…" : "Send report"}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

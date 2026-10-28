@@ -1,26 +1,114 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  /* Lagoon: primary brand teal */
+  --color-lagoon-50: #effcfa;
+  --color-lagoon-100: #cff7f0;
+  --color-lagoon-200: #a0ede2;
+  --color-lagoon-300: #66dccf;
+  --color-lagoon-400: #34c2b6;
+  --color-lagoon-500: #1aa69c;
+  --color-lagoon-600: #12857f;
+  --color-lagoon-700: #136a66;
+  --color-lagoon-800: #145553;
+  --color-lagoon-900: #154745;
+
+  /* Ocean: deep navy for hero and footer */
+  --color-ocean-700: #12325a;
+  --color-ocean-800: #0d2747;
+  --color-ocean-900: #091c35;
+  --color-ocean-950: #061226;
+
+  /* Coral: call-to-action accent */
+  --color-coral-400: #ff8a6b;
+  --color-coral-500: #ff6a45;
+  --color-coral-600: #ec4f29;
+  --color-coral-700: #c63d1c;
+
+  --color-sand-50: #faf8f4;
+  --color-sand-100: #f3efe7;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-sand-50 text-slate-800 antialiased;
+  }
+  ::selection {
+    @apply bg-lagoon-200 text-lagoon-900;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-lagoon-500;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-lagoon-600 text-white shadow-sm hover:bg-lagoon-700;
+}
+
+@utility btn-accent {
+  @apply btn bg-coral-500 text-white shadow-sm hover:bg-coral-600;
+}
+
+@utility btn-secondary {
+  @apply btn border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50;
+}
+
+@utility btn-ghost {
+  @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+}
+
+@utility btn-danger {
+  @apply btn border border-red-200 bg-white text-red-600 hover:bg-red-50;
+}
+
+@utility input {
+  @apply block w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-lagoon-500 focus:ring-4 focus:ring-lagoon-100 focus:outline-none;
+}
+
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+
+@utility card {
+  @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+}
+
+@utility badge {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+}
+
+@layer components {
+  .prose-simple h2 {
+    @apply mt-8 mb-3 text-xl font-bold text-slate-900;
+  }
+}
+
+@layer components {
+  .prose-simple p,
+  .prose-simple li {
+    @apply mb-3 leading-relaxed text-slate-600;
+  }
+}
+
+@layer components {
+  .prose-simple ul {
+    @apply list-disc pl-5;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
