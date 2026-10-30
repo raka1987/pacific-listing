@@ -312,3 +312,12 @@
     overflow: hidden;
   }
 }
+
+/* iPhones zoom in on any text box with text under 16px, and stay zoomed after the form is sent. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
