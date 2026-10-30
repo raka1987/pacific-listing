@@ -41,7 +41,7 @@ export async function Header() {
             </Link>
           )}
           <Link href="/post" className="btn-accent ml-1 hidden sm:inline-flex">
-            <Plus className="h-4 w-4" strokeWidth={2.5} /> Sell
+            <Plus className="h-4 w-4" strokeWidth={2.5} /> List
           </Link>
         </nav>
       </div>

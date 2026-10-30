@@ -7,7 +7,7 @@ import { Heart, Home, LayoutGrid, Plus, User } from "lucide-react";
 const ITEMS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/search", label: "Browse", icon: LayoutGrid },
-  { href: "/post", label: "Sell", icon: Plus, primary: true },
+  { href: "/post", label: "List", icon: Plus, primary: true },
   { href: "/favorites", label: "Saved", icon: Heart },
   { href: "/my-ads", label: "Account", icon: User },
 ];
