@@ -228,7 +228,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
               ) : listing.status === "sold" ? (
                 <p className="rounded-xl bg-subtle p-3 text-center text-sm font-medium text-ink-2">This item has been sold.</p>
               ) : (
-                <ContactSeller phone={phone} whatsapp={whatsapp} title={listing.title} listingUrl={url} />
+                <ContactSeller listingId={listing.id} phone={phone} whatsapp={whatsapp} title={listing.title} listingUrl={url} />
               )}
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2">
@@ -276,6 +276,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
       {!isOwner && listing.status === "active" && (
         <ContactBar
+          listingId={listing.id}
           price={formatPrice(listing.price, listing.price_type, listing.country)}
           phone={phone}
           whatsapp={whatsapp}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Heart, List, LogOut, Receipt, Shield, Store, User } from "lucide-react";
+import { ChevronDown, Heart, List, LogOut, MessagesSquare, Receipt, Shield, Store, User } from "lucide-react";
 import { Avatar } from "./avatar";
 
 export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl: string | null; isAdmin: boolean }) {
@@ -44,6 +44,9 @@ export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl
         >
           <Link href="/my-ads" className={item} role="menuitem" onClick={() => setOpen(false)}>
             <List className="h-4 w-4" /> My ads
+          </Link>
+          <Link href="/messages" className={item} role="menuitem" onClick={() => setOpen(false)}>
+            <MessagesSquare className="h-4 w-4" /> Messages
           </Link>
           <Link href="/favorites" className={item} role="menuitem" onClick={() => setOpen(false)}>
             <Heart className="h-4 w-4" /> Saved

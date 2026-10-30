@@ -4,13 +4,16 @@ import { Mail, MessageCircle, Phone } from "lucide-react";
 import { useState } from "react";
 import { phoneDigits } from "@/lib/format";
 import { track } from "@/lib/track";
+import { ChatButton } from "./chat-button";
 
 export function ContactSeller({
+  listingId,
   phone,
   whatsapp,
   title,
   listingUrl,
 }: {
+  listingId: string;
   phone: string | null;
   whatsapp: string | null;
   title: string;
@@ -19,16 +22,9 @@ export function ContactSeller({
   const [revealed, setRevealed] = useState(false);
   const message = encodeURIComponent(`Hi! Is "${title}" still available? (seen on Pacific Listing: ${listingUrl})`);
 
-  if (!phone && !whatsapp) {
-    return (
-      <p className="rounded-xl bg-subtle p-3 text-sm text-muted">
-        The seller hasn&apos;t added contact details to this ad.
-      </p>
-    );
-  }
-
   return (
     <div className="space-y-2.5">
+      <ChatButton listingId={listingId} className="btn-primary w-full py-3" />
       {whatsapp && (
         <a
           href={`https://wa.me/${phoneDigits(whatsapp)}?text=${message}`}
@@ -42,11 +38,11 @@ export function ContactSeller({
       )}
       {phone &&
         (revealed ? (
-          <a onClick={() => track("contact_seller", { method: "phone" })} href={`tel:${phone.replace(/\s/g, "")}`} className="btn-primary w-full py-3">
+          <a onClick={() => track("contact_seller", { method: "phone" })} href={`tel:${phone.replace(/\s/g, "")}`} className="btn-secondary w-full py-3">
             <Phone className="h-5 w-5" /> {phone}
           </a>
         ) : (
-          <button onClick={() => setRevealed(true)} className="btn-primary w-full py-3">
+          <button onClick={() => setRevealed(true)} className="btn-secondary w-full py-3">
             <Phone className="h-5 w-5" /> Show phone number
           </button>
         ))}

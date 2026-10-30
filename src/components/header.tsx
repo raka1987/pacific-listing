@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Plus } from "lucide-react";
+import { MessagesSquare, Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
+import { getUnreadChats } from "@/lib/chat";
 import { getViewer, VIEWER_REGIONS } from "@/lib/location";
+import { UnreadBadge } from "./chat-unread";
 import { CountryPicker } from "./country-picker";
 import { Logo } from "./logo";
 import { SearchBar } from "./search-bar";
@@ -12,7 +14,7 @@ import { UserMenu } from "./user-menu";
 export async function Header() {
   const current = await getCurrentUser();
   const profile = current?.profile;
-  const viewer = await getViewer();
+  const [viewer, unread] = await Promise.all([getViewer(), getUnreadChats()]);
 
   return (
     <header className="glass sticky top-0 z-40 border-b border-line pt-[env(safe-area-inset-top)] backdrop-blur-xl">
@@ -29,6 +31,12 @@ export async function Header() {
           </Link>
           <CountryPicker regions={VIEWER_REGIONS} current={{ code: viewer.country, flag: viewer.flag, currency: viewer.currency }} />
           <ThemeToggle />
+          {current && (
+            <Link href="/messages" className="relative hidden h-10 w-10 items-center justify-center rounded-full text-ink-2 hover:bg-subtle sm:flex" aria-label="Messages">
+              <MessagesSquare className="h-5 w-5" />
+              <UnreadBadge initial={unread} className="absolute -top-0.5 -right-0.5" />
+            </Link>
+          )}
           {current ? (
             <UserMenu
               name={profile?.full_name || current.user.email || "Account"}

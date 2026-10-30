@@ -21,7 +21,8 @@ FIND WHAT YOU NEED
 • Save ads you like and come back to them later
 
 CONTACT SELLERS DIRECTLY
-• Chat on WhatsApp or call the seller in one tap
+• Chat with the seller inside the app, see new messages instantly, and block or report anyone
+• Or chat on WhatsApp or call the seller in one tap
 • No middleman and no fees on the sale
 
 SELL IN A MINUTE
@@ -94,7 +95,7 @@ Answer honestly. For a marketplace like this the answers are usually:
 | Email address | Yes | For login; never shown publicly |
 | Phone number | Optional | Shown on ads only if the seller adds it |
 | Photos | Yes | Photos the user adds to their ads or profile |
-| Other user content | Yes | Ad text, reports, contact messages |
+| Other user content | Yes | Ad text, chat messages between members, reports, contact messages |
 | Purchase history | Yes | Promotions/plans they buy (no card details are stored) |
 | Approximate location | No | The country comes from the connection to set prices; it isn't stored |
 | Device or other IDs | No | |
@@ -112,7 +113,7 @@ Password: <its password>
 
 Pacific Listing is a classifieds marketplace for the Pacific Islands. Without signing in you can browse
 and search ads and contact sellers by WhatsApp or phone. Signed in, you can post an ad (with photos from
-the camera or library), save ads, manage your ads, and delete your account (Account > Profile > Delete account).
+the camera or library), save ads, chat with sellers (Messages), manage your ads, and delete your account (Account > Profile > Delete account).
 
 Optional paid promotions and business plans are paid outside the app by local mobile money or bank
 transfer, so the app has no in-app purchases.

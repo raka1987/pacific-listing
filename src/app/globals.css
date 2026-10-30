@@ -305,3 +305,10 @@
     justify-content: flex-start !important;
   }
 }
+
+/* Chats fill the whole screen on phones, so the page behind them shouldn't scroll. */
+@media (max-width: 639px) {
+  body:has(.chat-page) {
+    overflow: hidden;
+  }
+}

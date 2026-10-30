@@ -14,7 +14,7 @@ export default function PrivacyPage() {
           <li><strong>Account details</strong> — your name, email, and optionally your phone, WhatsApp number, country and photo.</li>
           <li><strong>Ads you post</strong> — text, photos, price, location and the contact numbers you choose to show.</li>
           <li><strong>Usage</strong> — basic information such as ad views and saved ads, so the site works and we can improve it.</li>
-          <li><strong>Messages</strong> — anything you send us through the contact or report forms.</li>
+          <li><strong>Messages</strong> — anything you send us through the contact or report forms, and chats you have with other members. Chats are private to the two people in them; our team only reads a chat if one of them reports it.</li>
         </ul>
         <h2>How we use it</h2>
         <ul>

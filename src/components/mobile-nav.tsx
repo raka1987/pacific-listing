@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, Home, LayoutGrid, Plus, User } from "lucide-react";
+import { Home, LayoutGrid, MessagesSquare, Plus, User } from "lucide-react";
+import { UnreadBadge } from "./chat-unread";
 
 const ITEMS = [
   { href: "/", label: "Home", icon: Home },
   { href: "/search", label: "Browse", icon: LayoutGrid },
   { href: "/post", label: "List", icon: Plus, primary: true },
-  { href: "/favorites", label: "Saved", icon: Heart },
+  { href: "/messages", label: "Chats", icon: MessagesSquare },
   { href: "/my-ads", label: "Account", icon: User },
 ];
 
-export function MobileNav() {
+export function MobileNav({ unread }: { unread: number }) {
   const pathname = usePathname();
-  if (pathname.startsWith("/admin") || /^\/listing\/[^/]+$/.test(pathname)) return null;
+  if (pathname.startsWith("/admin") || /^\/(listing|messages)\/[^/]+$/.test(pathname)) return null;
   return (
     <nav className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line pb-[env(safe-area-inset-bottom)] sm:hidden">
       <ul className="grid grid-cols-5">
@@ -31,8 +32,9 @@ export function MobileNav() {
                     <Icon className="h-5 w-5" strokeWidth={2.5} />
                   </span>
                 ) : (
-                  <span className={`flex h-8 w-12 items-center justify-center rounded-2xl transition ${active ? "bg-lagoon-100" : ""}`}>
+                  <span className={`relative flex h-8 w-12 items-center justify-center rounded-2xl transition ${active ? "bg-lagoon-100" : ""}`}>
                     <Icon className="h-5 w-5" strokeWidth={active ? 2.4 : 2} />
+                    {href === "/messages" && <UnreadBadge initial={unread} className="absolute -top-0.5 right-1" />}
                   </span>
                 )}
                 {label}

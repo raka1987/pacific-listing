@@ -3,22 +3,24 @@
 import { MessageCircle, Phone } from "lucide-react";
 import { phoneDigits } from "@/lib/format";
 import { track } from "@/lib/track";
+import { ChatButton } from "./chat-button";
 
 /** Sticky contact buttons at the bottom of the screen on phones. */
 export function ContactBar({
+  listingId,
   price,
   phone,
   whatsapp,
   title,
   listingUrl,
 }: {
+  listingId: string;
   price: string;
   phone: string | null;
   whatsapp: string | null;
   title: string;
   listingUrl: string;
 }) {
-  if (!phone && !whatsapp) return null;
   const message = encodeURIComponent(`Hi! Is "${title}" still available? (seen on Pacific Listing: ${listingUrl})`);
   return (
     <div className="glass fixed inset-x-0 bottom-0 z-40 border-t border-line px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden">
@@ -38,11 +40,13 @@ export function ContactBar({
           onClick={() => track("contact_seller", { method: "whatsapp" })}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn h-11 bg-[#25D366] px-5 text-white shadow-md shadow-[#25D366]/30 hover:bg-[#1ebe5b]"
+            className="btn h-11 w-11 bg-[#25D366] p-0 text-white shadow-md shadow-[#25D366]/30 hover:bg-[#1ebe5b]"
+            aria-label="WhatsApp seller"
           >
-            <MessageCircle className="h-5 w-5" /> WhatsApp
+            <MessageCircle className="h-5 w-5" />
           </a>
         )}
+        <ChatButton listingId={listingId} label="Chat" className="btn-primary h-11 px-5 shadow-md" />
       </div>
     </div>
   );

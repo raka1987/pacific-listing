@@ -148,6 +148,8 @@ export const COUNTRIES: Country[] = [
 
 export const countryByCode = (code?: string | null) => COUNTRIES.find((c) => c.code === code);
 
+export const CHAT_REPORT_REASONS = ["Scam or asking for money upfront", "Abusive or threatening", "Spam", "Other"];
+
 export const REPORT_REASONS = [
   "Scam or fraud",
   "Prohibited item",
