@@ -2,6 +2,7 @@
 
 import { Check, Download, Share, Smartphone, SquarePlus, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { isNativeApp } from "@/lib/native";
 
 type InstallEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
 
@@ -27,7 +28,9 @@ function useInstall() {
     listeners.add(update);
     const ua = navigator.userAgent;
     setPlatform(/iphone|ipad|ipod/i.test(ua) ? "ios" : "other");
-    setInstalled(matchMedia("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone === true);
+    setInstalled(
+      isNativeApp() || matchMedia("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone === true,
+    );
     return () => {
       listeners.delete(update);
     };
@@ -48,6 +51,9 @@ function useInstall() {
 export function InstallAppCard() {
   const { canPrompt, platform, installed, install } = useInstall();
   const [showIos, setShowIos] = useState(false);
+  const [native, setNative] = useState(false);
+  useEffect(() => setNative(isNativeApp()), []);
+  if (native) return null;
 
   return (
     <div className="card p-6 sm:p-7">

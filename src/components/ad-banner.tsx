@@ -33,7 +33,7 @@ export async function AdBanner({
     return (
       <Link
         href="/advertise"
-        className={`group flex ${tall ? "aspect-[4/3] flex-col justify-center text-center" : "min-h-24 items-center"} gap-4 rounded-3xl border border-dashed border-line bg-surface p-5 transition hover:border-lagoon-300 hover:bg-lagoon-50`}
+        className={`hide-in-app group flex ${tall ? "aspect-[4/3] flex-col justify-center text-center" : "min-h-24 items-center"} gap-4 rounded-3xl border border-dashed border-line bg-surface p-5 transition hover:border-lagoon-300 hover:bg-lagoon-50`}
       >
         <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-lagoon-100 text-lagoon-700 ${tall ? "mx-auto" : ""}`}>
           <Megaphone className="h-5 w-5" />
@@ -60,7 +60,7 @@ export async function AdBanner({
         <span>
           Sponsored · {ad.advertiser_name}
         </span>
-        <Link href="/advertise" className="hover:text-ink">
+        <Link href="/advertise" className="hide-in-app hover:text-ink">
           Advertise with us
         </Link>
       </figcaption>

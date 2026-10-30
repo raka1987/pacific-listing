@@ -1,0 +1,101 @@
+# Cloud builds for the Pacific Listing phone apps (https://codemagic.io).
+# No Mac needed: Codemagic builds the iPhone app on its own Macs.
+# Setup steps are in MOBILE_APP.md. Start each build from the Codemagic
+# dashboard (Start new build -> choose the workflow).
+
+definitions:
+  setup: &setup
+    - name: Install packages
+      script: npm ci
+  android_env: &android_env
+    android_signing:
+      - pacific_listing_upload # the upload key you add in Codemagic (see MOBILE_APP.md)
+    node: 22
+    java: 21
+    vars:
+      PACKAGE_NAME: com.pacificlisting.app
+
+workflows:
+  # 1) Android app bundle to download and upload to Google Play by hand.
+  #    Use this for the very first release (Google requires the first upload to be manual).
+  android-build:
+    name: Android - build only
+    instance_type: linux_x2
+    max_build_duration: 60
+    environment:
+      <<: *android_env
+    scripts:
+      - *setup
+      - name: Copy app settings into the Android project
+        script: npx cap sync android
+      - name: Version number
+        script: |
+          echo "VERSION_CODE=$((BUILD_NUMBER + 1))" >> $CM_ENV
+          echo "VERSION_NAME=1.0.$BUILD_NUMBER" >> $CM_ENV
+      - name: Build the app bundle (.aab)
+        script: cd android && ./gradlew bundleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+
+  # 2) Every release after the first: builds and sends it straight to Google Play
+  #    (Internal testing track, as a draft you can review and promote).
+  android-release:
+    name: Android - build and send to Google Play
+    instance_type: linux_x2
+    max_build_duration: 60
+    environment:
+      <<: *android_env
+      groups:
+        - google_play # contains GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+    scripts:
+      - *setup
+      - name: Copy app settings into the Android project
+        script: npx cap sync android
+      - name: Version number (one higher than what's on Google Play)
+        script: |
+          LATEST=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks internal,alpha,beta,production 2>/dev/null || echo 1)
+          echo "VERSION_CODE=$((LATEST + 1))" >> $CM_ENV
+          echo "VERSION_NAME=1.0.$((LATEST + 1))" >> $CM_ENV
+      - name: Build the app bundle (.aab)
+        script: cd android && ./gradlew bundleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+
+  # 3) iPhone app: builds on Codemagic's Mac and uploads to TestFlight.
+  ios-release:
+    name: iPhone - build and send to TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: Pacific Listing # the App Store Connect API key name in Codemagic
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.pacificlisting.app
+      vars:
+        APP_STORE_APPLE_ID: "0000000000" # replace with the app's Apple ID (App Store Connect > App Information)
+      node: 22
+      xcode: latest
+    scripts:
+      - *setup
+      - name: Copy app settings into the iPhone project
+        script: npx cap sync ios
+      - name: Use the signing certificate and profile
+        script: xcode-project use-profiles
+      - name: Build number (one higher than TestFlight)
+        script: |
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
+          cd ios/App && agvtool new-version -all $((LATEST + 1))
+      - name: Build the iPhone app (.ipa)
+        script: xcode-project build-ipa --project "ios/App/App.xcodeproj" --scheme "App"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink, KeyRound } from "lucide-react";
+import { DeleteAccount } from "@/components/delete-account";
 import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
 import { ProfileForm } from "./form";
@@ -33,6 +34,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
           <KeyRound className="h-4 w-4" /> Change password
         </Link>
       </div>
+      <DeleteAccount />
     </div>
   );
 }

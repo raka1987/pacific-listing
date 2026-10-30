@@ -96,7 +96,7 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
               </Link>
               {payFor.has(l.id) ? (
                 <div className="flex flex-wrap gap-2">
-                  <Link href={`/orders/${payFor.get(l.id)}`} className="btn-accent px-3 py-2 text-xs">
+                  <Link href={`/orders/${payFor.get(l.id)}`} className="hide-in-app btn-accent px-3 py-2 text-xs">
                     <CreditCard className="h-4 w-4" /> Pay posting fee
                   </Link>
                   <OwnerActions id={l.id} status={l.status} compact />

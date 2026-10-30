@@ -26,7 +26,7 @@ export function OwnerActions({ id, status, compact = false }: { id: string; stat
   return (
     <div className={`flex flex-wrap gap-2 ${pending ? "pointer-events-none opacity-60" : ""}`}>
       {status === "active" && (
-        <Link href={`/promote/${id}`} className={compact ? "btn-accent px-3 py-2 text-xs" : "btn-accent"}>
+        <Link href={`/promote/${id}`} className={`hide-in-app ${compact ? "btn-accent px-3 py-2 text-xs" : "btn-accent"}`}>
           <Rocket className="h-4 w-4" /> Promote
         </Link>
       )}

@@ -2,6 +2,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { InstallBanner } from "@/components/install-app";
 import { MobileNav } from "@/components/mobile-nav";
+import { NativeApp } from "@/components/native-app";
 import { RegisterServiceWorker } from "@/components/register-sw";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,6 +21,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <MobileNav />
       <InstallBanner />
       <RegisterServiceWorker />
+      <NativeApp />
     </div>
   );
 }

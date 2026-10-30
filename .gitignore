@@ -41,3 +41,14 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# Native app build output
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+ios/App/build/
+ios/DerivedData/
+*.keystore
+*.jks
+store/raw/

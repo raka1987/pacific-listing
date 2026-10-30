@@ -35,7 +35,7 @@ export default function PrivacyPage() {
         <h2>Your choices</h2>
         <ul>
           <li>You can edit your profile and ads, or delete your ads, at any time.</li>
-          <li>To delete your account entirely, contact us and we&apos;ll remove your data.</li>
+          <li>You can delete your account at any time from <strong>Profile → Delete account</strong>, in the app or on the website. This removes your login, profile, ads and photos.</li>
         </ul>
         <h2>Contact</h2>
         <p>

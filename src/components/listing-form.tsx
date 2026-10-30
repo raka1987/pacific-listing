@@ -106,7 +106,7 @@ export function ListingForm({
           <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-900">
             Ads in <strong>{categoryBySlug(category)?.name}</strong> have a posting fee of <strong>{formatMoney(fee, currency)}</strong>. You&apos;ll pay
             after posting, and your ad goes live once the payment is confirmed.{" "}
-            <a href="/business" className="font-semibold underline">Business accounts</a> don&apos;t pay posting fees.
+            <span className="hide-in-app"><a href="/business" className="font-semibold underline">Business accounts</a> don&apos;t pay posting fees.</span>
           </p>
         )}
       </Section>

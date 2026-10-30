@@ -51,10 +51,10 @@ export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl
           <Link href="/profile" className={item} role="menuitem" onClick={() => setOpen(false)}>
             <User className="h-4 w-4" /> Profile
           </Link>
-          <Link href="/orders" className={item} role="menuitem" onClick={() => setOpen(false)}>
+          <Link href="/orders" className={`${item} hide-in-app`} role="menuitem" onClick={() => setOpen(false)}>
             <Receipt className="h-4 w-4" /> Payments
           </Link>
-          <Link href="/business" className={item} role="menuitem" onClick={() => setOpen(false)}>
+          <Link href="/business" className={`${item} hide-in-app`} role="menuitem" onClick={() => setOpen(false)}>
             <Store className="h-4 w-4" /> Business account
           </Link>
           {isAdmin && (

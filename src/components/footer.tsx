@@ -54,8 +54,10 @@ function FooterCol({ title, children }: { title: string; children: React.ReactNo
 }
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  // Business plans and advertising are bought on the website, not in the phone apps.
+  const webOnly = href === "/business" || href === "/advertise";
   return (
-    <li>
+    <li className={webOnly ? "hide-in-app" : undefined}>
       <Link href={href} className="text-sm text-faint transition hover:text-white">
         {children}
       </Link>

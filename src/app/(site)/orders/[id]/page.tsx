@@ -81,6 +81,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
       </div>
 
       {order.status === "awaiting_payment" && !order.payer_reference && owner && (
+        <div className="hide-in-app">
         <PayOrder
           orderId={order.id}
           orderNumber={order.order_number}
@@ -90,6 +91,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           cardEnabled={!!settings?.card_payments_enabled}
           canCancel={order.kind !== "posting_fee"}
         />
+        </div>
       )}
       {order.status === "cancelled" && (
         <p className="card flex items-center gap-3 p-5 text-muted">

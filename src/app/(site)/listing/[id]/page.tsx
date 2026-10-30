@@ -148,7 +148,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             <strong>Not live yet.</strong> This category has a posting fee. Your ad goes live once it&apos;s paid.
           </p>
           {feeOrderId && (
-            <Link href={`/orders/${feeOrderId}`} className="btn-accent px-4 py-2 text-xs">
+            <Link href={`/orders/${feeOrderId}`} className="hide-in-app btn-accent px-4 py-2 text-xs">
               Pay posting fee
             </Link>
           )}

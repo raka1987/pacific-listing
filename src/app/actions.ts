@@ -307,3 +307,38 @@ export async function cancelOrder(orderId: string): Promise<Result> {
   revalidatePath(`/orders/${orderId}`);
   return { ok: true };
 }
+
+// ---------------------------------------------------------------------------
+// Account deletion (required by the app stores)
+// ---------------------------------------------------------------------------
+export type DeleteAccountState = { error?: string };
+
+export async function deleteMyAccount(_: DeleteAccountState, fd: FormData): Promise<DeleteAccountState> {
+  if (str(fd, "confirm").toUpperCase() !== "DELETE") return { error: 'Type DELETE in capitals to confirm.' };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Please log in." };
+
+  // Remove their photos first; the database can't delete stored files itself.
+  const bucket = supabase.storage.from(IMAGE_BUCKET);
+  for (let round = 0; round < 20; round++) {
+    const { data: files } = await bucket.list(user.id, { limit: 100 });
+    if (!files?.length) break;
+    await bucket.remove(files.map((f) => `${user.id}/${f.name}`));
+    if (files.length < 100) break;
+  }
+
+  const { error } = await supabase.rpc("delete_my_account");
+  if (error) {
+    return {
+      error: /could not find|does not exist/i.test(error.message)
+        ? "Account deletion isn't switched on yet. Please contact support and we'll delete it for you."
+        : error.message,
+    };
+  }
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  redirect("/account-deleted");
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { ImagePlus, Loader2, Star, X } from "lucide-react";
+import { Camera, ImagePlus, Loader2, Star, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { IMAGE_BUCKET, MAX_IMAGES } from "@/lib/constants";
 import { compressImage } from "@/lib/image";
@@ -18,6 +18,7 @@ export function ImageUploader({
   max?: number;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(0);
   const [error, setError] = useState("");
 
@@ -48,6 +49,7 @@ export function ImageUploader({
     }
     onChange([...value, ...urls]);
     if (inputRef.current) inputRef.current.value = "";
+    if (cameraRef.current) cameraRef.current.value = "";
   }
 
   function remove(url: string) {
@@ -101,7 +103,26 @@ export function ImageUploader({
             <span className="text-xs font-semibold">Add photos</span>
           </button>
         )}
+        {value.length + uploading < max && (
+          // On phones, open the camera directly
+          <button
+            type="button"
+            onClick={() => cameraRef.current?.click()}
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-line bg-surface text-muted transition hover:border-lagoon-400 hover:bg-lagoon-50 hover:text-lagoon-700 [@media(pointer:fine)]:hidden"
+          >
+            <Camera className="h-7 w-7" />
+            <span className="text-xs font-semibold">Take photo</span>
+          </button>
+        )}
       </div>
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => upload(e.target.files)}
+      />
       <input
         ref={inputRef}
         type="file"
