@@ -9,7 +9,8 @@ export async function middleware(request: NextRequest) {
     return new NextResponse(
       "Pacific Listing can't connect to its database.\n\n" +
         problem +
-        "\n\nFix it in Vercel: open the project > Settings > Environment Variables, edit the value,\n" +
+        "\n\nFix it in Vercel: open the project > Settings > Environment Variables and set\n" +
+        "SUPABASE_URL and SUPABASE_ANON_KEY (the NEXT_PUBLIC_ names work too),\n" +
         "then go to Deployments > ... (next to the latest) > Redeploy.",
       { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } },
     );

@@ -3,8 +3,8 @@ export const SITE = {
   tagline: "Buy, sell and discover across the Pacific",
   description:
     "Pacific Listing is the free marketplace for Fiji, Samoa, Tonga, Vanuatu and the wider Pacific. Buy and sell vehicles, property, electronics, find jobs, services and more.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "support@pacificlisting.com",
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").trim().replace(/\/+$/, ""),
+  supportEmail: (process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@pacificlisting.com").trim(),
 };
 
 export type Category = {

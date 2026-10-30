@@ -33,10 +33,10 @@ You need three free accounts: **GitHub**, **Supabase** and **Vercel**. Allow abo
 
    | Name | Value |
    |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | Project URL from Supabase |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon public key from Supabase |
-   | `NEXT_PUBLIC_SITE_URL` | `https://pacificlisting.com` |
-   | `NEXT_PUBLIC_SUPPORT_EMAIL` | the email you want people to contact |
+   | `SUPABASE_URL` | Project URL from Supabase |
+   | `SUPABASE_ANON_KEY` | anon public (or publishable) key from Supabase |
+   | `SITE_URL` | `https://pacificlisting.com` |
+   | `SUPPORT_EMAIL` | the email you want people to contact |
 
 3. Click **Deploy**. You'll get a temporary address such as `pacific-listing.vercel.app`. Check that everything works there first.
 
