@@ -3,6 +3,7 @@
 import { Mail, MessageCircle, Phone } from "lucide-react";
 import { useState } from "react";
 import { phoneDigits } from "@/lib/format";
+import { track } from "@/lib/track";
 
 export function ContactSeller({
   phone,
@@ -31,6 +32,7 @@ export function ContactSeller({
       {whatsapp && (
         <a
           href={`https://wa.me/${phoneDigits(whatsapp)}?text=${message}`}
+          onClick={() => track("contact_seller", { method: "whatsapp" })}
           target="_blank"
           rel="noopener noreferrer"
           className="btn w-full bg-[#25D366] py-3 text-white hover:bg-[#1ebe5b]"
@@ -40,7 +42,7 @@ export function ContactSeller({
       )}
       {phone &&
         (revealed ? (
-          <a href={`tel:${phone.replace(/\s/g, "")}`} className="btn-primary w-full py-3">
+          <a onClick={() => track("contact_seller", { method: "phone" })} href={`tel:${phone.replace(/\s/g, "")}`} className="btn-primary w-full py-3">
             <Phone className="h-5 w-5" /> {phone}
           </a>
         ) : (

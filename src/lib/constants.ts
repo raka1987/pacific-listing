@@ -198,6 +198,20 @@ export const ROLE_DESCRIPTIONS = {
   admin: "Full access, including users, staff roles and settings.",
 } as const;
 
+/** Answers to "How did you hear about us?" at sign-up. */
+export const HEARD_FROM = [
+  "Facebook",
+  "A Facebook group",
+  "WhatsApp",
+  "Google search",
+  "Instagram",
+  "TikTok",
+  "Friend or family",
+  "Radio or TV",
+  "Poster or flyer",
+  "Other",
+];
+
 export const PAGE_SIZE = 24;
 export const MAX_IMAGES = 8;
 export const IMAGE_BUCKET = "listing-images";

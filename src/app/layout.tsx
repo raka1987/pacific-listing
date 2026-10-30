@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { Suspense } from "react";
+import { Analytics } from "@/components/analytics";
 import { NavProgress } from "@/components/nav-progress";
 import { SITE } from "@/lib/constants";
 import "./globals.css";
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen font-sans">
         <Suspense>
           <NavProgress />
+          <Analytics />
         </Suspense>
         {children}
       </body>

@@ -183,9 +183,10 @@ export async function adminDeleteNotice(id: string) {
 export async function adminUpdateSettings(fd: FormData) {
   const { supabase, log } = await staff(["admin"]);
   const limit = num(fd, "free_ad_limit");
-  await supabase
-    .from("site_settings")
-    .update({
+  const offer = num(fd, "launch_offer_days");
+  const launch = offer == null ? null : Math.min(60, Math.max(1, Math.floor(offer)));
+  const values: Record<string, unknown> = {
+      launch_offer_days: launch,
       require_approval: fd.get("require_approval") === "on",
       announcement: str(fd, "announcement") || null,
       free_ad_limit: limit == null ? null : Math.floor(limit),
@@ -200,8 +201,14 @@ export async function adminUpdateSettings(fd: FormData) {
         instructions: str(fd, "instructions"),
       },
       updated_at: new Date().toISOString(),
-    })
-    .eq("id", 1);
+  };
+  let { error } = await supabase.from("site_settings").update(values).eq("id", 1);
+  // Before the launch-offer database update has been run, save everything else.
+  if (error && /launch_offer_days/.test(error.message)) {
+    delete values.launch_offer_days;
+    ({ error } = await supabase.from("site_settings").update(values).eq("id", 1));
+  }
+  if (error) console.error("settings", error.message);
   await log("settings.update", "settings");
   done("/admin/settings");
 }

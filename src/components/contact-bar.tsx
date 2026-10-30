@@ -2,6 +2,7 @@
 
 import { MessageCircle, Phone } from "lucide-react";
 import { phoneDigits } from "@/lib/format";
+import { track } from "@/lib/track";
 
 /** Sticky contact buttons at the bottom of the screen on phones. */
 export function ContactBar({
@@ -27,13 +28,14 @@ export function ContactBar({
           <p className="truncate text-xs text-muted">{title}</p>
         </div>
         {phone && (
-          <a href={`tel:${phone.replace(/\s/g, "")}`} className="btn-secondary h-11 w-11 p-0" aria-label="Call seller">
+          <a onClick={() => track("contact_seller", { method: "phone" })} href={`tel:${phone.replace(/\s/g, "")}`} className="btn-secondary h-11 w-11 p-0" aria-label="Call seller">
             <Phone className="h-5 w-5" />
           </a>
         )}
         {whatsapp && (
           <a
             href={`https://wa.me/${phoneDigits(whatsapp)}?text=${message}`}
+          onClick={() => track("contact_seller", { method: "whatsapp" })}
             target="_blank"
             rel="noopener noreferrer"
             className="btn h-11 bg-[#25D366] px-5 text-white shadow-md shadow-[#25D366]/30 hover:bg-[#1ebe5b]"

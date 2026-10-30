@@ -37,7 +37,10 @@ export default async function AdminDashboard() {
   const canSales = profile.role === "admin" || profile.role === "sales";
   const canMod = profile.role === "admin" || profile.role === "moderator";
   if (canSales) await supabase.rpc("expire_promotions");
-  const { data: rev } = canSales ? await supabase.rpc("admin_revenue") : { data: null };
+  const [{ data: rev }, { data: sources }] = await Promise.all([
+    canSales ? supabase.rpc("admin_revenue") : Promise.resolve({ data: null }),
+    supabase.rpc("admin_signup_sources"),
+  ]);
   const r = rev as Revenue | null;
   const [{ data: stats }, { data: pending }, { data: reports }] = await Promise.all([
     supabase.rpc("admin_stats"),
@@ -127,6 +130,8 @@ export default async function AdminDashboard() {
           </ul>
         </section>
       </div>
+
+      {sources && <SourcesCard sources={sources as { last_30_days: Record<string, number>; all_time: Record<string, number> }} />}
 
       {canMod && <div className="grid gap-6 xl:grid-cols-2">
         <Panel title="Waiting for review" href="/admin/listings?status=pending" empty="No ads waiting — all caught up.">
@@ -254,6 +259,39 @@ function RevenuePanel({ r }: { r: Revenue }) {
           ))}
         </div>
       </div>
+    </section>
+  );
+}
+
+function SourcesCard({ sources }: { sources: { last_30_days: Record<string, number>; all_time: Record<string, number> } }) {
+  const rows = Object.entries(sources.last_30_days).sort((a, b) => b[1] - a[1]);
+  const total = rows.reduce((n, [, v]) => n + v, 0);
+  const max = Math.max(1, ...rows.map(([, v]) => v));
+  return (
+    <section className="card p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-semibold text-ink">Where new members heard about us</h2>
+        <span className="text-xs text-muted">Last 30 days · {total} sign-ups</span>
+      </div>
+      {rows.length ? (
+        <ul className="mt-4 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+          {rows.map(([k, v]) => (
+            <li key={k} className="text-sm">
+              <div className="flex justify-between gap-3">
+                <span className="text-ink-2">{k}</span>
+                <span className="font-semibold text-ink tabular-nums">
+                  {v} <span className="font-normal text-muted">({Math.round((v / total) * 100)}%)</span>
+                </span>
+              </div>
+              <div className="mt-1 h-1.5 rounded-full bg-subtle">
+                <div className="h-full rounded-full bg-lagoon-500" style={{ width: `${(v / max) * 100}%` }} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-3 text-sm text-muted">No sign-ups in the last 30 days yet.</p>
+      )}
     </section>
   );
 }

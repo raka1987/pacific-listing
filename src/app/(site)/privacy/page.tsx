@@ -27,6 +27,12 @@ export default function PrivacyPage() {
           Your name, profile photo, and the phone/WhatsApp numbers you add to ads are visible to people viewing your ads. Your
           email address is never shown publicly.
         </p>
+        <h2>Cookies and analytics</h2>
+        <p>
+          We use essential cookies to keep you logged in and remember your country and settings. If you accept our cookie notice, we also use Google
+          Analytics to understand how the site is used, and the Meta (Facebook) Pixel to measure and show our ads to people who may be interested in
+          Pacific Listing. You can choose &quot;No thanks&quot; and the site works the same. The phone apps don&apos;t use these tools.
+        </p>
         <h2>Sharing</h2>
         <p>
           We don&apos;t sell your personal information. We use trusted service providers to host the site and store data, and

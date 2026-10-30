@@ -14,6 +14,7 @@ import { approxPrice, ListingGrid } from "@/components/listing-card";
 import { OwnerActions } from "@/components/owner-actions";
 import { ReportDialog } from "@/components/report-dialog";
 import { ShareButton } from "@/components/share-button";
+import { ShareLinks } from "@/components/share-links";
 import { StatusBadge } from "@/components/status-badge";
 import { ViewTracker } from "@/components/view-tracker";
 import { categoryBySlug, countryByCode, SITE, subcategoryBySlug } from "@/lib/constants";
@@ -22,7 +23,7 @@ import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { LISTING_CARD_COLUMNS, type ListingCardData, type ListingWithSeller } from "@/lib/types";
 
-type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ posted?: string; updated?: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ posted?: string; updated?: string; offer?: string }> };
 
 const getListing = cache(async (id: string) => {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
@@ -45,13 +46,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/listing/${listing.id}` },
     robots: listing.status === "active" || listing.status === "sold" ? undefined : { index: false },
-    openGraph: { title: `${listing.title} — ${price}`, description, images: listing.images.slice(0, 1), type: "article" },
+    openGraph: { title: `${listing.title} — ${price}`, description, type: "article" },
   };
 }
 
 export default async function ListingPage({ params, searchParams }: Props) {
   const { id } = await params;
-  const { posted, updated } = await searchParams;
+  const { posted, updated, offer } = await searchParams;
   const listing = await getListing(id);
   if (!listing) notFound();
 
@@ -133,11 +134,21 @@ export default async function ListingPage({ params, searchParams }: Props) {
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-lagoon-600" />
           <div>
             <p className="font-semibold">{posted ? "Your ad has been posted!" : "Your changes have been saved."}</p>
+            {offer && listing.featured_until && (
+              <p className="mt-0.5 text-sm font-medium text-coral-600">
+                Welcome offer: your first ad is featured free until {formatDate(listing.featured_until)}.
+              </p>
+            )}
             <p className="text-sm text-lagoon-800">
               {listing.status === "pending"
                 ? "It's now waiting for a quick review by our team and will go live shortly."
-                : "It's live now. Share the link to reach buyers faster."}
+                : "It's live now. Share it to your Facebook groups and WhatsApp to reach buyers faster."}
             </p>
+            {listing.status === "active" && (
+              <div className="mt-3">
+                <ShareLinks url={url} text={`${listing.title} – ${formatPrice(listing.price, listing.price_type, listing.country)}. See photos and details on Pacific Listing:`} compact />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -223,6 +234,10 @@ export default async function ListingPage({ params, searchParams }: Props) {
             <div className="mt-3 grid grid-cols-2 gap-2">
               <FavoriteButton listingId={listing.id} initial={favoriteIds.has(listing.id)} variant="button" />
               <ShareButton title={listing.title} url={url} />
+            </div>
+            <div className="mt-4 border-t border-line pt-4">
+              <p className="mb-2 text-xs font-medium text-muted">Share this ad</p>
+              <ShareLinks url={url} text={`${listing.title} – ${formatPrice(listing.price, listing.price_type, listing.country)}:`} compact />
             </div>
           </div>
 

@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { FormMessage } from "@/components/auth-card";
 import { SubmitButton } from "@/components/submit-button";
-import { COUNTRIES } from "@/lib/constants";
+import { COUNTRIES, HEARD_FROM } from "@/lib/constants";
 import { signup } from "../actions";
 
 export function SignupForm({ next }: { next: string }) {
@@ -36,13 +37,24 @@ export function SignupForm({ next }: { next: string }) {
         </div>
       </div>
       <div>
+        <label className="label" htmlFor="heard_from">
+          How did you hear about us? <span className="font-normal text-faint">(optional)</span>
+        </label>
+        <select id="heard_from" name="heard_from" defaultValue={state.values?.heard_from ?? ""} className="input">
+          <option value="">Choose one…</option>
+          {HEARD_FROM.map((h) => (
+            <option key={h}>{h}</option>
+          ))}
+        </select>
+      </div>
+      <div>
         <label className="label" htmlFor="password">Password</label>
         <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required className="input" />
         <p className="mt-1 text-xs text-muted">At least 8 characters.</p>
       </div>
       <SubmitButton className="btn-accent w-full py-3" pendingText="Creating account…">Create account</SubmitButton>
       <p className="text-center text-xs text-muted">
-        By signing up you agree to our <a href="/terms" className="underline">Terms</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
+        By signing up you agree to our <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.
       </p>
     </form>
   );

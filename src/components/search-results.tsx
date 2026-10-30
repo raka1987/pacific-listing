@@ -18,11 +18,23 @@ export async function SearchResults({
   basePath,
   title,
   lockCategory,
+  pagePath,
+  landingCountry,
+  intro,
+  children,
 }: {
   filters: SearchFilters;
+  /** Where filter changes go */
   basePath: string;
   title: string;
   lockCategory?: boolean;
+  /** Where page-number links go, if different (landing pages) */
+  pagePath?: string;
+  /** On country landing pages, category buttons link to that country's pages */
+  landingCountry?: string;
+  intro?: React.ReactNode;
+  /** Extra content under the results, e.g. FAQs */
+  children?: React.ReactNode;
 }) {
   const supabase = await createClient();
   const user = await getAuthUser();
@@ -57,8 +69,10 @@ export async function SearchResults({
           <SearchBar />
         </Suspense>
       </div>
-      <CategoryChips active={filters.category} q={filters.q} country={filters.country} />
-      {filters.category && <SubcategoryChips category={filters.category} active={filters.sub} q={filters.q} country={filters.country} />}
+      <CategoryChips active={filters.category} q={filters.q} country={filters.country} landingCountry={landingCountry} />
+      {filters.category && (
+        <SubcategoryChips category={filters.category} active={filters.sub} q={filters.q} country={filters.country} landingCountry={landingCountry} />
+      )}
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <SearchFiltersPanel filters={filters} basePath={basePath} lockCategory={lockCategory} />
         <div className="min-w-0">
@@ -68,6 +82,7 @@ export async function SearchResults({
               <p className="text-sm text-muted">
                 {total.toLocaleString()} {total === 1 ? "result" : "results"}
               </p>
+              {intro && <div className="mt-2 max-w-2xl text-sm text-ink-2">{intro}</div>}
             </div>
             <div className="flex items-center gap-2">
               <SortSelect value={filters.sort} />
@@ -92,22 +107,36 @@ export async function SearchResults({
           {listings.length ? (
             <>
               <ListingGrid listings={listings} favoriteIds={favoriteIds} />
-              <Pagination page={page} totalPages={totalPages} makeHref={(p) => qs({ page: p > 1 ? String(p) : undefined })} />
+              <Pagination page={page} totalPages={totalPages} makeHref={(p) => (pagePath ? `${pagePath}${p > 1 ? `?page=${p}` : ""}` : qs({ page: p > 1 ? String(p) : undefined }))} />
             </>
           ) : (
-            <EmptyState
-              icon={SearchX}
-              title="No listings found"
-              description="Try fewer filters or a different search. New ads are posted every day."
-              action={
-                <Link href={basePath} className="btn-secondary">
-                  Clear filters
-                </Link>
-              }
-            />
+            landingCountry ? (
+              <EmptyState
+                icon={SearchX}
+                title="Nothing here yet"
+                description="Be the first to list here. It's free, takes a minute, and local buyers will find your ad."
+                action={
+                  <Link href="/post" className="btn-accent">
+                    List an item free
+                  </Link>
+                }
+              />
+            ) : (
+              <EmptyState
+                icon={SearchX}
+                title="No listings found"
+                description="Try fewer filters or a different search. New ads are posted every day."
+                action={
+                  <Link href={basePath} className="btn-secondary">
+                    Clear filters
+                  </Link>
+                }
+              />
+            )
           )}
         </div>
       </div>
+      {children}
     </div>
   );
 }

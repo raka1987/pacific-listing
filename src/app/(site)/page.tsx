@@ -8,9 +8,10 @@ import { CategoryTiles } from "@/components/category-tiles";
 import { InstallAppCard } from "@/components/install-app";
 import { ListingGrid, ListingRail } from "@/components/listing-card";
 import { SearchBar } from "@/components/search-bar";
-import { COUNTRIES } from "@/lib/constants";
+import { COUNTRIES, SITE } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import { getViewer } from "@/lib/location";
+import { landingPath } from "@/lib/places";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { LISTING_CARD_COLUMNS, type ListingCardData, type Notice } from "@/lib/types";
@@ -39,8 +40,33 @@ export default async function HomePage() {
   const latestListings = (latest.data ?? []) as ListingCardData[];
   const noticeList = (notices.data ?? []) as Notice[];
 
+  // Tells Google and AI assistants what this site is and how to search it.
+  const siteJsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.url,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: { "@type": "EntryPoint", urlTemplate: `${SITE.url}/search?q={search_term_string}` },
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: SITE.name,
+      url: SITE.url,
+      logo: `${SITE.url}/icons/icon-512.png`,
+      email: SITE.supportEmail,
+      areaServed: COUNTRIES.map((c) => c.name),
+    },
+  ];
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd).replace(/</g, "\\u003c") }} />
       {/* Hero */}
       {/* Sits above the sections below so the search dropdowns can overlap them */}
       <section className="container-page relative z-20 pt-3 sm:pt-5">
@@ -167,7 +193,7 @@ export default async function HomePage() {
           <h2 className="font-display text-2xl font-semibold">Browse by country</h2>
           <div className="mt-5 flex flex-wrap gap-2">
             {COUNTRIES.map((c) => (
-              <Link key={c.code} href={`/search?country=${c.code}`} className="chip">
+              <Link key={c.code} href={landingPath(c.code)} className="chip">
                 <span>{c.flag}</span>
                 {c.name}
               </Link>

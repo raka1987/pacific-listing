@@ -34,6 +34,15 @@ export default async function AdminSettings() {
             </span>
             <input id="free_ad_limit" name="free_ad_limit" type="number" min={0} defaultValue={s?.free_ad_limit ?? ""} placeholder="No limit" className="input" />
           </div>
+          <div className="grid gap-4 p-5 sm:grid-cols-[1fr_160px] sm:items-center">
+            <span>
+              <label className="block font-semibold text-ink" htmlFor="launch_offer_days">Launch offer: first ad featured free</label>
+              <span className="mt-0.5 block text-sm text-muted">
+                Each new seller&apos;s first ad is featured on the homepage for this many days. Great for filling the site early on. Leave empty to switch off.
+              </span>
+            </span>
+            <input id="launch_offer_days" name="launch_offer_days" type="number" min={1} max={60} defaultValue={s?.launch_offer_days ?? ""} placeholder="Off" className="input" />
+          </div>
           <div className="p-5">
             <label className="block font-semibold text-ink" htmlFor="announcement">Announcement banner</label>
             <p className="mt-0.5 mb-3 text-sm text-muted">Shown in a strip at the top of every page. Leave empty to hide it.</p>

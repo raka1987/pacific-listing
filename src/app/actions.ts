@@ -126,7 +126,13 @@ export async function createListing(_: ListingFormState, fd: FormData): Promise<
       .maybeSingle();
     if (order) redirect(`/orders/${order.id}?new=1`);
   }
-  redirect(`/listing/${data.id}?posted=1`);
+  // Launch offer: first ad featured free (does nothing when the offer is off).
+  let offer = false;
+  if (data.status === "active") {
+    const { data: applied } = await supabase.rpc("apply_launch_offer", { p_listing: data.id });
+    offer = applied === true;
+  }
+  redirect(`/listing/${data.id}?posted=1${offer ? "&offer=1" : ""}`);
 }
 
 export async function updateListing(id: string, _: ListingFormState, fd: FormData): Promise<ListingFormState> {

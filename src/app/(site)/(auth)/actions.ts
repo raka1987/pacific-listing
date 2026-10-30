@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { COUNTRIES, SITE } from "@/lib/constants";
+import { COUNTRIES, HEARD_FROM, SITE } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = { error?: string; message?: string; values?: Record<string, string> };
@@ -54,13 +54,19 @@ export async function signup(_: AuthState, fd: FormData): Promise<AuthState> {
     email,
     password,
     options: {
-      data: { full_name, country: COUNTRIES.some((c) => c.code === country) ? country : null, phone: str(fd, "phone") || null },
+      data: {
+        full_name,
+        country: COUNTRIES.some((c) => c.code === country) ? country : null,
+        phone: str(fd, "phone") || null,
+        heard_from: HEARD_FROM.includes(str(fd, "heard_from")) ? str(fd, "heard_from") : null,
+      },
       emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(safeNext(str(fd, "next")))}`,
     },
   });
   if (error) return { error: friendly(error.message), values: typed(fd) };
   if (!data.session) return { message: `We've sent a confirmation link to ${email}. Click it to activate your account.` };
-  redirect(safeNext(str(fd, "next")));
+  const next = safeNext(str(fd, "next"));
+  redirect(`${next}${next.includes("?") ? "&" : "?"}welcome=1`);
 }
 
 export async function requestPasswordReset(_: AuthState, fd: FormData): Promise<AuthState> {

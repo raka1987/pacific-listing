@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import type { ListingFormState } from "@/app/actions";
@@ -18,6 +19,7 @@ export function ListingForm({
   listing,
   defaults,
   fees = {},
+  initialCategory,
 }: {
   action: (state: ListingFormState, fd: FormData) => Promise<ListingFormState>;
   userId: string;
@@ -25,10 +27,12 @@ export function ListingForm({
   defaults: Defaults;
   /** Posting fees by category, already empty when the user's plan waives them. */
   fees?: Record<string, Prices>;
+  /** Pre-selected category, e.g. from a "List your car" link */
+  initialCategory?: string;
 }) {
   const [state, formAction] = useActionState(action, {});
   const [images, setImages] = useState<string[]>(listing?.images ?? []);
-  const [category, setCategory] = useState(listing?.category ?? "");
+  const [category, setCategory] = useState(listing?.category ?? (categoryBySlug(initialCategory) ? initialCategory! : ""));
   const [subcategory, setSubcategory] = useState(listing?.subcategory ?? "");
   const subs = categoryBySlug(category)?.subcategories ?? [];
   const [priceType, setPriceType] = useState<string>(listing?.price_type ?? "fixed");
@@ -106,7 +110,7 @@ export function ListingForm({
           <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-900">
             Ads in <strong>{categoryBySlug(category)?.name}</strong> have a posting fee of <strong>{formatMoney(fee, currency)}</strong>. You&apos;ll pay
             after posting, and your ad goes live once the payment is confirmed.{" "}
-            <span className="hide-in-app"><a href="/business" className="font-semibold underline">Business accounts</a> don&apos;t pay posting fees.</span>
+            <span className="hide-in-app"><Link href="/business" className="font-semibold underline">Business accounts</Link> don&apos;t pay posting fees.</span>
           </p>
         )}
       </Section>
@@ -212,7 +216,7 @@ export function ListingForm({
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-muted">
-          By posting you agree to our <a href="/terms" className="underline">Terms</a> and confirm the item is legal to sell.
+          By posting you agree to our <Link href="/terms" className="underline">Terms</Link> and confirm the item is legal to sell.
         </p>
         <SubmitButton className="btn-accent px-8 py-3 text-base" pendingText={listing ? "Saving…" : "Posting…"}>
           {listing ? "Save changes" : fee != null ? "Post and pay fee" : "Post my ad"}

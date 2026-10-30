@@ -9,8 +9,9 @@ import type { Prices } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Post a free ad", robots: { index: false } };
 
-export default async function PostPage() {
-  const { user, profile } = await requireUser("/post");
+export default async function PostPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+  const { category } = await searchParams;
+  const { user, profile } = await requireUser(category ? `/post?category=${encodeURIComponent(category)}` : "/post");
   if (profile?.is_banned) {
     return (
       <div className="container-page max-w-3xl py-10">
@@ -38,6 +39,7 @@ export default async function PostPage() {
           whatsapp: profile?.whatsapp ?? null,
         }}
         fees={fees}
+        initialCategory={category}
       />
     </div>
   );
