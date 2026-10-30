@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
   appendUserAgent: "PacificListingApp",
   backgroundColor: "#ffffff",
   server: {
-    url: "https://pacificlisting.com",
+    url: "https://www.pacificlisting.com",
     errorPath: "offline.html",
     // Pages the app may open inside itself; everything else (WhatsApp, phone
     // calls, advertisers' websites) opens in the right app or the browser.
