@@ -1,18 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { supabaseConfigProblem } from "@/lib/supabase/env";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  // Without these settings nothing can load, so say so plainly instead of erroring.
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  // If the database settings are wrong nothing can load, so say exactly what to fix.
+  const problem = supabaseConfigProblem();
+  if (problem) {
     return new NextResponse(
-      "Pacific Listing isn't connected to its database yet.\n\n" +
-        "In Vercel, open the project > Settings > Environment Variables and add\n" +
-        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY (from Supabase > Project Settings > API),\n" +
-        "then redeploy (Deployments > ... > Redeploy).",
+      "Pacific Listing can't connect to its database.\n\n" +
+        problem +
+        "\n\nFix it in Vercel: open the project > Settings > Environment Variables, edit the value,\n" +
+        "then go to Deployments > ... (next to the latest) > Redeploy.",
       { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } },
     );
   }
-  return updateSession(request);
+  try {
+    return await updateSession(request);
+  } catch (e) {
+    // Never block the page because the login check failed; the visitor is treated as logged out.
+    console.error("middleware: session refresh failed", e);
+    return NextResponse.next({ request });
+  }
 }
 
 export const config = {

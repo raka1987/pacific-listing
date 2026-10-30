@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { CATEGORIES, COUNTRIES, IMAGE_BUCKET, MAX_IMAGES, REPORT_REASONS } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
+import { SUPABASE_URL } from "@/lib/supabase/env";
 
 type Result = { error?: string; ok?: boolean };
 
@@ -66,7 +67,7 @@ function parseListing(fd: FormData) {
   if (!Array.isArray(images) || images.length > MAX_IMAGES || images.some((u) => typeof u !== "string")) {
     fieldErrors.images = `Add up to ${MAX_IMAGES} photos.`;
   }
-  const storagePrefix = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/`;
+  const storagePrefix = `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/`;
   images = images.filter((u) => typeof u === "string" && u.startsWith(storagePrefix));
 
   return {
