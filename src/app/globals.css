@@ -257,3 +257,51 @@
 .native-app .hide-in-app {
   display: none !important;
 }
+
+/* Admin tables become stacked cards on phones: one card per row, each value with its column name. */
+@media (max-width: 767px) {
+  .rtable {
+    min-width: 0 !important;
+  }
+  .rtable thead {
+    display: none;
+  }
+  .rtable tbody,
+  .rtable tr,
+  .rtable td {
+    display: block;
+    width: 100%;
+  }
+  .rtable tr {
+    padding: 0.9rem 1rem;
+  }
+  .rtable td {
+    padding: 0.2rem 0 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+  .rtable td[data-label] {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: baseline;
+  }
+  .rtable td[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .rtable td[data-label] > * {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .rtable td.rtable-actions {
+    padding-top: 0.6rem !important;
+  }
+  .rtable td.rtable-actions > div {
+    justify-content: flex-start !important;
+  }
+}

@@ -42,7 +42,7 @@ export default async function CampaignPage({ params, searchParams }: { params: P
       )}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <h1 className="font-display text-2xl font-semibold">{c.title}</h1>
             <CampaignStatus campaign={c} />
           </div>
@@ -87,17 +87,17 @@ export default async function CampaignPage({ params, searchParams }: { params: P
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { icon: Eye, label: "Views", value: c.impressions.toLocaleString() },
           { icon: MousePointerClick, label: "Clicks", value: c.clicks.toLocaleString() },
           { icon: Percent, label: "Click rate", value: ctr },
         ].map(({ icon: Icon, label, value }) => (
-          <div key={label} className="card p-4">
-            <p className="flex items-center gap-1.5 text-sm text-muted">
+          <div key={label} className="card p-3 sm:p-4">
+            <p className="flex items-center gap-1.5 text-xs whitespace-nowrap text-muted sm:text-sm">
               <Icon className="h-4 w-4" /> {label}
             </p>
-            <p className="mt-1 font-display text-2xl font-semibold tabular-nums">{value}</p>
+            <p className="mt-1 font-display text-xl font-semibold tabular-nums sm:text-2xl">{value}</p>
           </div>
         ))}
       </div>

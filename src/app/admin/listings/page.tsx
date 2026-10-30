@@ -83,7 +83,7 @@ export default async function AdminListings({
       </div>
 
       <div className="card overflow-x-auto">
-        <table className="w-full min-w-[860px] text-sm">
+        <table className="rtable w-full min-w-[860px] text-sm">
           <thead className="border-b border-line bg-subtle text-left text-xs font-semibold tracking-wide text-muted uppercase">
             <tr>
               <th className="px-4 py-3">Ad</th>
@@ -113,20 +113,20 @@ export default async function AdminListings({
                     </span>
                   </Link>
                 </td>
-                <td className="px-4 py-3">
+                <td data-label="Seller" className="px-4 py-3">
                   {l.seller ? (
                     <Link href={`/admin/users?q=${encodeURIComponent(l.seller.full_name)}`} className="hover:text-lagoon-700">{l.seller.full_name || "—"}</Link>
                   ) : "—"}
                 </td>
-                <td className="px-4 py-3 whitespace-nowrap">{formatPrice(l.price, l.price_type, l.country)}</td>
-                <td className="px-4 py-3">
+                <td data-label="Price" className="px-4 py-3 whitespace-nowrap">{formatPrice(l.price, l.price_type, l.country)}</td>
+                <td data-label="Status" className="px-4 py-3">
                   <div className="flex items-center gap-1.5">
                     <StatusBadge status={l.status} />
                     {l.is_featured && <Sparkles className="h-4 w-4 text-coral-500" aria-label="Featured" />}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted">{l.views}</td>
-                <td className="px-4 py-3">
+                <td data-label="Views" className="px-4 py-3 text-muted">{l.views}</td>
+                <td className="rtable-actions px-4 py-3">
                   <div className="flex items-center justify-end gap-1.5">
                     {l.status !== "active" && l.status !== "sold" && (
                       <form action={adminSetListingStatus.bind(null, l.id, "active")}>

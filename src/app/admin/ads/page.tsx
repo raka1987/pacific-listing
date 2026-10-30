@@ -38,7 +38,7 @@ export default async function AdminAds() {
       <section>
         {campaigns.length ? (
           <div className="card overflow-x-auto">
-            <table className="w-full min-w-[880px] text-sm">
+            <table className="rtable w-full min-w-[880px] text-sm">
               <thead className="border-b border-line bg-subtle text-left text-xs font-semibold tracking-wide text-muted uppercase">
                 <tr>
                   <th className="px-4 py-3">Campaign</th>
@@ -66,8 +66,8 @@ export default async function AdminAds() {
                         </span>
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-ink-2">{slotName.get(x.slot_code)}</td>
-                    <td className="px-4 py-3">
+                    <td data-label="Spot" className="px-4 py-3 text-ink-2">{slotName.get(x.slot_code)}</td>
+                    <td data-label="Shown in" className="px-4 py-3">
                       {x.countries.length ? (
                         <span className="text-ink-2">{x.countries.map((c) => countryByCode(c)?.flag ?? c).join(" ")}</span>
                       ) : (
@@ -76,16 +76,16 @@ export default async function AdminAds() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-ink-2">
+                    <td data-label="Dates" className="px-4 py-3 whitespace-nowrap text-ink-2">
                       {formatDate(x.starts_on)} – {formatDate(x.ends_on)}
                     </td>
-                    <td className="px-4 py-3 text-right text-ink-2 tabular-nums">{x.impressions.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right text-ink-2 tabular-nums">
+                    <td data-label="Views" className="px-4 py-3 text-right text-ink-2 tabular-nums">{x.impressions.toLocaleString()}</td>
+                    <td data-label="Clicks" className="px-4 py-3 text-right text-ink-2 tabular-nums">
                       {x.clicks.toLocaleString()}
                       {x.impressions > 0 && <span className="ml-1 text-xs text-muted">({((x.clicks / x.impressions) * 100).toFixed(1)}%)</span>}
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold whitespace-nowrap text-ink tabular-nums">{formatMoney(x.amount, x.currency)}</td>
-                    <td className="px-4 py-3">
+                    <td data-label="Price" className="px-4 py-3 text-right font-semibold whitespace-nowrap text-ink tabular-nums">{formatMoney(x.amount, x.currency)}</td>
+                    <td data-label="Status" className="px-4 py-3">
                       <CampaignStatus campaign={x} />
                     </td>
                   </tr>

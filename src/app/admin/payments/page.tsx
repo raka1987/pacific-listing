@@ -65,7 +65,7 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
 
       {orders.length ? (
         <div className="card overflow-x-auto">
-          <table className="w-full min-w-[960px] text-sm">
+          <table className="rtable w-full min-w-[960px] text-sm">
             <thead className="border-b border-line bg-subtle text-left text-xs font-semibold tracking-wide text-muted uppercase">
               <tr>
                 <th className="px-4 py-3">Order</th>
@@ -84,7 +84,7 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
                     <p className="font-semibold text-ink">{o.order_number}</p>
                     <p className="text-xs text-muted">{timeAgo(o.created_at)}</p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td data-label="Customer" className="px-4 py-3">
                     {o.customer ? (
                       <Link href={`/admin/users/${o.customer.id}`} className="font-medium text-ink hover:text-lagoon-700">{o.billing_name || o.customer.full_name}</Link>
                     ) : (
@@ -92,7 +92,7 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
                     )}
                     {o.billing_email && <p className="text-xs text-muted">{o.billing_email}</p>}
                   </td>
-                  <td className="max-w-xs px-4 py-3">
+                  <td data-label="For" className="max-w-xs px-4 py-3">
                     <p className="truncate text-ink">{o.description}</p>
                     <p className="text-xs text-muted">
                       {ORDER_KINDS[o.kind]}
@@ -112,17 +112,17 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
                       )}
                     </p>
                   </td>
-                  <td className="px-4 py-3 text-right font-semibold whitespace-nowrap text-ink tabular-nums">{o.amount === 0 ? "Free" : formatMoney(o.amount, o.currency)}</td>
-                  <td className="px-4 py-3">
+                  <td data-label="Amount" className="px-4 py-3 text-right font-semibold whitespace-nowrap text-ink tabular-nums">{o.amount === 0 ? "Free" : formatMoney(o.amount, o.currency)}</td>
+                  <td data-label="Paid with" className="px-4 py-3">
                     <p className="text-ink">{o.method ? PAYMENT_METHODS[o.method] : "—"}</p>
                     {o.payer_reference && <p className="font-mono text-xs text-ink-2">{o.payer_reference}</p>}
                   </td>
-                  <td className="px-4 py-3">
+                  <td data-label="Status" className="px-4 py-3">
                     <OrderStatusBadge status={o.status} />
                     {o.paid_at && <p className="mt-1 text-xs text-muted">{formatDate(o.paid_at)}</p>}
                     {o.admin_note && <p className="mt-1 text-xs text-muted">Note: {o.admin_note}</p>}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="rtable-actions px-4 py-3">
                     <div className="flex flex-wrap justify-end gap-1.5">
                       {o.status === "awaiting_payment" && (
                         <form action={adminMarkPaid.bind(null, o.id)} className="flex items-center gap-1">

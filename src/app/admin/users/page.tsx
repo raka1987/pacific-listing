@@ -67,7 +67,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       {error && <p className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{error.message}</p>}
 
       <div className="card overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="rtable w-full min-w-[820px] text-sm">
           <thead className="border-b border-line bg-subtle text-left text-xs font-semibold tracking-wide text-muted uppercase">
             <tr>
               <th className="px-4 py-3">User</th>
@@ -97,11 +97,11 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
                     {u.is_banned && <span className="badge bg-red-100 text-red-700">Banned</span>}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-ink-2">{u.phone || "—"}</td>
-                <td className="px-4 py-3 text-ink-2">{countryByCode(u.country)?.name ?? "—"}</td>
-                <td className="px-4 py-3 text-right text-ink-2 tabular-nums">{u.listing_count}</td>
-                <td className="px-4 py-3 text-ink-2">{formatDate(u.created_at)}</td>
-                <td className="px-4 py-3 text-right">
+                <td data-label="Phone" className="px-4 py-3 text-ink-2">{u.phone || "—"}</td>
+                <td data-label="Country" className="px-4 py-3 text-ink-2">{countryByCode(u.country)?.name ?? "—"}</td>
+                <td data-label="Ads" className="px-4 py-3 text-right text-ink-2 tabular-nums">{u.listing_count}</td>
+                <td data-label="Joined" className="px-4 py-3 text-ink-2">{formatDate(u.created_at)}</td>
+                <td className="rtable-actions px-4 py-3 text-right">
                   <Link href={`/admin/users/${u.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-lagoon-700 hover:underline">
                     Manage <ChevronRight className="h-4 w-4" />
                   </Link>

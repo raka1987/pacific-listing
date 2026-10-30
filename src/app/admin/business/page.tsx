@@ -37,7 +37,7 @@ export default async function AdminBusiness() {
         <h2 className="mb-3 font-display text-lg font-semibold">Subscribers</h2>
         {subs?.length ? (
           <div className="card overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
+            <table className="rtable w-full min-w-[640px] text-sm">
               <thead className="border-b border-line bg-subtle text-left text-xs font-semibold tracking-wide text-muted uppercase">
                 <tr>
                   <th className="px-4 py-3">Business</th>
@@ -56,9 +56,9 @@ export default async function AdminBusiness() {
                         <Link href={`/admin/users/${s.id}`} className="font-medium text-ink hover:text-lagoon-700">{s.business_name || s.full_name}</Link>
                         <p className="text-xs text-muted">{s.full_name}</p>
                       </td>
-                      <td className="px-4 py-3 text-ink-2">{(s.plan_id && planName.get(s.plan_id)) || "—"}</td>
-                      <td className="px-4 py-3 text-ink-2">{formatDate(s.business_until!)}</td>
-                      <td className="px-4 py-3"><span className={`badge ${state[1]}`}>{state[0]}</span></td>
+                      <td data-label="Plan" className="px-4 py-3 text-ink-2">{(s.plan_id && planName.get(s.plan_id)) || "—"}</td>
+                      <td data-label="Runs until" className="px-4 py-3 text-ink-2">{formatDate(s.business_until!)}</td>
+                      <td data-label="Status" className="px-4 py-3"><span className={`badge ${state[1]}`}>{state[0]}</span></td>
                     </tr>
                   );
                 })}
