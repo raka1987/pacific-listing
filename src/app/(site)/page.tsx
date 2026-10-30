@@ -43,10 +43,11 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="container-page pt-3 sm:pt-5">
-        <div className="relative isolate overflow-hidden rounded-3xl bg-ocean-900">
-          <Image src="/images/hero.jpg" alt="" fill priority sizes="100vw" className="-z-10 object-cover object-[70%_center]" />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ocean-950/60 to-ocean-950/70 sm:bg-gradient-to-r sm:from-ocean-950/85 sm:via-ocean-950/45 sm:to-transparent" />
+      {/* Sits above the sections below so the search dropdowns can overlap them */}
+      <section className="container-page relative z-20 pt-3 sm:pt-5">
+        <div className="relative isolate rounded-3xl bg-ocean-900">
+          <Image src="/images/hero.jpg" alt="" fill priority sizes="100vw" className="-z-10 rounded-3xl object-cover object-[70%_center]" />
+          <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-b from-ocean-950/60 to-ocean-950/70 sm:bg-gradient-to-r sm:from-ocean-950/85 sm:via-ocean-950/45 sm:to-transparent" />
           <div className="px-5 py-14 sm:px-12 sm:py-24 lg:px-16 lg:py-28">
             <div className="max-w-3xl">
               <h1 className="font-display max-w-xl text-4xl leading-[1.05] font-semibold text-white sm:text-6xl">Buy and sell across the Pacific</h1>

@@ -1,10 +1,12 @@
 "use client";
 
-import { SlidersHorizontal, X } from "lucide-react";
+import { Globe2, LayoutGrid, SlidersHorizontal, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CATEGORIES, COUNTRIES } from "@/lib/constants";
 import type { SearchFilters } from "@/lib/queries";
+import { CategoryIcon } from "./category-icon";
+import { Dropdown, type DropdownOption } from "./dropdown";
 
 export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filters: SearchFilters; basePath: string; lockCategory?: boolean }) {
   const router = useRouter();
@@ -28,23 +30,29 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
       </div>
       {!lockCategory && (
         <div>
-          <label className="label" htmlFor="f-category">Category</label>
-          <select id="f-category" name="category" defaultValue={filters.category ?? ""} className="input">
-            <option value="">All categories</option>
-            {CATEGORIES.map((c) => (
-              <option key={c.slug} value={c.slug}>{c.name}</option>
-            ))}
-          </select>
+          <span className="label">Category</span>
+          <FieldDropdown
+            name="category"
+            label="Category"
+            initial={filters.category ?? ""}
+            options={[
+              { value: "", label: "All categories", icon: <LayoutGrid className="h-4 w-4" /> },
+              ...CATEGORIES.map((c) => ({ value: c.slug, label: c.name, icon: <CategoryIcon icon={c.icon} className="h-4 w-4" /> })),
+            ]}
+          />
         </div>
       )}
       <div>
-        <label className="label" htmlFor="f-country">Country</label>
-        <select id="f-country" name="country" defaultValue={filters.country ?? ""} className="input">
-          <option value="">All Pacific</option>
-          {COUNTRIES.map((c) => (
-            <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
-          ))}
-        </select>
+        <span className="label">Country</span>
+        <FieldDropdown
+          name="country"
+          label="Country"
+          initial={filters.country ?? ""}
+          options={[
+            { value: "", label: "All Pacific", icon: <Globe2 className="h-4 w-4" /> },
+            ...COUNTRIES.map((c) => ({ value: c.code, label: c.name, icon: <span className="text-base leading-none">{c.flag}</span> })),
+          ]}
+        />
       </div>
       <div>
         <label className="label" htmlFor="f-city">Town / city</label>
@@ -131,5 +139,23 @@ export function SortSelect({ value }: { value?: string }) {
         <option value="oldest">Oldest first</option>
       </select>
     </label>
+  );
+}
+
+/** A dropdown that submits with its form, like a <select name="...">. */
+function FieldDropdown({ name, label, initial, options }: { name: string; label: string; initial: string; options: DropdownOption[] }) {
+  const [value, setValue] = useState(initial);
+  return (
+    <>
+      <input type="hidden" name={name} value={value} />
+      <Dropdown
+        label={label}
+        value={value}
+        onChange={setValue}
+        options={options}
+        className="rounded-xl border border-line bg-surface px-3.5 transition focus-within:border-lagoon-500 focus-within:ring-4 focus-within:ring-lagoon-500/10"
+        buttonClassName="py-2.5 font-normal text-ink"
+      />
+    </>
   );
 }

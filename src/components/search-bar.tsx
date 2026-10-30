@@ -1,9 +1,11 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Globe2, LayoutGrid, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { CATEGORIES, COUNTRIES } from "@/lib/constants";
+import { CategoryIcon } from "./category-icon";
+import { Dropdown, type DropdownOption } from "./dropdown";
 
 export function SearchBar({
   size = "md",
@@ -34,27 +36,21 @@ export function SearchBar({
   }
 
   const lg = size === "lg";
-  const selectCls = "bg-transparent py-2 pr-1 text-sm font-medium text-slate-700 focus:outline-none dark:text-slate-200";
+  const categoryOptions: DropdownOption[] = [
+    { value: "", label: "All categories", icon: <LayoutGrid className="h-4 w-4" /> },
+    ...CATEGORIES.map((c) => ({ value: c.slug, label: c.name, icon: <CategoryIcon icon={c.icon} className="h-4 w-4" /> })),
+  ];
+  const countryOptions: DropdownOption[] = [
+    { value: "", label: "All Pacific", icon: <Globe2 className="h-4 w-4" /> },
+    ...COUNTRIES.map((c) => ({ value: c.code, label: c.name, icon: <span className="text-base leading-none">{c.flag}</span> })),
+  ];
+  const triggerCls = "py-2 text-slate-700 hover:text-slate-950 dark:text-slate-200 dark:hover:text-white";
 
-  const categorySelect = (id: string, cls = "max-w-40") => (
-    <select id={id} value={category} onChange={(e) => setCategory(e.target.value)} className={`${selectCls} ${cls}`} aria-label="Category">
-      <option value="">All categories</option>
-      {CATEGORIES.map((c) => (
-        <option key={c.slug} value={c.slug}>
-          {c.name}
-        </option>
-      ))}
-    </select>
+  const categorySelect = (pillCls: string, align: "left" | "right" = "left") => (
+    <Dropdown label="Category" value={category} onChange={setCategory} options={categoryOptions} align={align} className={pillCls} buttonClassName={triggerCls} />
   );
-  const countrySelect = (id: string, cls = "max-w-40") => (
-    <select id={id} value={country} onChange={(e) => setCountry(e.target.value)} className={`${selectCls} ${cls}`} aria-label="Country">
-      <option value="">All Pacific</option>
-      {COUNTRIES.map((c) => (
-        <option key={c.code} value={c.code}>
-          {c.flag} {c.name}
-        </option>
-      ))}
-    </select>
+  const countrySelect = (pillCls: string, align: "left" | "right" = "left") => (
+    <Dropdown label="Country" value={country} onChange={setCountry} options={countryOptions} align={align} className={pillCls} buttonClassName={triggerCls} />
   );
 
   return (
@@ -79,8 +75,8 @@ export function SearchBar({
             }`}
           />
         </label>
-        {withCategory && <span className="hidden border-l border-slate-200 pl-3 md:block dark:border-white/10">{categorySelect("search-category")}</span>}
-        {withCountry && <span className="hidden border-l border-slate-200 pl-3 md:block dark:border-white/10">{countrySelect("search-country")}</span>}
+        {withCategory && categorySelect("hidden w-44 shrink-0 border-l border-slate-200 pl-3 md:block dark:border-white/10")}
+        {withCountry && countrySelect("hidden w-44 shrink-0 border-l border-slate-200 pl-3 md:block dark:border-white/10", "right")}
         <button type="submit" className={lg ? "btn-accent h-12 w-12 shrink-0 p-0 text-base md:w-auto md:px-7" : "btn-primary h-9 w-9 p-0"}>
           {lg ? (
             <>
@@ -95,8 +91,8 @@ export function SearchBar({
       {(withCategory || withCountry) && (
         // On phones the dropdowns sit under the search box
         <div className="mt-2 flex gap-2 md:hidden">
-          {withCategory && <span className="min-w-0 flex-1 rounded-full bg-white/95 px-3 dark:bg-ocean-900/90">{categorySelect("search-category-m", "w-full")}</span>}
-          {withCountry && <span className="min-w-0 flex-1 rounded-full bg-white/95 px-3 dark:bg-ocean-900/90">{countrySelect("search-country-m", "w-full")}</span>}
+          {withCategory && categorySelect("min-w-0 flex-1 rounded-full bg-white/95 px-3.5 dark:bg-ocean-900/90")}
+          {withCountry && countrySelect("min-w-0 flex-1 rounded-full bg-white/95 px-3.5 dark:bg-ocean-900/90", "right")}
         </div>
       )}
     </form>
