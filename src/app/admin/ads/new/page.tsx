@@ -16,7 +16,7 @@ export default async function NewCampaign() {
       <Link href="/admin/ads" className="mb-3 inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
         <ArrowLeft className="h-4 w-4" /> Banner ads
       </Link>
-      <h1 className="mb-5 font-display text-2xl font-bold">New banner campaign</h1>
+      <h1 className="mb-5 font-display text-2xl font-semibold">New banner campaign</h1>
       <CampaignForm slots={(data ?? []) as AdSlot[]} userId={user.id} />
     </div>
   );

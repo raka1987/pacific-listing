@@ -37,12 +37,12 @@ export default async function AdminPromotions() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-2xl font-bold">Promotions & fees</h1>
+        <h1 className="font-display text-2xl font-semibold">Promotions & fees</h1>
         <p className="text-sm text-muted">What sellers can buy for their ads, and which categories cost money to post in. Leave a price empty to not sell it in that currency.</p>
       </div>
 
       <section>
-        <h2 className="mb-3 font-display text-lg font-bold">Promotions sellers can buy</h2>
+        <h2 className="mb-3 font-display text-lg font-semibold">Promotions sellers can buy</h2>
         <div className="grid gap-4 xl:grid-cols-2">
           {packages.map((p) => {
             const k = KIND[p.kind];
@@ -93,7 +93,7 @@ export default async function AdminPromotions() {
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-bold">Posting fees</h2>
+        <h2 className="font-display text-lg font-semibold">Posting fees</h2>
         <p className="mb-3 text-sm text-muted">Charge to post in a category. Ads wait as &quot;Awaiting payment&quot; until paid. Business plans can waive these.</p>
         <div className="card divide-y divide-line">
           {CATEGORIES.map((c) => {
@@ -115,7 +115,7 @@ export default async function AdminPromotions() {
       </section>
 
       <section>
-        <h2 className="mb-3 font-display text-lg font-bold">Ads being promoted now</h2>
+        <h2 className="mb-3 font-display text-lg font-semibold">Ads being promoted now</h2>
         {promoted?.length ? (
           <div className="card divide-y divide-line">
             {promoted.map((l) => (

@@ -36,7 +36,7 @@ export function PromoteForm({
       <input type="hidden" name="listing_id" value={listingId} />
       <FormMessage error={state.error} />
       <section className="card p-5 sm:p-6">
-        <h2 className="font-display text-xl font-bold">1. Choose a promotion</h2>
+        <h2 className="font-display text-xl font-semibold">1. Choose a promotion</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {available.map((p) => {
             const Icon = KIND_ICON[p.kind];
@@ -50,7 +50,7 @@ export function PromoteForm({
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="text-right">
-                      <span className="block font-display text-lg font-bold text-ink">
+                      <span className="block font-display text-lg font-semibold text-ink">
                         {isFree ? "Free" : formatMoney(priceIn(p.prices, currency), currency)}
                       </span>
                       {isFree && <span className="text-xs text-lagoon-700">{freeBumpsLeft} free left this month</span>}
@@ -72,7 +72,7 @@ export function PromoteForm({
 
       {!free && (
         <section className="card p-5 sm:p-6">
-          <h2 className="font-display text-xl font-bold">2. How will you pay?</h2>
+          <h2 className="font-display text-xl font-semibold">2. How will you pay?</h2>
           <p className="mt-1 text-sm text-muted">You&apos;ll get the payment details and your reference number on the next screen.</p>
           <div className="mt-4">
             <PaymentMethodPicker value={method} onChange={setMethod} cardEnabled={cardEnabled} />
@@ -84,7 +84,7 @@ export function PromoteForm({
       <div className="card flex flex-wrap items-center justify-between gap-4 p-5">
         <div>
           <p className="text-sm text-muted">Total</p>
-          <p className="font-display text-2xl font-bold text-ink">{free ? "Free" : formatMoney(priceIn(chosen?.prices, currency), currency)}</p>
+          <p className="font-display text-2xl font-semibold text-ink">{free ? "Free" : formatMoney(priceIn(chosen?.prices, currency), currency)}</p>
         </div>
         <SubmitButton className="btn-accent px-8 py-3 text-base" pendingText="One moment…">
           {free ? (

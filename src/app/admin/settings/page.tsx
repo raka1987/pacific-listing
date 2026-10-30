@@ -14,7 +14,7 @@ export default async function AdminSettings() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-5 font-display text-2xl font-bold">Site settings</h1>
+      <h1 className="mb-5 font-display text-2xl font-semibold">Site settings</h1>
       <form action={adminUpdateSettings} className="space-y-6">
         <section className="card divide-y divide-line">
           <h2 className="px-5 pt-5 pb-3 font-bold">Posting</h2>

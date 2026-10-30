@@ -45,7 +45,7 @@ export default async function SellerPage({ params }: Props) {
       <div className="card mb-8 flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
         <Avatar name={name} url={seller.avatar_url} size={88} />
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-ink">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold text-ink">
             {name}
             {seller.is_verified && <BadgeCheck className="h-6 w-6 text-lagoon-600" aria-label="Verified seller" />}
           </h1>

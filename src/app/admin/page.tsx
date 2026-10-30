@@ -69,7 +69,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-2xl font-bold">Dashboard</h1>
+      <h1 className="font-display text-2xl font-semibold">Dashboard</h1>
 
       {r && <RevenuePanel r={r} />}
 
@@ -82,7 +82,7 @@ export default async function AdminDashboard() {
                 <Icon className="h-4 w-4" />
               </span>
             </div>
-            <p className="mt-2 text-3xl font-extrabold text-ink">{value.toLocaleString()}</p>
+            <p className="mt-2 text-3xl font-semibold text-ink">{value.toLocaleString()}</p>
             <p className="mt-0.5 text-xs text-muted">{sub}</p>
           </Link>
         ))}
@@ -194,7 +194,7 @@ function RevenuePanel({ r }: { r: Revenue }) {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="flex items-center gap-1.5 text-sm font-medium text-muted"><Wallet className="h-4 w-4" /> Revenue this month</p>
-            <p className="mt-1 font-display text-4xl font-bold tabular-nums">{formatMoney(fjd, "FJD")}</p>
+            <p className="mt-1 font-display text-4xl font-semibold tabular-nums">{formatMoney(fjd, "FJD")}</p>
             <p className="mt-1 text-sm text-muted">
               {change == null ? "First month with sales" : `${change >= 0 ? "+" : ""}${change}% on last month (${formatMoney(last, "FJD")})`}
             </p>
@@ -248,7 +248,7 @@ function RevenuePanel({ r }: { r: Revenue }) {
           ].map(({ icon: Icon, label, value, href }) => (
             <Link key={label} href={href} className="card p-3.5 transition hover:shadow-md">
               <Icon className="h-4 w-4 text-lagoon-600" />
-              <p className="mt-2 font-display text-2xl font-bold tabular-nums">{value}</p>
+              <p className="mt-2 font-display text-2xl font-semibold tabular-nums">{value}</p>
               <p className="text-xs text-muted">{label}</p>
             </Link>
           ))}

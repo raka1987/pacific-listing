@@ -43,7 +43,7 @@ export default async function AdminPayments({ searchParams }: { searchParams: Pr
     <div>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold">Payments</h1>
+          <h1 className="font-display text-2xl font-semibold">Payments</h1>
           <p className="text-sm text-muted">Confirm M-PAiSA, MyCash and bank transfers here. Confirming a payment switches on what was bought straight away.</p>
         </div>
         <form>

@@ -29,12 +29,12 @@ export default async function AdminBusiness() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="font-display text-2xl font-bold">Business plans</h1>
+        <h1 className="font-display text-2xl font-semibold">Business plans</h1>
         <p className="text-sm text-muted">Monthly accounts for regular sellers. Prices and limits here show on the public Business accounts page.</p>
       </div>
 
       <section>
-        <h2 className="mb-3 font-display text-lg font-bold">Subscribers</h2>
+        <h2 className="mb-3 font-display text-lg font-semibold">Subscribers</h2>
         {subs?.length ? (
           <div className="card overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
@@ -71,7 +71,7 @@ export default async function AdminBusiness() {
       </section>
 
       <section>
-        <h2 className="mb-3 font-display text-lg font-bold">Plans</h2>
+        <h2 className="mb-3 font-display text-lg font-semibold">Plans</h2>
         <div className="grid gap-4 xl:grid-cols-2">
           {plans.map((p) => (
             <form key={p.id} action={adminSavePlan.bind(null, p.id)} className="card space-y-4 p-5">

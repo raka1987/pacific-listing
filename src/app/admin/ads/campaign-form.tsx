@@ -57,7 +57,7 @@ export function CampaignForm({ campaign, slots, userId }: { campaign?: Campaign;
       <input type="hidden" name="image_url" value={image} />
 
       <section className="card space-y-4 p-5 sm:p-6">
-        <h2 className="font-display text-lg font-bold">Advertiser</h2>
+        <h2 className="font-display text-lg font-semibold">Advertiser</h2>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="label" htmlFor="advertiser_name">Business name</label>
@@ -75,7 +75,7 @@ export function CampaignForm({ campaign, slots, userId }: { campaign?: Campaign;
       </section>
 
       <section className="card space-y-4 p-5 sm:p-6">
-        <h2 className="font-display text-lg font-bold">The banner</h2>
+        <h2 className="font-display text-lg font-semibold">The banner</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="title">Campaign name</label>
@@ -118,7 +118,7 @@ export function CampaignForm({ campaign, slots, userId }: { campaign?: Campaign;
       </section>
 
       <section className="card space-y-5 p-5 sm:p-6">
-        <h2 className="font-display text-lg font-bold">Who sees it</h2>
+        <h2 className="font-display text-lg font-semibold">Who sees it</h2>
         <fieldset className="space-y-3">
           <legend className="label">Countries</legend>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -169,7 +169,7 @@ export function CampaignForm({ campaign, slots, userId }: { campaign?: Campaign;
       </section>
 
       <section className="card space-y-4 p-5 sm:p-6">
-        <h2 className="font-display text-lg font-bold">Dates and price</h2>
+        <h2 className="font-display text-lg font-semibold">Dates and price</h2>
         <div className="grid gap-4 sm:grid-cols-4">
           <div>
             <label className="label" htmlFor="starts_on">Starts</label>

@@ -3,8 +3,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-heading), var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 
   /* Lagoon: primary brand teal */
   --color-lagoon-50: #effcfa;
@@ -37,27 +37,27 @@
 
 /* Semantic surface/text tokens, swapped for dark mode */
 :root {
-  --canvas: #f6f7f9;
+  --canvas: #ffffff;
   --surface: #ffffff;
-  --subtle: #f1f4f7;
-  --line: #e4e8ee;
-  --ink: #0b1b30;
+  --subtle: #f4f6f8;
+  --line: #e7eaee;
+  --ink: #0d1620;
   --ink-2: #334155;
   --muted: #64748b;
   --faint: #94a3b8;
-  --glass: rgb(255 255 255 / 0.72);
+  --glass: rgb(255 255 255 / 0.85);
   color-scheme: light;
 }
 .dark {
-  --canvas: #070f1c;
-  --surface: #0e1a2b;
-  --subtle: #15233a;
+  --canvas: #0a0f17;
+  --surface: #111822;
+  --subtle: #18212d;
   --line: rgb(255 255 255 / 0.08);
   --ink: #eef3f8;
   --ink-2: #c4cfdc;
   --muted: #8d9bb0;
   --faint: #64748b;
-  --glass: rgb(9 18 32 / 0.72);
+  --glass: rgb(10 15 23 / 0.85);
   color-scheme: dark;
   --color-sky-50: color-mix(in oklab, var(--color-sky-500) 12%, transparent);
   --color-sky-100: color-mix(in oklab, var(--color-sky-500) 20%, transparent);
@@ -148,7 +148,6 @@
 @layer base {
   body {
     @apply bg-canvas text-ink-2 antialiased;
-    font-feature-settings: "ss01", "cv11";
   }
   h1, h2, h3 {
     @apply text-ink;
@@ -166,16 +165,16 @@
 }
 @utility font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.035em;
 }
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-colors duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
 }
 @utility btn-primary {
-  @apply btn bg-lagoon-600 text-white shadow-sm shadow-lagoon-600/20 hover:bg-lagoon-700 hover:shadow-md hover:shadow-lagoon-600/25;
+  @apply btn bg-lagoon-600 text-white hover:bg-lagoon-700;
 }
 @utility btn-accent {
-  @apply btn bg-gradient-to-b from-coral-400 to-coral-500 text-white shadow-md shadow-coral-500/25 hover:from-coral-500 hover:to-coral-600 hover:shadow-lg hover:shadow-coral-500/30;
+  @apply btn bg-coral-500 text-white hover:bg-coral-600;
 }
 @utility btn-secondary {
   @apply btn border border-line bg-surface text-ink hover:bg-subtle;
@@ -187,13 +186,13 @@
   @apply btn border border-red-200 bg-surface text-red-600 hover:bg-red-50;
 }
 @utility input {
-  @apply block w-full rounded-2xl border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-faint transition focus:border-lagoon-500 focus:ring-4 focus:ring-lagoon-500/15 focus:outline-none;
+  @apply block w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-faint transition focus:border-lagoon-500 focus:ring-4 focus:ring-lagoon-500/10 focus:outline-none;
 }
 @utility label {
-  @apply mb-1.5 block text-sm font-semibold text-ink;
+  @apply mb-1.5 block text-sm font-medium text-ink;
 }
 @utility card {
-  @apply rounded-3xl border border-line bg-surface shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.08)];
+  @apply rounded-2xl border border-line bg-surface;
 }
 @utility badge {
   @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
@@ -202,7 +201,7 @@
   @apply bg-glass backdrop-blur-xl backdrop-saturate-150;
 }
 @utility chip {
-  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-ink-2 transition hover:border-lagoon-300 hover:text-ink;
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm text-ink-2 transition hover:border-faint hover:text-ink;
 }
 
 @layer components {

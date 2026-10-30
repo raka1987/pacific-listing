@@ -27,7 +27,7 @@ export default async function AdminAds() {
     <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold">Banner ads</h1>
+          <h1 className="font-display text-2xl font-semibold">Banner ads</h1>
           <p className="text-sm text-muted">Banners you&apos;ve sold to businesses, with views and clicks to show them.</p>
         </div>
         <Link href="/admin/ads/new" className="btn-primary">
@@ -99,7 +99,7 @@ export default async function AdminAds() {
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-bold">Rate card</h2>
+        <h2 className="font-display text-lg font-semibold">Rate card</h2>
         <p className="mb-3 text-sm text-muted">
           Weekly prices for each spot: one price for a single country, and a higher price for a global campaign shown in every country. These show on the public &quot;Advertise
           with us&quot; page and fill in new campaigns.

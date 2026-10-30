@@ -46,10 +46,10 @@ export default async function BusinessPage({ searchParams }: { searchParams: Pro
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-lagoon-100 text-lagoon-700">
                 <Store className="h-5 w-5" />
               </span>
-              <h2 className="font-display mt-4 text-2xl font-bold">{p.name}</h2>
+              <h2 className="font-display mt-4 text-2xl font-semibold">{p.name}</h2>
               <p className="mt-1 text-sm text-muted">{p.description}</p>
               <p className="mt-5">
-                <span className="font-display text-4xl font-extrabold text-ink">{price == null ? "—" : formatMoney(price, currency)}</span>
+                <span className="font-display text-4xl font-semibold text-ink">{price == null ? "—" : formatMoney(price, currency)}</span>
                 <span className="text-muted"> / {p.duration_days} days</span>
               </p>
               <ul className="mt-5 flex-1 space-y-2.5">

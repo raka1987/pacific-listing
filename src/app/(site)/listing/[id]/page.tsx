@@ -162,14 +162,14 @@ export default async function ListingPage({ params, searchParams }: Props) {
           <ImageGallery images={listing.images} title={listing.title} />
 
           <section className="card p-5 sm:p-6">
-            <h2 className="font-display text-xl font-bold text-ink">Details</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">Details</h2>
             <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Detail icon={Tag} label="Category" value={category?.name ?? listing.category} />
               <Detail icon={MapPin} label="Location" value={locationLabel(listing.country, listing.city)} />
               {listing.condition && <Detail icon={BadgeCheck} label="Condition" value={listing.condition === "new" ? "New" : "Used"} />}
               <Detail icon={CalendarDays} label="Posted" value={formatDate(listing.created_at)} />
             </dl>
-            <h2 className="font-display mt-8 text-xl font-bold text-ink">Description</h2>
+            <h2 className="font-display mt-8 text-xl font-semibold text-ink">Description</h2>
             <p className="mt-3 leading-relaxed whitespace-pre-line text-ink-2">
               {listing.description || "No description provided."}
             </p>
@@ -186,7 +186,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
         <aside className="space-y-4 lg:sticky lg:top-24 lg:h-fit">
           <div className="card p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
-              <p className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              <p className="font-display text-3xl font-semibold text-ink sm:text-4xl">
                 {formatPrice(listing.price, listing.price_type, listing.country)}
               </p>
               {listing.status !== "active" && <StatusBadge status={listing.status} />}
@@ -200,7 +200,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
                 </span>
               )}
             </div>
-            <h1 className="font-display mt-2 text-xl leading-snug font-bold text-ink sm:text-2xl">{listing.title}</h1>
+            <h1 className="font-display mt-2 text-xl leading-snug font-semibold text-ink sm:text-2xl">{listing.title}</h1>
             <p className="mt-2 flex items-center gap-1 text-sm text-muted">
               <MapPin className="h-4 w-4" /> {locationLabel(listing.country, listing.city)}
             </p>
@@ -265,7 +265,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
       {similar && similar.length > 0 && (
         <section className="mt-14">
-          <h2 className="font-display mb-6 text-2xl font-bold text-ink sm:text-3xl">Similar listings</h2>
+          <h2 className="font-display mb-6 text-2xl font-semibold text-ink sm:text-3xl">Similar listings</h2>
           <ListingGrid listings={similar as ListingCardData[]} favoriteIds={favoriteIds} />
         </section>
       )}

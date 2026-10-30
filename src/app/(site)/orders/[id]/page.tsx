@@ -46,13 +46,13 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             <p className="text-sm font-medium text-muted">
               {order.status === "paid" ? "Receipt" : "Order"} {order.order_number}
             </p>
-            <h1 className="font-display mt-1 text-2xl font-bold sm:text-3xl">{order.description}</h1>
+            <h1 className="font-display mt-1 text-2xl font-semibold sm:text-3xl">{order.description}</h1>
             <p className="mt-1 text-sm text-muted">
               {ORDER_KINDS[order.kind]} · {formatDate(order.created_at)}
             </p>
           </div>
           <div className="text-right">
-            <p className="font-display text-3xl font-bold text-ink">{amount}</p>
+            <p className="font-display text-3xl font-semibold text-ink">{amount}</p>
             <div className="mt-1">
               <OrderStatusBadge status={order.status} />
             </div>

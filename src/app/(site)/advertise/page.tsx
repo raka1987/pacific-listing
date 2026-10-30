@@ -64,7 +64,7 @@ export default async function AdvertisePage() {
         ))}
       </div>
 
-      <h2 className="font-display mt-12 mb-5 text-2xl font-bold">Ad spots and prices</h2>
+      <h2 className="font-display mt-12 mb-5 text-2xl font-semibold">Ad spots and prices</h2>
       <div className="grid gap-5 md:grid-cols-3">
         {slots.map((s) => (
           <div key={s.code} className="card flex flex-col p-5">
@@ -79,14 +79,14 @@ export default async function AdvertisePage() {
               <div className="flex items-baseline justify-between gap-2 px-3.5 py-2.5">
                 <dt className="text-muted">One country</dt>
                 <dd>
-                  <span className="font-display text-lg font-bold text-ink">{formatMoney(priceIn(s.prices, currency), currency)}</span>
+                  <span className="font-display text-lg font-semibold text-ink">{formatMoney(priceIn(s.prices, currency), currency)}</span>
                   <span className="text-muted"> / week</span>
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-2 px-3.5 py-2.5">
                 <dt className="text-muted">All countries</dt>
                 <dd>
-                  <span className="font-display text-lg font-bold text-ink">{formatMoney(priceIn(s.global_prices, currency), currency)}</span>
+                  <span className="font-display text-lg font-semibold text-ink">{formatMoney(priceIn(s.global_prices, currency), currency)}</span>
                   <span className="text-muted"> / week</span>
                 </dd>
               </div>
@@ -100,7 +100,7 @@ export default async function AdvertisePage() {
 
       <div className="mt-12 flex flex-col items-start gap-4 rounded-3xl bg-ocean-900 p-7 text-white sm:flex-row sm:items-center sm:justify-between sm:p-9">
         <div>
-          <h2 className="font-display text-2xl font-bold text-white">Ready to book a spot?</h2>
+          <h2 className="font-display text-2xl font-semibold text-white">Ready to book a spot?</h2>
           <p className="mt-1 text-white/75">Tell us about your business and we&apos;ll send a quote, usually within a day.</p>
         </div>
         <Link href="/contact?subject=Advertising%20%26%20business" className="btn-accent shrink-0 px-6 py-3">

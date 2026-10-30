@@ -44,7 +44,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
     <div>
       <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold">Users & staff</h1>
+          <h1 className="font-display text-2xl font-semibold">Users & staff</h1>
           <p className="text-sm text-muted">Open a user to change their role, ban them, set limits, give a business account or add notes.</p>
         </div>
         <form className="relative">

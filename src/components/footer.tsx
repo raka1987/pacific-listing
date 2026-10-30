@@ -4,10 +4,10 @@ import { Logo } from "./logo";
 
 export function Footer() {
   return (
-    <footer className="mt-20 rounded-t-[2rem] bg-ocean-950 pb-24 text-slate-300 sm:mt-28 sm:rounded-t-[2.5rem] sm:pb-0">
+    <footer className="mt-24 border-t border-line bg-subtle pb-24 sm:mt-32 sm:pb-0">
       <div className="container-page grid gap-10 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div>
-          <Logo light />
+          <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-faint">
             The free, local marketplace for the Pacific. Buy, sell and find what you need — from Suva to Apia, Nuku‘alofa to
             Port Vila.
@@ -34,7 +34,7 @@ export function Footer() {
           <FooterLink href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</FooterLink>
         </FooterCol>
       </div>
-      <div className="border-t border-white/10">
+      <div className="border-t border-line">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-muted sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Pacific Listing. All rights reserved.</p>
           <p>Made with care for the Pacific 🌊</p>
@@ -47,7 +47,7 @@ export function Footer() {
 function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-4 text-sm font-semibold !text-white">{title}</h3>
+      <h3 className="mb-4 text-sm font-medium text-ink">{title}</h3>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );

@@ -71,7 +71,7 @@ export default async function ActivityPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="font-display text-2xl font-bold">Activity log</h1>
+      <h1 className="font-display text-2xl font-semibold">Activity log</h1>
       <p className="mb-5 text-sm text-muted">Every change made by staff, newest first.</p>
       {rows.length ? (
         <ol className="card divide-y divide-line">

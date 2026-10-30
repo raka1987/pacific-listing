@@ -4,6 +4,7 @@ import { categoryBySlug, countryByCode } from "@/lib/constants";
 import { getFavoriteIds, searchListings, type SearchFilters } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { AdBanner } from "./ad-banner";
+import { CategoryChips } from "./category-chips";
 import { EmptyState } from "./empty-state";
 import { ListingGrid } from "./listing-card";
 import { Pagination } from "./pagination";
@@ -55,12 +56,13 @@ export async function SearchResults({
           <SearchBar />
         </Suspense>
       </div>
+      <CategoryChips active={filters.category} q={filters.q} country={filters.country} />
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <SearchFiltersPanel filters={filters} basePath={basePath} lockCategory={lockCategory} />
         <div className="min-w-0">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">{title}</h1>
+              <h1 className="font-display text-2xl font-semibold text-ink sm:text-3xl">{title}</h1>
               <p className="text-sm text-muted">
                 {total.toLocaleString()} {total === 1 ? "result" : "results"}
               </p>

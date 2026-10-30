@@ -50,31 +50,29 @@ export function InstallAppCard() {
   const [showIos, setShowIos] = useState(false);
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-lagoon-500 to-lagoon-700 p-6 text-white sm:p-8">
-      <div aria-hidden className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/10" />
-      <div aria-hidden className="absolute -right-6 -bottom-20 h-44 w-44 rounded-full bg-white/10" />
-      <span className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
-        <Smartphone className="h-6 w-6" />
+    <div className="card p-6 sm:p-7">
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-lagoon-50 text-lagoon-700">
+        <Smartphone className="h-5 w-5" />
       </span>
-      <h2 className="font-display relative mt-4 text-2xl font-bold text-white">Get the Pacific Listing app</h2>
-      <p className="relative mt-2 max-w-sm text-white/80">
+      <h2 className="font-display mt-4 text-xl font-semibold">Get the app</h2>
+      <p className="mt-1.5 max-w-sm text-sm text-muted">
         Add it to your home screen. It opens full-screen, loads fast and uses less data. No app store needed.
       </p>
-      <div className="relative mt-6">
+      <div className="mt-5">
         {installed ? (
-          <span className="btn bg-white/15 text-white ring-1 ring-white/25">
+          <span className="btn bg-lagoon-50 text-lagoon-700">
             <Check className="h-4 w-4" /> Installed on this device
           </span>
         ) : canPrompt ? (
-          <button onClick={install} className="btn bg-white px-6 py-3 text-lagoon-700 shadow-lg hover:bg-lagoon-50">
+          <button onClick={install} className="btn-primary">
             <Download className="h-4 w-4" /> Install app
           </button>
         ) : platform === "ios" ? (
-          <button onClick={() => setShowIos(true)} className="btn bg-white px-6 py-3 text-lagoon-700 shadow-lg hover:bg-lagoon-50">
+          <button onClick={() => setShowIos(true)} className="btn-primary">
             <Download className="h-4 w-4" /> Add to iPhone
           </button>
         ) : (
-          <p className="text-sm text-white/80">
+          <p className="text-sm text-muted">
             Open this site on your phone, then choose <strong>Install app</strong> or <strong>Add to Home screen</strong> from the browser menu.
           </p>
         )}
@@ -136,7 +134,7 @@ function IosSheet({ onClose }: { onClose: () => void }) {
         <button onClick={onClose} className="absolute top-4 right-4 text-faint" aria-label="Close">
           <X className="h-5 w-5" />
         </button>
-        <h2 className="font-display text-xl font-bold">Add to your iPhone</h2>
+        <h2 className="font-display text-xl font-semibold">Add to your iPhone</h2>
         <ol className="mt-4 space-y-3 text-sm text-ink-2">
           <li className="flex items-center gap-3">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-subtle"><Share className="h-4 w-4" /></span>

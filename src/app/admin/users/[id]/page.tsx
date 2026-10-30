@@ -77,7 +77,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
       <div className="card flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
         <Avatar name={u.full_name || u.email} url={u.avatar_url} size={72} />
         <div className="min-w-0 flex-1">
-          <h1 className="flex flex-wrap items-center gap-2 font-display text-2xl font-bold">
+          <h1 className="flex flex-wrap items-center gap-2 font-display text-2xl font-semibold">
             {u.full_name || "No name"}
             {u.is_verified && <BadgeCheck className="h-5 w-5 text-lagoon-600" aria-label="Verified" />}
             {u.role !== "user" && <span className="badge bg-ink text-canvas">{ROLES[u.role]}</span>}
@@ -257,7 +257,7 @@ function Stat({ label, value, warn }: { label: string; value: string; warn?: boo
   return (
     <div className="card p-4">
       <p className="text-sm text-muted">{label}</p>
-      <p className={`mt-1 font-display text-xl font-bold tabular-nums ${warn ? "text-red-600" : "text-ink"}`}>{value}</p>
+      <p className={`mt-1 font-display text-xl font-semibold tabular-nums ${warn ? "text-red-600" : "text-ink"}`}>{value}</p>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default async function AdminNotices() {
   return (
     <div className="grid gap-6 xl:grid-cols-[380px_1fr]">
       <div>
-        <h1 className="mb-5 text-2xl font-extrabold text-ink">Notice board</h1>
+        <h1 className="mb-5 text-2xl font-semibold text-ink">Notice board</h1>
         <form action={adminCreateNotice} className="card space-y-4 p-5">
           <h2 className="font-bold">New notice</h2>
           <div>

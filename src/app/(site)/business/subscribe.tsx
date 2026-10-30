@@ -14,8 +14,8 @@ export function SubscribeForm({ planId, planName, priceLabel, cardEnabled, defau
       <input type="hidden" name="plan_id" value={planId} />
       <input type="hidden" name="currency" value={currency} />
       <div className="flex items-baseline justify-between gap-3">
-        <h2 className="font-display text-xl font-bold">Start {planName}</h2>
-        <span className="font-display text-xl font-bold text-ink">{priceLabel}</span>
+        <h2 className="font-display text-xl font-semibold">Start {planName}</h2>
+        <span className="font-display text-xl font-semibold text-ink">{priceLabel}</span>
       </div>
       <FormMessage error={state.error} />
       <div>

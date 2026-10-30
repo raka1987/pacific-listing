@@ -22,7 +22,7 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
 
   return (
     <div>
-      <h1 className="mb-5 text-2xl font-extrabold text-ink">Contact messages</h1>
+      <h1 className="mb-5 text-2xl font-semibold text-ink">Contact messages</h1>
       <div className="mb-4 flex gap-2">
         {[["inbox", "Inbox"], ["archived", "Archived"]].map(([s, l]) => (
           <Link

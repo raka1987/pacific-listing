@@ -53,7 +53,7 @@ export async function AdBanner({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={ad.image_url} alt={ad.title} loading="lazy" className="h-full w-full object-cover object-left transition duration-500 group-hover:scale-[1.02]" />
         ) : (
-          <span className="flex h-full items-center justify-center p-6 text-center font-display text-2xl font-bold text-ink">{ad.title}</span>
+          <span className="flex h-full items-center justify-center p-6 text-center font-display text-2xl font-semibold text-ink">{ad.title}</span>
         )}
       </a>
       <figcaption className="mt-1.5 flex items-center justify-between gap-2 px-1 text-[11px] text-faint">

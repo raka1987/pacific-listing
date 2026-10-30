@@ -50,7 +50,7 @@ export async function ListingCard({ listing, isFavorite }: { listing: ListingCar
         </div>
       </div>
       <div className="flex flex-1 flex-col px-0.5 pt-3">
-        <p className="font-display text-[17px] font-bold text-ink">
+        <p className="text-[15px] font-semibold tracking-tight text-ink">
           {formatPrice(listing.price, listing.price_type, listing.country)}
           {approx && <span className="ml-1.5 font-sans text-xs font-medium text-muted">≈ {approx}</span>}
         </p>

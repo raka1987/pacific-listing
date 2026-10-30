@@ -35,7 +35,7 @@ export function PayOrder({
     return (
       <div className="card p-8 text-center">
         <CheckCircle2 className="mx-auto h-12 w-12 text-lagoon-600" />
-        <h2 className="font-display mt-3 text-xl font-bold">Thanks, we&apos;ve got your payment details</h2>
+        <h2 className="font-display mt-3 text-xl font-semibold">Thanks, we&apos;ve got your payment details</h2>
         <p className="mx-auto mt-1 max-w-sm text-sm text-muted">
           Our team will confirm the payment, usually within one working day. Your purchase switches on as soon as it&apos;s confirmed.
         </p>
@@ -60,14 +60,14 @@ export function PayOrder({
   return (
     <div className="space-y-6">
       <section className="card p-5 sm:p-6">
-        <h2 className="font-display text-xl font-bold">1. Choose how to pay</h2>
+        <h2 className="font-display text-xl font-semibold">1. Choose how to pay</h2>
         <div className="mt-4">
           <PaymentMethodPicker value={method} onChange={setMethod} cardEnabled={cardEnabled} name="method-pick" />
         </div>
       </section>
 
       <section className="card p-5 sm:p-6">
-        <h2 className="font-display text-xl font-bold">2. Send the payment</h2>
+        <h2 className="font-display text-xl font-semibold">2. Send the payment</h2>
         {method === "card" ? (
           <p className="mt-3 text-sm text-muted">Card payments open your bank&apos;s secure payment page. (Switched on by the site owner once their bank gateway is connected.)</p>
         ) : (
@@ -83,7 +83,7 @@ export function PayOrder({
       </section>
 
       <form action={action} className="card space-y-4 p-5 sm:p-6">
-        <h2 className="font-display text-xl font-bold">3. Tell us you&apos;ve paid</h2>
+        <h2 className="font-display text-xl font-semibold">3. Tell us you&apos;ve paid</h2>
         <FormMessage error={state.error} />
         <input type="hidden" name="method" value={method} />
         <div>
@@ -116,7 +116,7 @@ function Row({ label, value, strong, copy }: { label: string; value: string; str
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3">
       <dt className="text-sm text-muted">{label}</dt>
-      <dd className={`flex items-center gap-2 text-right ${strong ? "font-display text-lg font-bold text-ink" : "text-sm font-semibold text-ink"}`}>
+      <dd className={`flex items-center gap-2 text-right ${strong ? "font-display text-lg font-semibold text-ink" : "text-sm font-semibold text-ink"}`}>
         <span className="select-all">{value}</span>
         {copy && (
           <button

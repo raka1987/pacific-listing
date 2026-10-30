@@ -43,7 +43,7 @@ export default async function CampaignPage({ params, searchParams }: { params: P
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-2xl font-bold">{c.title}</h1>
+            <h1 className="font-display text-2xl font-semibold">{c.title}</h1>
             <CampaignStatus campaign={c} />
           </div>
           <p className="text-sm text-muted">
@@ -97,7 +97,7 @@ export default async function CampaignPage({ params, searchParams }: { params: P
             <p className="flex items-center gap-1.5 text-sm text-muted">
               <Icon className="h-4 w-4" /> {label}
             </p>
-            <p className="mt-1 font-display text-2xl font-bold tabular-nums">{value}</p>
+            <p className="mt-1 font-display text-2xl font-semibold tabular-nums">{value}</p>
           </div>
         ))}
       </div>

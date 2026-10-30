@@ -35,7 +35,7 @@ export default async function AdminReports({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <h1 className="mb-5 text-2xl font-extrabold text-ink">Reported ads</h1>
+      <h1 className="mb-5 text-2xl font-semibold text-ink">Reported ads</h1>
       <div className="mb-4 flex gap-2">
         {["open", "resolved", "dismissed"].map((s) => (
           <Link

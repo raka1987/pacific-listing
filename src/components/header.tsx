@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Heart, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { getViewer, VIEWER_REGIONS } from "@/lib/location";
 import { CountryPicker } from "./country-picker";
@@ -15,7 +15,7 @@ export async function Header() {
   const viewer = await getViewer();
 
   return (
-    <header className="glass sticky top-0 z-40 border-b border-line pt-[env(safe-area-inset-top)]">
+    <header className="glass sticky top-0 z-40 border-b border-line pt-[env(safe-area-inset-top)] backdrop-blur-xl">
       <div className="container-page flex h-16 items-center gap-3 sm:gap-5">
         <Logo />
         <div className="hidden max-w-xl flex-1 md:block">
@@ -29,15 +29,6 @@ export async function Header() {
           </Link>
           <CountryPicker regions={VIEWER_REGIONS} current={{ code: viewer.country, flag: viewer.flag, currency: viewer.currency }} />
           <ThemeToggle />
-          {current && (
-            <Link
-              href="/favorites"
-              className="hidden h-10 w-10 items-center justify-center rounded-full text-ink-2 transition hover:bg-subtle hover:text-ink sm:flex"
-              aria-label="Saved ads"
-            >
-              <Heart className="h-[18px] w-[18px]" />
-            </Link>
-          )}
           {current ? (
             <UserMenu
               name={profile?.full_name || current.user.email || "Account"}
