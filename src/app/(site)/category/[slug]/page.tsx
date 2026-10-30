@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SearchResults } from "@/components/search-results";
-import { CATEGORIES, categoryBySlug, countryByCode } from "@/lib/constants";
+import { categoryBySlug, countryByCode, subcategoryBySlug } from "@/lib/constants";
 import type { SearchFilters } from "@/lib/queries";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<SearchFilters> };
 
-export function generateStaticParams() {
-  return CATEGORIES.map((c) => ({ slug: c.slug }));
-}
+// Rendered per request so switching type (?sub=...) updates in place.
+export const dynamic = "force-dynamic";
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = categoryBySlug(slug);
   if (!category) return {};
+  const sub = subcategoryBySlug(slug, (await searchParams).sub);
   return {
-    title: `${category.name} for sale`,
+    title: sub ? `${sub.name} · ${category.name}` : `${category.name} for sale`,
     description: `Browse ${category.name.toLowerCase()} listings across Fiji, Samoa, Tonga, Vanuatu and the Pacific on Pacific Listing.`,
     alternates: { canonical: `/category/${slug}` },
   };
@@ -27,11 +27,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (!category) notFound();
   const filters = { ...(await searchParams), category: slug };
   const country = countryByCode(filters.country);
+  const sub = subcategoryBySlug(slug, filters.sub);
+  const name = sub ? (slug === "property" ? `Property ${sub.name.toLowerCase()}` : sub.name) : category.name;
   return (
     <SearchResults
       filters={filters}
       basePath={`/category/${slug}`}
-      title={country ? `${category.name} in ${country.name}` : category.name}
+      title={country ? `${name} in ${country.name}` : name}
       lockCategory
     />
   );

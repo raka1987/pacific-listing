@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Camera, ImageIcon, MapPin, Sparkles, Zap } from "lucide-react";
-import { categoryBySlug, currencyFor } from "@/lib/constants";
+import { categoryBySlug, currencyFor, subcategoryBySlug } from "@/lib/constants";
 import { convert, getViewer } from "@/lib/location";
 import { formatMoney, formatPrice, locationLabel, timeAgo } from "@/lib/format";
 import type { ListingCardData } from "@/lib/types";
@@ -9,6 +9,7 @@ import { FavoriteButton } from "./favorite-button";
 export async function ListingCard({ listing, isFavorite }: { listing: ListingCardData; isFavorite?: boolean }) {
   const cover = listing.images[0];
   const category = categoryBySlug(listing.category);
+  const sub = subcategoryBySlug(listing.category, listing.subcategory);
   const approx = await approxPrice(listing);
   return (
     <article className="group relative flex flex-col">
@@ -45,6 +46,7 @@ export async function ListingCard({ listing, isFavorite }: { listing: ListingCar
             <Camera className="h-3 w-3" /> {listing.images.length}
           </span>
         )}
+        {sub && <span className="badge absolute right-2.5 bottom-2.5 bg-white/90 text-slate-800 backdrop-blur">{sub.name}</span>}
         <div className="absolute top-2 right-2">
           <FavoriteButton listingId={listing.id} initial={!!isFavorite} />
         </div>
@@ -64,7 +66,7 @@ export async function ListingCard({ listing, isFavorite }: { listing: ListingCar
           <span className="truncate">{locationLabel(listing.country, listing.city)}</span>
           <span className="shrink-0 text-faint">· {timeAgo(listing.created_at)}</span>
         </p>
-        {category && <span className="sr-only">Category: {category.name}</span>}
+        {category && <span className="sr-only">Category: {category.name}{sub ? `, ${sub.name}` : ""}</span>}
       </div>
     </article>
   );

@@ -104,6 +104,16 @@ async function main() {
     if (error) throw error;
   }
 
+  // Types within categories
+  const types = {
+    Tacoma: "utes", yacht: "boats", "4-bedroom": "for-sale", iPhone: "phones", Expedition: "suvs", sofa: "furniture",
+    villa: "holiday", Beagle: "dogs", labourers: "full-time", cleaning: "cleaning", MacBook: "computers", Nike: "shoes",
+    headphones: "tv-audio", Scuba: "lessons", armchair: "furniture", "Lost cat": "lost-pets", "Smart watch": "accessories",
+  };
+  for (const [word, sub] of Object.entries(types)) {
+    await supabase.from("listings").update({ subcategory: sub }).ilike("title", `%${word}%`);
+  }
+
   await supabase.from("notices").insert([
     { title: "Community beach clean-up — Saturday 8am", body: "Join us at My Suva Park this Saturday. Gloves and bags provided. Vinaka!" },
     { title: "Welcome to the new Pacific Listing", body: "We've rebuilt the site to be faster and easier to use. Post your ads for free and let us know what you think." },

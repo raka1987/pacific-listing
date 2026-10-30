@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Check, EyeOff, ImageIcon, Search, Sparkles, Trash2, X } from "lucide-react";
 import { Pagination } from "@/components/pagination";
 import { StatusBadge } from "@/components/status-badge";
-import { CATEGORIES, categoryBySlug } from "@/lib/constants";
+import { CATEGORIES, categoryBySlug, subcategoryBySlug } from "@/lib/constants";
 import { formatPrice, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { Listing } from "@/lib/types";
@@ -109,7 +109,7 @@ export default async function AdminListings({
                     </span>
                     <span className="min-w-0">
                       <span className="block max-w-xs truncate font-medium">{l.title}</span>
-                      <span className="text-xs text-muted">{categoryBySlug(l.category)?.name} · {timeAgo(l.created_at)}</span>
+                      <span className="text-xs text-muted">{categoryBySlug(l.category)?.name}{l.subcategory ? ` · ${subcategoryBySlug(l.category, l.subcategory)?.name ?? l.subcategory}` : ""} · {timeAgo(l.created_at)}</span>
                     </span>
                   </Link>
                 </td>

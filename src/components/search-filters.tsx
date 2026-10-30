@@ -3,7 +3,7 @@
 import { Globe2, LayoutGrid, SlidersHorizontal, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { CATEGORIES, COUNTRIES } from "@/lib/constants";
+import { CATEGORIES, categoryBySlug, COUNTRIES } from "@/lib/constants";
 import type { SearchFilters } from "@/lib/queries";
 import { CategoryIcon } from "./category-icon";
 import { Dropdown, type DropdownOption } from "./dropdown";
@@ -14,7 +14,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
 
   function apply(fd: FormData) {
     const params = new URLSearchParams();
-    for (const key of ["q", "category", "country", "city", "min", "max", "condition", "sort"]) {
+    for (const key of ["q", "category", "sub", "country", "city", "min", "max", "condition", "sort"]) {
       const v = String(fd.get(key) ?? "").trim();
       if (v && !(lockCategory && key === "category")) params.set(key, v);
     }
@@ -28,20 +28,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
         <label className="label" htmlFor="f-q">Keywords</label>
         <input id="f-q" name="q" defaultValue={filters.q} className="input" placeholder="e.g. Hilux, 3 bedroom" />
       </div>
-      {!lockCategory && (
-        <div>
-          <span className="label">Category</span>
-          <FieldDropdown
-            name="category"
-            label="Category"
-            initial={filters.category ?? ""}
-            options={[
-              { value: "", label: "All categories", icon: <LayoutGrid className="h-4 w-4" /> },
-              ...CATEGORIES.map((c) => ({ value: c.slug, label: c.name, icon: <CategoryIcon icon={c.icon} className="h-4 w-4" /> })),
-            ]}
-          />
-        </div>
-      )}
+      <CategoryAndType lockCategory={lockCategory} initialCategory={filters.category ?? ""} initialSub={filters.sub ?? ""} />
       <div>
         <span className="label">Country</span>
         <FieldDropdown
@@ -139,6 +126,52 @@ export function SortSelect({ value }: { value?: string }) {
         <option value="oldest">Oldest first</option>
       </select>
     </label>
+  );
+}
+
+/** Category, then the types within it (e.g. Property > For rent). */
+function CategoryAndType({ lockCategory, initialCategory, initialSub }: { lockCategory?: boolean; initialCategory: string; initialSub: string }) {
+  const [category, setCategory] = useState(initialCategory);
+  const [sub, setSub] = useState(initialSub);
+  const cat = categoryBySlug(category);
+  const field = "rounded-xl border border-line bg-surface px-3.5 transition focus-within:border-lagoon-500 focus-within:ring-4 focus-within:ring-lagoon-500/10";
+  return (
+    <>
+      {!lockCategory && (
+        <div>
+          <span className="label">Category</span>
+          <input type="hidden" name="category" value={category} />
+          <Dropdown
+            label="Category"
+            value={category}
+            onChange={(v) => {
+              setCategory(v);
+              setSub("");
+            }}
+            options={[
+              { value: "", label: "All categories", icon: <LayoutGrid className="h-4 w-4" /> },
+              ...CATEGORIES.map((c) => ({ value: c.slug, label: c.name, icon: <CategoryIcon icon={c.icon} className="h-4 w-4" /> })),
+            ]}
+            className={field}
+            buttonClassName="py-2.5 font-normal text-ink"
+          />
+        </div>
+      )}
+      {cat && cat.subcategories.length > 0 && (
+        <div>
+          <span className="label">Type</span>
+          <input type="hidden" name="sub" value={sub} />
+          <Dropdown
+            label="Type"
+            value={sub}
+            onChange={setSub}
+            options={[{ value: "", label: `All ${cat.name.toLowerCase()}` }, ...cat.subcategories.map((x) => ({ value: x.slug, label: x.name }))]}
+            className={field}
+            buttonClassName="py-2.5 font-normal text-ink"
+          />
+        </div>
+      )}
+    </>
   );
 }
 

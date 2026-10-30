@@ -26,6 +26,7 @@ export type Listing = {
   title: string;
   description: string;
   category: string;
+  subcategory: string | null;
   price: number | null;
   price_type: PriceType;
   condition: "new" | "used" | null;
@@ -57,11 +58,11 @@ export const PROFILE_COLUMNS =
   "id, full_name, avatar_url, phone, whatsapp, country, city, bio, role, is_banned, is_verified, created_at, business_name, business_until, plan_id";
 
 export const LISTING_CARD_COLUMNS =
-  "id, title, price, price_type, category, country, city, images, status, is_featured, is_urgent, created_at, condition";
+  "id, title, price, price_type, category, subcategory, country, city, images, status, is_featured, is_urgent, created_at, condition";
 
 export type ListingCardData = Pick<
   Listing,
-  "id" | "title" | "price" | "price_type" | "category" | "country" | "city" | "images" | "status" | "is_featured" | "is_urgent" | "created_at" | "condition"
+  "id" | "title" | "price" | "price_type" | "category" | "subcategory" | "country" | "city" | "images" | "status" | "is_featured" | "is_urgent" | "created_at" | "condition"
 >;
 
 export type Prices = Record<string, number>;

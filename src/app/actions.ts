@@ -10,6 +10,10 @@ type Result = { error?: string; ok?: boolean };
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
+/** What was typed, sent back with an error so the form can keep it (React clears submitted forms). */
+const typed = (fd: FormData) =>
+  Object.fromEntries([...fd.entries()].filter(([, v]) => typeof v === "string")) as Record<string, string>;
+
 // ---------------------------------------------------------------------------
 // Favorites
 // ---------------------------------------------------------------------------
@@ -31,13 +35,14 @@ export async function toggleFavorite(listingId: string, save: boolean): Promise<
 // ---------------------------------------------------------------------------
 // Listings
 // ---------------------------------------------------------------------------
-export type ListingFormState = { error?: string; fieldErrors?: Record<string, string> };
+export type ListingFormState = { error?: string; fieldErrors?: Record<string, string>; values?: Record<string, string> };
 
 function parseListing(fd: FormData) {
   const fieldErrors: Record<string, string> = {};
   const title = str(fd, "title");
   const description = str(fd, "description");
   const category = str(fd, "category");
+  const subcategory = str(fd, "subcategory") || null;
   const country = str(fd, "country");
   const city = str(fd, "city") || null;
   const price_type = str(fd, "price_type") || "fixed";
@@ -55,7 +60,11 @@ function parseListing(fd: FormData) {
   if (title.length < 3) fieldErrors.title = "Give your ad a title (at least 3 characters).";
   if (title.length > 120) fieldErrors.title = "Keep the title under 120 characters.";
   if (description.length > 5000) fieldErrors.description = "Description is too long (max 5000 characters).";
-  if (!CATEGORIES.some((c) => c.slug === category)) fieldErrors.category = "Choose a category.";
+  const cat = CATEGORIES.find((c) => c.slug === category);
+  if (!cat) fieldErrors.category = "Choose a category.";
+  else if (cat.subcategories.length && !cat.subcategories.some((s) => s.slug === subcategory)) {
+    fieldErrors.category = `Choose what kind of ${cat.name.toLowerCase()} this is.`;
+  }
   if (!COUNTRIES.some((c) => c.code === country)) fieldErrors.country = "Choose a country.";
   if (!["fixed", "negotiable", "free", "contact"].includes(price_type)) fieldErrors.price_type = "Choose a price type.";
 
@@ -76,6 +85,7 @@ function parseListing(fd: FormData) {
       title,
       description,
       category,
+      subcategory: cat?.subcategories.length ? subcategory : null,
       country,
       city,
       price_type,
@@ -96,14 +106,14 @@ export async function createListing(_: ListingFormState, fd: FormData): Promise<
   if (!user) return { error: "Please log in to post an ad." };
 
   const { fieldErrors, values } = parseListing(fd);
-  if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields." };
+  if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields.", values: typed(fd) };
 
   const { data, error } = await supabase
     .from("listings")
     .insert({ ...values, user_id: user.id })
     .select("id, status")
     .single();
-  if (error) return { error: error.message };
+  if (error) return { error: error.message, values: typed(fd) };
 
   revalidatePath("/");
   if (data.status === "awaiting_payment") {
@@ -127,10 +137,10 @@ export async function updateListing(id: string, _: ListingFormState, fd: FormDat
   if (!user) return { error: "Please log in." };
 
   const { fieldErrors, values } = parseListing(fd);
-  if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields." };
+  if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields.", values: typed(fd) };
 
   const { error } = await supabase.from("listings").update(values).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: error.message, values: typed(fd) };
 
   revalidatePath(`/listing/${id}`);
   revalidatePath("/my-ads");
@@ -187,7 +197,7 @@ export async function reportListing(listingId: string, reason: string, details: 
   return { ok: true };
 }
 
-export type ContactState = { error?: string; ok?: boolean };
+export type ContactState = { error?: string; ok?: boolean; values?: Record<string, string> };
 
 export async function sendContactMessage(_: ContactState, fd: FormData): Promise<ContactState> {
   const name = str(fd, "name");
@@ -196,7 +206,7 @@ export async function sendContactMessage(_: ContactState, fd: FormData): Promise
   const message = str(fd, "message");
   if (str(fd, "website")) return { ok: true }; // honeypot: silently drop bots
   if (!name || !/^\S+@\S+\.\S+$/.test(email) || message.length < 5) {
-    return { error: "Please fill in your name, a valid email and a message." };
+    return { error: "Please fill in your name, a valid email and a message.", values: typed(fd) };
   }
   const supabase = await createClient();
   const {
@@ -205,7 +215,7 @@ export async function sendContactMessage(_: ContactState, fd: FormData): Promise
   const { error } = await supabase
     .from("contact_messages")
     .insert({ name, email, subject, message: message.slice(0, 5000), user_id: user?.id ?? null });
-  if (error) return { error: "Could not send your message. Please try again." };
+  if (error) return { error: "Could not send your message. Please try again.", values: typed(fd) };
   return { ok: true };
 }
 

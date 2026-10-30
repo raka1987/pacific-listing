@@ -1301,3 +1301,8 @@ grant select (id, full_name, avatar_url, phone, whatsapp, country, city, bio, ro
 
 -- Only the database itself may apply a paid order.
 revoke execute on function public.fulfil_order(uuid) from public, anon, authenticated;
+
+-- ========== 20261101000000_subcategories.sql ==========
+-- Pacific Listing: types within categories (e.g. Property > For rent, Vehicles > SUVs & 4x4)
+alter table public.listings add column if not exists subcategory text;
+create index if not exists listings_category_sub_idx on public.listings (category, subcategory);

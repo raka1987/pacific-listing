@@ -29,9 +29,13 @@ export function ListingForm({
   const [state, formAction] = useActionState(action, {});
   const [images, setImages] = useState<string[]>(listing?.images ?? []);
   const [category, setCategory] = useState(listing?.category ?? "");
+  const [subcategory, setSubcategory] = useState(listing?.subcategory ?? "");
+  const subs = categoryBySlug(category)?.subcategories ?? [];
   const [priceType, setPriceType] = useState<string>(listing?.price_type ?? "fixed");
   const [country, setCountry] = useState(listing?.country ?? defaults.country ?? "FJ");
   const fe = state.fieldErrors ?? {};
+  // After an error, keep what the seller typed.
+  const typed = (name: string, fallback: string | number | null | undefined) => state.values?.[name] ?? String(fallback ?? "");
   const showCondition = categoryBySlug(category)?.hasCondition;
   const currency = countryByCode(country)?.currency ?? "";
   const fee = !listing && category ? priceIn(fees[category], currency) : null;
@@ -60,7 +64,10 @@ export function ListingForm({
                 name="category"
                 value={c.slug}
                 checked={category === c.slug}
-                onChange={() => setCategory(c.slug)}
+                onChange={() => {
+                  setCategory(c.slug);
+                  setSubcategory("");
+                }}
                 className="peer sr-only"
               />
               <span className="flex h-full flex-col items-center gap-1.5 rounded-xl border border-line bg-surface p-3 text-center text-xs font-semibold text-ink-2 transition peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800 peer-focus-visible:ring-2 peer-focus-visible:ring-lagoon-400 hover:border-line">
@@ -72,6 +79,28 @@ export function ListingForm({
             </label>
           ))}
         </div>
+        {subs.length > 0 && (
+          <fieldset className="mt-5">
+            <legend className="label">What kind of {categoryBySlug(category)?.name.toLowerCase()}?</legend>
+            <div className="flex flex-wrap gap-2">
+              {subs.map((s) => (
+                <label key={s.slug} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="subcategory"
+                    value={s.slug}
+                    checked={subcategory === s.slug}
+                    onChange={() => setSubcategory(s.slug)}
+                    className="peer sr-only"
+                  />
+                  <span className="inline-flex rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm text-ink-2 transition peer-checked:border-ink peer-checked:bg-ink peer-checked:text-canvas peer-focus-visible:ring-2 peer-focus-visible:ring-lagoon-400 hover:border-faint">
+                    {s.name}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
         <FieldError msg={fe.category} />
         {fee != null && (
           <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-900">
@@ -86,7 +115,7 @@ export function ListingForm({
         <div className="space-y-4">
           <div>
             <label className="label" htmlFor="title">Title</label>
-            <input id="title" name="title" required maxLength={120} defaultValue={listing?.title} className="input" placeholder="e.g. 2015 Toyota Hilux, 4x4, low km" />
+            <input id="title" name="title" required maxLength={120} defaultValue={typed("title", listing?.title)} className="input" placeholder="e.g. 2015 Toyota Hilux, 4x4, low km" />
             <FieldError msg={fe.title} />
           </div>
           <div>
@@ -96,7 +125,7 @@ export function ListingForm({
               name="description"
               rows={6}
               maxLength={5000}
-              defaultValue={listing?.description}
+              defaultValue={typed("description", listing?.description)}
               className="input"
               placeholder="Describe the condition, features, and why you're selling. More detail means fewer questions."
             />
@@ -108,7 +137,7 @@ export function ListingForm({
               <div className="flex gap-2">
                 {[["used", "Used"], ["new", "New"]].map(([v, l]) => (
                   <label key={v} className="flex-1 cursor-pointer">
-                    <input type="radio" name="condition" value={v} defaultChecked={(listing?.condition ?? "used") === v} className="peer sr-only" />
+                    <input type="radio" name="condition" value={v} defaultChecked={typed("condition", listing?.condition ?? "used") === v} className="peer sr-only" />
                     <span className="block rounded-xl border border-line bg-surface py-2.5 text-center text-sm font-medium text-ink-2 peer-checked:border-lagoon-500 peer-checked:bg-lagoon-50 peer-checked:text-lagoon-800">
                       {l}
                     </span>
@@ -140,7 +169,7 @@ export function ListingForm({
                 id="price"
                 name="price"
                 inputMode="decimal"
-                defaultValue={listing?.price ?? ""}
+                defaultValue={typed("price", listing?.price)}
                 className="input pl-14"
                 placeholder="0"
               />
@@ -163,7 +192,7 @@ export function ListingForm({
           </div>
           <div>
             <label className="label" htmlFor="city">Town / city / island</label>
-            <input id="city" name="city" defaultValue={listing?.city ?? defaults.city ?? ""} className="input" placeholder="e.g. Suva, Nadi, Apia" />
+            <input id="city" name="city" defaultValue={typed("city", listing?.city ?? defaults.city)} className="input" placeholder="e.g. Suva, Nadi, Apia" />
           </div>
         </div>
       </Section>
@@ -172,11 +201,11 @@ export function ListingForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label" htmlFor="contact_phone">Phone number</label>
-            <input id="contact_phone" name="contact_phone" type="tel" defaultValue={listing?.contact_phone ?? defaults.phone ?? ""} className="input" placeholder="+679 123 4567" />
+            <input id="contact_phone" name="contact_phone" type="tel" defaultValue={typed("contact_phone", listing?.contact_phone ?? defaults.phone)} className="input" placeholder="+679 123 4567" />
           </div>
           <div>
             <label className="label" htmlFor="contact_whatsapp">WhatsApp number</label>
-            <input id="contact_whatsapp" name="contact_whatsapp" type="tel" defaultValue={listing?.contact_whatsapp ?? defaults.whatsapp ?? ""} className="input" placeholder="+679 123 4567" />
+            <input id="contact_whatsapp" name="contact_whatsapp" type="tel" defaultValue={typed("contact_whatsapp", listing?.contact_whatsapp ?? defaults.whatsapp)} className="input" placeholder="+679 123 4567" />
           </div>
         </div>
       </Section>

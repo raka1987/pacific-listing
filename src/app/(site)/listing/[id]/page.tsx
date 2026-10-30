@@ -15,7 +15,7 @@ import { ReportDialog } from "@/components/report-dialog";
 import { ShareButton } from "@/components/share-button";
 import { StatusBadge } from "@/components/status-badge";
 import { ViewTracker } from "@/components/view-tracker";
-import { categoryBySlug, countryByCode, SITE } from "@/lib/constants";
+import { categoryBySlug, countryByCode, SITE, subcategoryBySlug } from "@/lib/constants";
 import { formatDate, formatPrice, isBusiness, locationLabel, timeAgo } from "@/lib/format";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -73,6 +73,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
   ]);
 
   const category = categoryBySlug(listing.category);
+  const sub = subcategoryBySlug(listing.category, listing.subcategory);
   const country = countryByCode(listing.country);
   const approx = await approxPrice(listing);
   const url = `${SITE.url}/listing/${listing.id}`;
@@ -117,6 +118,12 @@ export default async function ListingPage({ params, searchParams }: Props) {
           <>
             <Link href={`/category/${category.slug}`} className="hover:text-lagoon-700">{category.name}</Link>
             <ChevronRight className="h-4 w-4" />
+            {sub && (
+              <>
+                <Link href={`/category/${category.slug}?sub=${sub.slug}`} className="hover:text-lagoon-700">{sub.name}</Link>
+                <ChevronRight className="h-4 w-4" />
+              </>
+            )}
           </>
         )}
         <span className="truncate text-ink-2">{listing.title}</span>
@@ -164,7 +171,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
           <section className="card p-5 sm:p-6">
             <h2 className="font-display text-xl font-semibold text-ink">Details</h2>
             <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Detail icon={Tag} label="Category" value={category?.name ?? listing.category} />
+              <Detail icon={Tag} label="Category" value={sub ? `${category?.name} · ${sub.name}` : (category?.name ?? listing.category)} />
               <Detail icon={MapPin} label="Location" value={locationLabel(listing.country, listing.city)} />
               {listing.condition && <Detail icon={BadgeCheck} label="Condition" value={listing.condition === "new" ? "New" : "Used"} />}
               <Detail icon={CalendarDays} label="Posted" value={formatDate(listing.created_at)} />

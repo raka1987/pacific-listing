@@ -5,6 +5,8 @@ import { LISTING_CARD_COLUMNS, type ListingCardData } from "./types";
 export type SearchFilters = {
   q?: string;
   category?: string;
+  /** Type within the category, e.g. "for-rent" */
+  sub?: string;
   country?: string;
   city?: string;
   min?: string;
@@ -29,6 +31,7 @@ export async function searchListings(supabase: SupabaseClient, f: SearchFilters)
   const term = f.q ? cleanTerm(f.q) : "";
   if (term) query = query.or(`title.ilike."*${term}*",search.wfts(english)."${term}"`);
   if (f.category) query = query.eq("category", f.category);
+  if (f.category && f.sub) query = query.eq("subcategory", f.sub);
   if (f.country) query = query.eq("country", f.country);
   if (f.city) query = query.ilike("city", `%${cleanTerm(f.city)}%`);
   if (f.condition === "new" || f.condition === "used") query = query.eq("condition", f.condition);

@@ -22,7 +22,10 @@ export function SearchBar({
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [country, setCountry] = useState(params.get("country") ?? defaultCountry ?? "");
-  const [category, setCategory] = useState(params.get("category") ?? "");
+  // "property" or "property:for-rent"
+  const [category, setCategory] = useState(
+    [params.get("category"), params.get("sub")].filter(Boolean).join(":"),
+  );
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -30,15 +33,20 @@ export function SearchBar({
     if (q.trim()) next.set("q", q.trim());
     const c = withCountry ? country : params.get("country");
     if (c) next.set("country", c);
-    // A chosen category opens that category's page; otherwise search everything.
-    const base = withCategory && category ? `/category/${category}` : "/search";
+    // A chosen category opens that category's page (with its type); otherwise search everything.
+    const [cat, sub] = category.split(":");
+    if (withCategory && sub) next.set("sub", sub);
+    const base = withCategory && cat ? `/category/${cat}` : "/search";
     router.push(`${base}${next.size ? `?${next}` : ""}`);
   }
 
   const lg = size === "lg";
   const categoryOptions: DropdownOption[] = [
     { value: "", label: "All categories", icon: <LayoutGrid className="h-4 w-4" /> },
-    ...CATEGORIES.map((c) => ({ value: c.slug, label: c.name, icon: <CategoryIcon icon={c.icon} className="h-4 w-4" /> })),
+    ...CATEGORIES.flatMap((c) => [
+      { value: c.slug, label: c.name, icon: <CategoryIcon icon={c.icon} className="h-4 w-4" /> },
+      ...c.subcategories.map((s) => ({ value: `${c.slug}:${s.slug}`, label: s.name, nested: true, buttonLabel: s.name })),
+    ]),
   ];
   const countryOptions: DropdownOption[] = [
     { value: "", label: "All Pacific", icon: <Globe2 className="h-4 w-4" /> },

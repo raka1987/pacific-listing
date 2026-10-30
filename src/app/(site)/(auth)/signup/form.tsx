@@ -15,16 +15,16 @@ export function SignupForm({ next }: { next: string }) {
       <input type="hidden" name="next" value={next} />
       <div>
         <label className="label" htmlFor="full_name">Your name</label>
-        <input id="full_name" name="full_name" autoComplete="name" required className="input" />
+        <input id="full_name" name="full_name" autoComplete="name" required defaultValue={state.values?.full_name} className="input" />
       </div>
       <div>
         <label className="label" htmlFor="email">Email</label>
-        <input id="email" name="email" type="email" autoComplete="email" required className="input" />
+        <input id="email" name="email" type="email" autoComplete="email" required defaultValue={state.values?.email} className="input" />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="country">Country</label>
-          <select id="country" name="country" defaultValue="FJ" className="input">
+          <select id="country" name="country" defaultValue={state.values?.country ?? "FJ"} className="input">
             {COUNTRIES.map((c) => (
               <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
             ))}
@@ -32,7 +32,7 @@ export function SignupForm({ next }: { next: string }) {
         </div>
         <div>
           <label className="label" htmlFor="phone">Phone <span className="font-normal text-faint">(optional)</span></label>
-          <input id="phone" name="phone" type="tel" autoComplete="tel" className="input" placeholder="+679…" />
+          <input id="phone" name="phone" type="tel" autoComplete="tel" defaultValue={state.values?.phone} className="input" placeholder="+679…" />
         </div>
       </div>
       <div>

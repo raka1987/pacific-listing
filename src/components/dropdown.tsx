@@ -3,7 +3,15 @@
 import { Check, ChevronDown } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 
-export type DropdownOption = { value: string; label: string; icon?: React.ReactNode };
+export type DropdownOption = {
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+  /** Shown indented under the option above it */
+  nested?: boolean;
+  /** Shown on the button instead of label when chosen, e.g. "Property · For rent" */
+  buttonLabel?: string;
+};
 
 /**
  * A styled replacement for <select>: the list follows the site's colours in
@@ -100,11 +108,11 @@ export function Dropdown({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={`${id}-list`}
-        aria-label={`${label}: ${current?.label}`}
+        aria-label={`${label}: ${current?.buttonLabel ?? current?.label}`}
         className={`flex w-full min-w-0 items-center gap-2 text-left text-sm font-medium transition focus:outline-none ${buttonClassName}`}
       >
         {current?.icon && <span className="flex shrink-0 items-center">{current.icon}</span>}
-        <span className="min-w-0 flex-1 truncate">{current?.label}</span>
+        <span className="min-w-0 flex-1 truncate">{current?.buttonLabel ?? current?.label}</span>
         <ChevronDown className={`h-4 w-4 shrink-0 opacity-60 transition ${open ? "rotate-180" : ""}`} aria-hidden />
       </button>
       {open && (
@@ -128,9 +136,9 @@ export function Dropdown({
                 onMouseEnter={() => setActive(i)}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => choose(i)}
-                className={`flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm ${
+                className={`flex cursor-pointer items-center gap-2.5 rounded-xl px-3 ${o.nested ? "py-1.5 pl-[2.6rem] text-[13px]" : "py-2 text-sm"} ${
                   i === active ? "bg-subtle" : ""
-                } ${selected ? "font-medium text-ink" : "text-ink-2"}`}
+                } ${selected ? "font-medium text-ink" : o.nested ? "text-muted" : "text-ink-2"}`}
               >
                 {o.icon && <span className="flex w-5 shrink-0 justify-center text-muted">{o.icon}</span>}
                 <span className="flex-1 truncate">{o.label}</span>

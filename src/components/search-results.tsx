@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { SearchX, X } from "lucide-react";
-import { categoryBySlug, countryByCode } from "@/lib/constants";
+import { categoryBySlug, countryByCode, subcategoryBySlug } from "@/lib/constants";
 import { getFavoriteIds, searchListings, type SearchFilters } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { AdBanner } from "./ad-banner";
-import { CategoryChips } from "./category-chips";
+import { CategoryChips, SubcategoryChips } from "./category-chips";
 import { EmptyState } from "./empty-state";
 import { ListingGrid } from "./listing-card";
 import { Pagination } from "./pagination";
@@ -42,7 +42,9 @@ export async function SearchResults({
   const chips: { label: string; remove: Record<string, undefined> }[] = [];
   if (filters.q) chips.push({ label: `“${filters.q}”`, remove: { q: undefined } });
   if (filters.category && !lockCategory)
-    chips.push({ label: categoryBySlug(filters.category)?.name ?? filters.category, remove: { category: undefined } });
+    chips.push({ label: categoryBySlug(filters.category)?.name ?? filters.category, remove: { category: undefined, sub: undefined } });
+  const sub = subcategoryBySlug(filters.category, filters.sub);
+  if (sub) chips.push({ label: sub.name, remove: { sub: undefined } });
   if (filters.country) chips.push({ label: countryByCode(filters.country)?.name ?? filters.country, remove: { country: undefined } });
   if (filters.city) chips.push({ label: filters.city, remove: { city: undefined } });
   if (filters.min || filters.max)
@@ -57,6 +59,7 @@ export async function SearchResults({
         </Suspense>
       </div>
       <CategoryChips active={filters.category} q={filters.q} country={filters.country} />
+      {filters.category && <SubcategoryChips category={filters.category} active={filters.sub} q={filters.q} country={filters.country} />}
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <SearchFiltersPanel filters={filters} basePath={basePath} lockCategory={lockCategory} />
         <div className="min-w-0">
