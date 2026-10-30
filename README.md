@@ -19,8 +19,7 @@ You need three free accounts: **GitHub**, **Supabase** and **Vercel**. Allow abo
 ### 2. Create the database (Supabase)
 1. Sign up at https://supabase.com and click **New project**. Pick the region closest to your users (for example **Sydney**).
 2. When it's ready, open **Database → Extensions** and turn on **pg_cron** (it ends promotions and banner campaigns on time).
-   Then open **SQL Editor**, then **New query**, and run each file in `supabase/migrations/` **in order**, pasting the whole file and clicking **Run** each time:
-   `20261028000000_init.sql`, then `20261030000000_revenue.sql`, then `20261030010000_location.sql`.
+   Then open **SQL Editor → New query**, paste the whole of `supabase/setup.sql`, and click **Run**.
    This creates all tables, security rules, prices and photo storage.
 3. Open **Project Settings → API** and copy the **Project URL** and the **anon public** key. You need them in step 3.
 4. Open **Authentication → URL Configuration**:
