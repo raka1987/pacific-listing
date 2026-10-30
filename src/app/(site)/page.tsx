@@ -1,3 +1,4 @@
+import { getAuthUser } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -18,9 +19,7 @@ export const revalidate = 60;
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   const [featured, latest, notices, favoriteIds, viewer] = await Promise.all([
     supabase

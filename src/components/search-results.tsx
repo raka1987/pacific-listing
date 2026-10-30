@@ -1,3 +1,4 @@
+import { getAuthUser } from "@/lib/auth";
 import Link from "next/link";
 import { SearchX, X } from "lucide-react";
 import { categoryBySlug, countryByCode, subcategoryBySlug } from "@/lib/constants";
@@ -24,9 +25,7 @@ export async function SearchResults({
   lockCategory?: boolean;
 }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   const [{ listings, total, page, totalPages }, favoriteIds] = await Promise.all([
     searchListings(supabase, filters),
     getFavoriteIds(supabase, user?.id),

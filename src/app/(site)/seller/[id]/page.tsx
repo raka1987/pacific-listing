@@ -1,3 +1,4 @@
+import { getAuthUser } from "@/lib/auth";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeCheck, CalendarDays, MapPin, Store } from "lucide-react";
@@ -29,9 +30,7 @@ export default async function SellerPage({ params }: Props) {
   const seller = await getSeller(id);
   if (!seller || seller.is_banned) notFound();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   const [{ data }, favoriteIds] = await Promise.all([
     supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("user_id", id).in("status", ["active", "sold"]).order("created_at", { ascending: false }),
     getFavoriteIds(supabase, user?.id),

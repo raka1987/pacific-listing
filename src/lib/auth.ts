@@ -3,12 +3,19 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { PROFILE_COLUMNS, type Profile, type Role } from "./types";
 
-export const getCurrentUser = cache(async () => {
+/** The logged-in user, checked once per page request and shared by everything on the page. */
+export const getAuthUser = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  return user;
+});
+
+export const getCurrentUser = cache(async () => {
+  const user = await getAuthUser();
   if (!user) return null;
+  const supabase = await createClient();
   const { data: profile } = await supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", user.id).single<Profile>();
   return { user, profile };
 });

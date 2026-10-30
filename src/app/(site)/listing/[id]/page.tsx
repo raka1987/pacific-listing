@@ -1,3 +1,4 @@
+import { getAuthUser } from "@/lib/auth";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -55,9 +56,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
   if (!listing) notFound();
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   const isOwner = user?.id === listing.user_id;
 
   const [{ data: similar }, favoriteIds] = await Promise.all([
