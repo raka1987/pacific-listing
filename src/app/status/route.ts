@@ -40,7 +40,9 @@ export async function GET() {
 
   const auth = await check("Login service", "/auth/v1/health");
   const db = await check("Database tables", "/rest/v1/plans?select=name&limit=1");
-  lines.push("", auth.line, db.line, "");
+  // Columns added by later updates; missing ones mean an update's SQL wasn't run yet.
+  const latest = await check("Latest database update", "/rest/v1/listings?select=subcategory&limit=1");
+  lines.push("", auth.line, db.line, latest.line, "");
 
   if (auth.status === 0) {
     lines.push(
@@ -52,6 +54,8 @@ export async function GET() {
     lines.push("PROBLEM: Supabase rejected the key. Copy the anon public (or publishable) key again from", "Supabase > Project Settings > API, update SUPABASE_ANON_KEY in Vercel, then redeploy.");
   } else if (db.status === 404 || (db.status >= 400 && /does not exist|schema cache/i.test(db.line))) {
     lines.push("PROBLEM: Connected, but the tables aren't there. Run supabase/setup.sql in the Supabase SQL Editor.");
+  } else if (auth.ok && db.ok && !latest.ok) {
+    lines.push("PROBLEM: The database is missing the latest update (listing types). Run the newest file in", "supabase/migrations/ in the Supabase SQL Editor.");
   } else if (auth.ok && db.ok) {
     lines.push("ALL GOOD: the site is connected to Supabase.");
   } else {
