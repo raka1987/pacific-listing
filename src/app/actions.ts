@@ -100,11 +100,21 @@ export async function createListing(_: ListingFormState, fd: FormData): Promise<
   const { data, error } = await supabase
     .from("listings")
     .insert({ ...values, user_id: user.id })
-    .select("id")
+    .select("id, status")
     .single();
   if (error) return { error: error.message };
 
   revalidatePath("/");
+  if (data.status === "awaiting_payment") {
+    // This category has a posting fee: send them to pay for it.
+    const { data: order } = await supabase
+      .from("orders")
+      .select("id")
+      .eq("listing_id", data.id)
+      .eq("kind", "posting_fee")
+      .maybeSingle();
+    if (order) redirect(`/orders/${order.id}?new=1`);
+  }
   redirect(`/listing/${data.id}?posted=1`);
 }
 
@@ -226,5 +236,63 @@ export async function updateProfile(_: ProfileState, fd: FormData): Promise<Prof
     .eq("id", user.id);
   if (error) return { error: error.message };
   revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Promotions, business accounts and payments
+// ---------------------------------------------------------------------------
+export type OrderState = { error?: string; ok?: boolean };
+
+export async function createBoostOrder(_: OrderState, fd: FormData): Promise<OrderState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Please log in." };
+  const { data, error } = await supabase.rpc("create_boost_order", {
+    p_listing: str(fd, "listing_id"),
+    p_package: str(fd, "package_id"),
+    p_method: str(fd, "method") || "mpaisa",
+  });
+  if (error) return { error: error.message };
+  revalidatePath("/my-ads");
+  redirect(`/orders/${data}`);
+}
+
+export async function createSubscriptionOrder(_: OrderState, fd: FormData): Promise<OrderState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Please log in." };
+  const { data, error } = await supabase.rpc("create_subscription_order", {
+    p_plan: str(fd, "plan_id"),
+    p_method: str(fd, "method") || "mpaisa",
+    p_business_name: str(fd, "business_name"),
+    p_currency: str(fd, "currency") || null,
+  });
+  if (error) return { error: error.message };
+  redirect(`/orders/${data}`);
+}
+
+export async function submitPayment(orderId: string, _: OrderState, fd: FormData): Promise<OrderState> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("submit_payment", {
+    p_order: orderId,
+    p_method: str(fd, "method"),
+    p_reference: str(fd, "reference"),
+  });
+  if (error) return { error: error.message };
+  revalidatePath(`/orders/${orderId}`);
+  return { ok: true };
+}
+
+export async function cancelOrder(orderId: string): Promise<Result> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("cancel_my_order", { p_order: orderId });
+  if (error) return { error: error.message };
+  revalidatePath("/orders");
+  revalidatePath(`/orders/${orderId}`);
   return { ok: true };
 }

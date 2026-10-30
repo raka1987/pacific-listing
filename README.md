@@ -18,8 +18,10 @@ You need three free accounts: **GitHub**, **Supabase** and **Vercel**. Allow abo
 
 ### 2. Create the database (Supabase)
 1. Sign up at https://supabase.com and click **New project**. Pick the region closest to your users (for example **Sydney**).
-2. When it's ready, open **SQL Editor**, then **New query**. Paste the whole contents of
-   `supabase/migrations/20261028000000_init.sql` and click **Run**. This creates all tables, security rules and photo storage.
+2. When it's ready, open **Database → Extensions** and turn on **pg_cron** (it ends promotions and banner campaigns on time).
+   Then open **SQL Editor**, then **New query**, and run each file in `supabase/migrations/` **in order**, pasting the whole file and clicking **Run** each time:
+   `20261028000000_init.sql`, then `20261030000000_revenue.sql`, then `20261030010000_location.sql`.
+   This creates all tables, security rules, prices and photo storage.
 3. Open **Project Settings → API** and copy the **Project URL** and the **anon public** key. You need them in step 3.
 4. Open **Authentication → URL Configuration**:
    - **Site URL:** `https://pacificlisting.com`
@@ -79,6 +81,33 @@ Apple can reject apps that are just a website in a frame. Adding native features
 
 ---
 
+## Making money
+
+Everything is managed in the admin panel under **Revenue**. Example prices are filled in; change them before launch.
+
+| What | Who pays | Where you manage it |
+|---|---|---|
+| **Promotions**: Featured, Bump to top, Urgent badge | Sellers, from **My ads → Promote** | Promotions & fees |
+| **Posting fees** for chosen categories (Property and Jobs are on by default) | Sellers, after posting | Promotions & fees |
+| **Business accounts**: more ads, free bumps, no posting fees, business badge | Shops, agents, car yards, at `/business` | Business plans |
+| **Banner ads** in three spots, for one country or **global** (all countries) | Advertisers you sell to directly | Banner ads |
+
+**How payments work.** The customer picks M-PAiSA, MyCash or bank transfer, sends the money using their order number as the reference, and enters the transaction number. It appears under **Payments → To confirm**. When you see the money arrive, click **Mark paid** and whatever they bought switches on immediately. Put your real account numbers in **Settings → How customers pay you**. Card payments can be switched on later, once a developer connects your bank's payment gateway.
+
+**Prices per country.** Every price can be set in each Pacific currency (there's a button to fill the others in from the FJD price). Visitors see prices in the currency of where they are.
+
+**Location.** The site detects the visitor's country from their connection (on Vercel this works automatically), and visitors can change it with the flag button in the header. This decides:
+- prices shown on Business accounts and Advertise pages,
+- an approximate conversion under ads from other countries (for example "≈ WST 120"),
+- which banner ads they see: a country banner only reaches visitors in that country, while a global banner reaches everyone.
+
+**Staff roles** (set on a user's page under Users & staff):
+- **Moderator:** listings, reports, messages and notice board; can't see money.
+- **Sales:** payments, promotions, banner ads and business plans.
+- **Admin:** everything, including users, roles, settings and the activity log.
+
+---
+
 ## Using the admin panel (`/admin`)
 
 | Section | What you can do |
@@ -104,7 +133,8 @@ npm run dev                       # http://localhost:3000
 ```
 
 Local database with Docker: `npx supabase start`, then use the printed URL and anon key. To load demo data **locally only**:
-`SUPABASE_SERVICE_ROLE_KEY=... node scripts/seed-demo.mjs <folder-of-jpgs>`.
+`SUPABASE_SERVICE_ROLE_KEY=... node scripts/seed-demo.mjs <folder-of-jpgs>`, then
+`SUPABASE_SERVICE_ROLE_KEY=... node scripts/seed-revenue-demo.mjs <folder-of-banner-jpgs>` for payments, staff and campaigns.
 The script needs these photo filenames: see `LISTINGS[].photos`.
 
 **Security model:** every table uses Postgres row-level security. Users can only change their own ads and profile. Triggers stop users from featuring their own ads, approving themselves, or making themselves admin. Profile emails can't be read through the public API. Admin actions are checked both in the server code and in the database.

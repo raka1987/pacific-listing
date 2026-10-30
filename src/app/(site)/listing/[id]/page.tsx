@@ -2,20 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { AlertTriangle, BadgeCheck, CalendarDays, CheckCircle2, ChevronRight, Clock, Eye, MapPin, ShieldCheck, Tag } from "lucide-react";
+import { AdBanner } from "@/components/ad-banner";
+import { AlertTriangle, Store, Zap, BadgeCheck, CalendarDays, CheckCircle2, ChevronRight, Clock, Eye, MapPin, ShieldCheck, Tag } from "lucide-react";
 import { Avatar } from "@/components/avatar";
 import { ContactBar } from "@/components/contact-bar";
 import { ContactSeller } from "@/components/contact-seller";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ImageGallery } from "@/components/image-gallery";
-import { ListingGrid } from "@/components/listing-card";
+import { approxPrice, ListingGrid } from "@/components/listing-card";
 import { OwnerActions } from "@/components/owner-actions";
 import { ReportDialog } from "@/components/report-dialog";
 import { ShareButton } from "@/components/share-button";
 import { StatusBadge } from "@/components/status-badge";
 import { ViewTracker } from "@/components/view-tracker";
 import { categoryBySlug, countryByCode, SITE } from "@/lib/constants";
-import { formatDate, formatPrice, locationLabel, timeAgo } from "@/lib/format";
+import { formatDate, formatPrice, isBusiness, locationLabel, timeAgo } from "@/lib/format";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { LISTING_CARD_COLUMNS, type ListingCardData, type ListingWithSeller } from "@/lib/types";
@@ -27,7 +28,7 @@ const getListing = cache(async (id: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("listings")
-    .select("*, seller:profiles!listings_user_id_fkey(id, full_name, avatar_url, is_verified, created_at, phone, whatsapp)")
+    .select("*, seller:profiles!listings_user_id_fkey(id, full_name, avatar_url, is_verified, created_at, phone, whatsapp, business_name, business_until)")
     .eq("id", id)
     .maybeSingle<ListingWithSeller>();
   return data;
@@ -73,10 +74,17 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
   const category = categoryBySlug(listing.category);
   const country = countryByCode(listing.country);
+  const approx = await approxPrice(listing);
   const url = `${SITE.url}/listing/${listing.id}`;
   const phone = listing.contact_phone || listing.seller?.phone || null;
   const whatsapp = listing.contact_whatsapp || listing.seller?.whatsapp || null;
-  const sellerName = listing.seller?.full_name || "Pacific Listing member";
+  const business = isBusiness(listing.seller?.business_until) ? listing.seller?.business_name : null;
+  const sellerName = business || listing.seller?.full_name || "Pacific Listing member";
+  let feeOrderId: string | null = null;
+  if (isOwner && listing.status === "awaiting_payment") {
+    const { data: o } = await supabase.from("orders").select("id").eq("listing_id", listing.id).eq("kind", "posting_fee").eq("status", "awaiting_payment").maybeSingle();
+    feeOrderId = o?.id ?? null;
+  }
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -127,6 +135,18 @@ export default async function ListingPage({ params, searchParams }: Props) {
           </div>
         </div>
       )}
+      {isOwner && listing.status === "awaiting_payment" && (
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+          <p className="text-sm">
+            <strong>Not live yet.</strong> This category has a posting fee. Your ad goes live once it&apos;s paid.
+          </p>
+          {feeOrderId && (
+            <Link href={`/orders/${feeOrderId}`} className="btn-accent px-4 py-2 text-xs">
+              Pay posting fee
+            </Link>
+          )}
+        </div>
+      )}
       {isOwner && listing.status === "rejected" && (
         <div className="mb-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-900">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
@@ -171,7 +191,15 @@ export default async function ListingPage({ params, searchParams }: Props) {
               </p>
               {listing.status !== "active" && <StatusBadge status={listing.status} />}
             </div>
-            {listing.price_type === "negotiable" && <p className="mt-1 text-sm font-medium text-lagoon-700">Price negotiable</p>}
+            {approx && <p className="mt-0.5 text-sm text-muted">About {approx} · approximate conversion</p>}
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              {listing.price_type === "negotiable" && <p className="text-sm font-medium text-lagoon-700">Price negotiable</p>}
+              {listing.is_urgent && listing.status === "active" && (
+                <span className="badge bg-red-600 text-white">
+                  <Zap className="h-3 w-3" /> Urgent sale
+                </span>
+              )}
+            </div>
             <h1 className="font-display mt-2 text-xl leading-snug font-bold text-ink sm:text-2xl">{listing.title}</h1>
             <p className="mt-2 flex items-center gap-1 text-sm text-muted">
               <MapPin className="h-4 w-4" /> {locationLabel(listing.country, listing.city)}
@@ -200,7 +228,13 @@ export default async function ListingPage({ params, searchParams }: Props) {
                   <span className="truncate">{sellerName}</span>
                   {listing.seller.is_verified && <BadgeCheck className="h-4 w-4 shrink-0 text-lagoon-600" aria-label="Verified seller" />}
                 </p>
-                <p className="text-sm text-muted">Member since {formatDate(listing.seller.created_at)}</p>
+                {business ? (
+                  <p className="flex items-center gap-1 text-sm font-medium text-lagoon-700">
+                    <Store className="h-3.5 w-3.5" /> Business seller
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted">Member since {formatDate(listing.seller.created_at)}</p>
+                )}
               </div>
               <ChevronRight className="h-5 w-5 text-faint" />
             </Link>
@@ -215,6 +249,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
             </ul>
             <Link href="/safety" className="mt-2 inline-block font-semibold underline">More safety tips</Link>
           </div>
+          <AdBanner slot="listing_sidebar" category={listing.category} tall />
         </aside>
       </div>
 

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Eye, ImageIcon, Megaphone, Plus } from "lucide-react";
+import { CreditCard, Eye, ImageIcon, Megaphone, Plus } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
 import { OwnerActions } from "@/components/owner-actions";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { requireUser } from "@/lib/auth";
-import { formatPrice, timeAgo } from "@/lib/format";
+import { formatDate, formatPrice, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type { Listing, ListingStatus } from "@/lib/types";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "My ads", robots: { index: false } };
 
 const TABS: { key: string; label: string; statuses: ListingStatus[] }[] = [
   { key: "live", label: "Live", statuses: ["active"] },
-  { key: "review", label: "In review", statuses: ["pending", "rejected"] },
+  { key: "review", label: "In review", statuses: ["awaiting_payment", "pending", "rejected"] },
   { key: "sold", label: "Sold", statuses: ["sold"] },
   { key: "hidden", label: "Hidden", statuses: ["hidden"] },
 ];
@@ -25,6 +25,13 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
   const supabase = await createClient();
   const { data } = await supabase.from("listings").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
   const all = (data ?? []) as Listing[];
+  const { data: feeOrders } = await supabase
+    .from("orders")
+    .select("id, listing_id")
+    .eq("user_id", user.id)
+    .eq("kind", "posting_fee")
+    .eq("status", "awaiting_payment");
+  const payFor = new Map((feeOrders ?? []).map((o) => [o.listing_id as string, o.id as string]));
   const current = TABS.find((t) => t.key === tab);
   const listings = current ? all.filter((l) => current.statuses.includes(l.status)) : all;
 
@@ -70,9 +77,12 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
                   )}
                 </div>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={l.status} />
-                    {l.is_featured && <span className="badge bg-coral-500 text-white">Featured</span>}
+                    {l.is_featured && (
+                      <span className="badge bg-coral-500 text-white">Featured{l.featured_until ? ` until ${formatDate(l.featured_until)}` : ""}</span>
+                    )}
+                    {l.is_urgent && <span className="badge bg-red-600 text-white">Urgent</span>}
                   </div>
                   <p className="mt-1 truncate font-semibold text-ink">{l.title}</p>
                   <p className="text-sm text-muted">
@@ -84,7 +94,16 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
                   )}
                 </div>
               </Link>
-              <OwnerActions id={l.id} status={l.status} compact />
+              {payFor.has(l.id) ? (
+                <div className="flex flex-wrap gap-2">
+                  <Link href={`/orders/${payFor.get(l.id)}`} className="btn-accent px-3 py-2 text-xs">
+                    <CreditCard className="h-4 w-4" /> Pay posting fee
+                  </Link>
+                  <OwnerActions id={l.id} status={l.status} compact />
+                </div>
+              ) : (
+                <OwnerActions id={l.id} status={l.status} compact />
+              )}
             </li>
           ))}
         </ul>

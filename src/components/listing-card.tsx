@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { Camera, ImageIcon, MapPin, Sparkles } from "lucide-react";
-import { categoryBySlug } from "@/lib/constants";
-import { formatPrice, locationLabel, timeAgo } from "@/lib/format";
+import { Camera, ImageIcon, MapPin, Sparkles, Zap } from "lucide-react";
+import { categoryBySlug, currencyFor } from "@/lib/constants";
+import { convert, getViewer } from "@/lib/location";
+import { formatMoney, formatPrice, locationLabel, timeAgo } from "@/lib/format";
 import type { ListingCardData } from "@/lib/types";
 import { FavoriteButton } from "./favorite-button";
 
-export function ListingCard({ listing, isFavorite }: { listing: ListingCardData; isFavorite?: boolean }) {
+export async function ListingCard({ listing, isFavorite }: { listing: ListingCardData; isFavorite?: boolean }) {
   const cover = listing.images[0];
   const category = categoryBySlug(listing.category);
+  const approx = await approxPrice(listing);
   return (
     <article className="group relative flex flex-col">
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-subtle sm:rounded-3xl">
@@ -31,6 +33,11 @@ export function ListingCard({ listing, isFavorite }: { listing: ListingCardData;
               <Sparkles className="h-3 w-3" /> Featured
             </span>
           )}
+          {listing.is_urgent && listing.status === "active" && (
+            <span className="badge bg-red-600 text-white shadow-sm">
+              <Zap className="h-3 w-3" /> Urgent
+            </span>
+          )}
           {listing.status === "sold" && <span className="badge bg-slate-900/85 text-white">Sold</span>}
         </div>
         {listing.images.length > 1 && (
@@ -43,7 +50,10 @@ export function ListingCard({ listing, isFavorite }: { listing: ListingCardData;
         </div>
       </div>
       <div className="flex flex-1 flex-col px-0.5 pt-3">
-        <p className="font-display text-[17px] font-bold text-ink">{formatPrice(listing.price, listing.price_type, listing.country)}</p>
+        <p className="font-display text-[17px] font-bold text-ink">
+          {formatPrice(listing.price, listing.price_type, listing.country)}
+          {approx && <span className="ml-1.5 font-sans text-xs font-medium text-muted">≈ {approx}</span>}
+        </p>
         <h3 className="mt-0.5 line-clamp-2 text-sm leading-snug text-ink-2">
           <Link href={`/listing/${listing.id}`} className="after:absolute after:inset-0 after:content-['']">
             {listing.title}
@@ -96,4 +106,14 @@ export function ListingGridSkeleton({ count = 8 }: { count?: number }) {
       ))}
     </div>
   );
+}
+
+/** "FJD 2,450" when the ad is priced in another currency than the visitor's. */
+export async function approxPrice(listing: Pick<ListingCardData, "price" | "price_type" | "country">) {
+  if (listing.price == null || listing.price_type === "free" || listing.price_type === "contact") return null;
+  const { currency } = await getViewer();
+  const from = currencyFor(listing.country);
+  if (from === currency) return null;
+  const v = convert(Number(listing.price), from, currency);
+  return v == null ? null : formatMoney(v, currency);
 }

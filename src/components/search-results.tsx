@@ -3,6 +3,7 @@ import { SearchX, X } from "lucide-react";
 import { categoryBySlug, countryByCode } from "@/lib/constants";
 import { getFavoriteIds, searchListings, type SearchFilters } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
+import { AdBanner } from "./ad-banner";
 import { EmptyState } from "./empty-state";
 import { ListingGrid } from "./listing-card";
 import { Pagination } from "./pagination";
@@ -67,6 +68,9 @@ export async function SearchResults({
             <div className="flex items-center gap-2">
               <SortSelect value={filters.sort} />
             </div>
+          </div>
+          <div className="mb-6">
+            <AdBanner slot="category_top" category={filters.category} compact />
           </div>
           {chips.length > 0 && (
             <div className="mb-5 flex flex-wrap gap-2">

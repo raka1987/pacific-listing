@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Clock, Flag, List, Mail, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Clock, CreditCard, Flag, List, Mail, Megaphone, Store, TrendingUp, Users, Wallet } from "lucide-react";
+import { requireStaff } from "@/lib/auth";
+import { ORDER_KINDS } from "@/lib/constants";
 import { CATEGORIES } from "@/lib/constants";
-import { formatPrice, timeAgo } from "@/lib/format";
+import { formatMoney, formatPrice, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 
 type Stats = {
@@ -17,8 +19,26 @@ type Stats = {
   by_day: { day: string; n: number }[];
 };
 
+type Revenue = {
+  this_month: Record<string, number>;
+  last_month: Record<string, number>;
+  by_kind: Record<string, number>;
+  by_month: { month: string; total: number }[];
+  awaiting: number;
+  awaiting_with_reference: number;
+  campaigns_active: number;
+  businesses: number;
+  promoted: number;
+};
+
 export default async function AdminDashboard() {
+  const { profile } = await requireStaff();
   const supabase = await createClient();
+  const canSales = profile.role === "admin" || profile.role === "sales";
+  const canMod = profile.role === "admin" || profile.role === "moderator";
+  if (canSales) await supabase.rpc("expire_promotions");
+  const { data: rev } = canSales ? await supabase.rpc("admin_revenue") : { data: null };
+  const r = rev as Revenue | null;
   const [{ data: stats }, { data: pending }, { data: reports }] = await Promise.all([
     supabase.rpc("admin_stats"),
     supabase
@@ -38,16 +58,20 @@ export default async function AdminDashboard() {
   const maxDay = Math.max(1, ...s.by_day.map((d) => d.n));
   const maxCat = Math.max(1, ...Object.values(s.by_category));
 
+  const isAdmin = profile.role === "admin";
+  // Each card links to a page; only show the ones this person can open.
   const cards = [
-    { label: "Live ads", value: s.listings_active, sub: `+${s.listings_7d} this week`, icon: List, href: "/admin/listings?status=active" },
-    { label: "Users", value: s.users, sub: `+${s.users_7d} this week`, icon: Users, href: "/admin/users" },
-    { label: "Awaiting review", value: s.listings_pending, sub: "Pending ads", icon: Clock, href: "/admin/listings?status=pending", alert: s.listings_pending > 0 },
-    { label: "Open reports", value: s.reports_open, sub: `${s.messages_new} new messages`, icon: Flag, href: "/admin/reports", alert: s.reports_open > 0 },
-  ];
+    { label: "Live ads", value: s.listings_active, sub: `+${s.listings_7d} this week`, icon: List, href: canMod ? "/admin/listings?status=active" : "/search", show: true },
+    { label: "Users", value: s.users, sub: `+${s.users_7d} this week`, icon: Users, href: isAdmin ? "/admin/users" : "/admin", show: true },
+    { label: "Awaiting review", value: s.listings_pending, sub: "Pending ads", icon: Clock, href: "/admin/listings?status=pending", alert: s.listings_pending > 0, show: canMod },
+    { label: "Open reports", value: s.reports_open, sub: `${s.messages_new} new messages`, icon: Flag, href: "/admin/reports", alert: s.reports_open > 0, show: canMod },
+  ].filter((c) => c.show);
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-ink">Dashboard</h1>
+      <h1 className="font-display text-2xl font-bold">Dashboard</h1>
+
+      {r && <RevenuePanel r={r} />}
 
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
         {cards.map(({ label, value, sub, icon: Icon, href, alert }) => (
@@ -104,7 +128,7 @@ export default async function AdminDashboard() {
         </section>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      {canMod && <div className="grid gap-6 xl:grid-cols-2">
         <Panel title="Waiting for review" href="/admin/listings?status=pending" empty="No ads waiting — all caught up.">
           {(pending ?? []).map((l) => (
             <li key={l.id}>
@@ -133,7 +157,7 @@ export default async function AdminDashboard() {
             );
           })}
         </Panel>
-      </div>
+      </div>}
       {s.messages_new > 0 && (
         <Link href="/admin/messages" className="card flex items-center gap-3 p-4 text-sm font-medium hover:shadow-md">
           <Mail className="h-4 w-4 text-lagoon-600" /> You have {s.messages_new} new contact message{s.messages_new > 1 ? "s" : ""}.
@@ -152,6 +176,84 @@ function Panel({ title, href, empty, children }: { title: string; href: string; 
         <Link href={href} className="text-sm font-semibold text-lagoon-700 hover:underline">View all</Link>
       </div>
       {children.length ? <ul className="mt-2 divide-y divide-line">{children}</ul> : <p className="mt-4 text-sm text-muted">{empty}</p>}
+    </section>
+  );
+}
+
+function RevenuePanel({ r }: { r: Revenue }) {
+  const fjd = r.this_month.FJD ?? 0;
+  const last = r.last_month.FJD ?? 0;
+  const change = last ? Math.round(((fjd - last) / last) * 100) : null;
+  const others = Object.entries(r.this_month).filter(([c]) => c !== "FJD");
+  const max = Math.max(1, ...r.by_month.map((m) => Number(m.total)));
+  const kinds = Object.entries(r.by_kind).sort((a, b) => b[1] - a[1]);
+  const kindMax = Math.max(1, ...kinds.map(([, v]) => v));
+  return (
+    <section className="grid gap-4 xl:grid-cols-[1.3fr_1fr]">
+      <div className="card p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="flex items-center gap-1.5 text-sm font-medium text-muted"><Wallet className="h-4 w-4" /> Revenue this month</p>
+            <p className="mt-1 font-display text-4xl font-bold tabular-nums">{formatMoney(fjd, "FJD")}</p>
+            <p className="mt-1 text-sm text-muted">
+              {change == null ? "First month with sales" : `${change >= 0 ? "+" : ""}${change}% on last month (${formatMoney(last, "FJD")})`}
+            </p>
+            {others.length > 0 && <p className="mt-1 text-sm text-ink-2">Plus {others.map(([c, v]) => formatMoney(v, c)).join(" · ")}</p>}
+          </div>
+          <Link href="/admin/payments" className={`card flex items-center gap-3 p-3 ${r.awaiting_with_reference ? "border-coral-400" : ""}`}>
+            <CreditCard className={`h-5 w-5 ${r.awaiting_with_reference ? "text-coral-600" : "text-muted"}`} />
+            <span className="text-sm">
+              <span className="block font-semibold text-ink">{r.awaiting_with_reference} to confirm</span>
+              <span className="text-muted">{r.awaiting} unpaid in total</span>
+            </span>
+          </Link>
+        </div>
+        <p className="mt-6 text-xs font-medium text-muted">FJD revenue, last 6 months</p>
+        <div className="mt-2 flex h-32 items-end gap-3">
+          {r.by_month.map((m) => (
+            <div key={m.month} className="group flex flex-1 flex-col items-center gap-1.5">
+              <span className="text-[10px] font-semibold text-muted tabular-nums">{Number(m.total) ? formatMoney(Number(m.total), "") .trim() : ""}</span>
+              <div className="w-full rounded-t-md bg-coral-500" style={{ height: `${Math.max(3, (Number(m.total) / max) * 96)}px` }} />
+              <span className="text-[10px] text-faint">{new Date(m.month + "-01").toLocaleDateString("en-GB", { month: "short" })}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="grid gap-4">
+        <div className="card p-5">
+          <p className="text-sm font-medium text-muted">This month by type (FJD)</p>
+          {kinds.length ? (
+            <ul className="mt-3 space-y-2.5">
+              {kinds.map(([k, v]) => (
+                <li key={k} className="text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-ink-2">{ORDER_KINDS[k as keyof typeof ORDER_KINDS] ?? k}</span>
+                    <span className="font-semibold text-ink tabular-nums">{formatMoney(v, "FJD")}</span>
+                  </div>
+                  <div className="mt-1 h-1.5 rounded-full bg-subtle">
+                    <div className="h-full rounded-full bg-coral-500" style={{ width: `${(v / kindMax) * 100}%` }} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-muted">No sales yet this month.</p>
+          )}
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { icon: Megaphone, label: "Banners live", value: r.campaigns_active, href: "/admin/ads" },
+            { icon: Store, label: "Businesses", value: r.businesses, href: "/admin/business" },
+            { icon: TrendingUp, label: "Ads promoted", value: r.promoted, href: "/admin/promotions" },
+          ].map(({ icon: Icon, label, value, href }) => (
+            <Link key={label} href={href} className="card p-3.5 transition hover:shadow-md">
+              <Icon className="h-4 w-4 text-lagoon-600" />
+              <p className="mt-2 font-display text-2xl font-bold tabular-nums">{value}</p>
+              <p className="text-xs text-muted">{label}</p>
+            </Link>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

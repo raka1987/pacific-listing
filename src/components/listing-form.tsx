@@ -4,7 +4,8 @@ import { useActionState, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import type { ListingFormState } from "@/app/actions";
 import { CATEGORIES, COUNTRIES, categoryBySlug, countryByCode } from "@/lib/constants";
-import type { Listing } from "@/lib/types";
+import { formatMoney, priceIn } from "@/lib/format";
+import type { Listing, Prices } from "@/lib/types";
 import { CategoryIcon } from "./category-icon";
 import { ImageUploader } from "./image-uploader";
 import { SubmitButton } from "./submit-button";
@@ -16,11 +17,14 @@ export function ListingForm({
   userId,
   listing,
   defaults,
+  fees = {},
 }: {
   action: (state: ListingFormState, fd: FormData) => Promise<ListingFormState>;
   userId: string;
   listing?: Listing;
   defaults: Defaults;
+  /** Posting fees by category, already empty when the user's plan waives them. */
+  fees?: Record<string, Prices>;
 }) {
   const [state, formAction] = useActionState(action, {});
   const [images, setImages] = useState<string[]>(listing?.images ?? []);
@@ -30,6 +34,7 @@ export function ListingForm({
   const fe = state.fieldErrors ?? {};
   const showCondition = categoryBySlug(category)?.hasCondition;
   const currency = countryByCode(country)?.currency ?? "";
+  const fee = !listing && category ? priceIn(fees[category], currency) : null;
 
   return (
     <form action={formAction} className="space-y-6">
@@ -68,6 +73,13 @@ export function ListingForm({
           ))}
         </div>
         <FieldError msg={fe.category} />
+        {fee != null && (
+          <p className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-sm text-amber-900">
+            Ads in <strong>{categoryBySlug(category)?.name}</strong> have a posting fee of <strong>{formatMoney(fee, currency)}</strong>. You&apos;ll pay
+            after posting, and your ad goes live once the payment is confirmed.{" "}
+            <a href="/business" className="font-semibold underline">Business accounts</a> don&apos;t pay posting fees.
+          </p>
+        )}
       </Section>
 
       <Section title="About your item">
@@ -174,7 +186,7 @@ export function ListingForm({
           By posting you agree to our <a href="/terms" className="underline">Terms</a> and confirm the item is legal to sell.
         </p>
         <SubmitButton className="btn-accent px-8 py-3 text-base" pendingText={listing ? "Saving…" : "Posting…"}>
-          {listing ? "Save changes" : "Post my ad"}
+          {listing ? "Save changes" : fee != null ? "Post and pay fee" : "Post my ad"}
         </SubmitButton>
       </div>
     </form>

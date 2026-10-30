@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BadgeCheck, CalendarDays, MapPin, Store } from "lucide-react";
+import { isBusiness } from "@/lib/format";
 import { Avatar } from "@/components/avatar";
 import { EmptyState } from "@/components/empty-state";
 import { ListingGrid } from "@/components/listing-card";
@@ -36,7 +37,8 @@ export default async function SellerPage({ params }: Props) {
     getFavoriteIds(supabase, user?.id),
   ]);
   const listings = (data ?? []) as ListingCardData[];
-  const name = seller.full_name || "Pacific Listing member";
+  const business = isBusiness(seller.business_until) ? seller.business_name : null;
+  const name = business || seller.full_name || "Pacific Listing member";
 
   return (
     <div className="container-page py-8">
@@ -47,6 +49,11 @@ export default async function SellerPage({ params }: Props) {
             {name}
             {seller.is_verified && <BadgeCheck className="h-6 w-6 text-lagoon-600" aria-label="Verified seller" />}
           </h1>
+          {business && (
+            <span className="badge mt-1 bg-lagoon-100 text-lagoon-700">
+              <Store className="h-3 w-3" /> Business seller
+            </span>
+          )}
           <div className="mt-2 flex flex-wrap gap-4 text-sm text-muted">
             {seller.country && (
               <span className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {locationLabel(seller.country, seller.city)}</span>

@@ -1,3 +1,4 @@
+import { requireStaff, MOD_ROLES } from "@/lib/auth";
 import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { SubmitButton } from "@/components/submit-button";
 import { formatDate } from "@/lib/format";
@@ -9,6 +10,7 @@ import { ActionButton, ConfirmButton } from "../ui";
 export const metadata = { title: "Notice board" };
 
 export default async function AdminNotices() {
+  await requireStaff(MOD_ROLES);
   const supabase = await createClient();
   const { data } = await supabase.from("notices").select("*").order("created_at", { ascending: false });
   const notices = (data ?? []) as Notice[];

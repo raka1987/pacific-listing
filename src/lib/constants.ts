@@ -65,6 +65,46 @@ export const REPORT_REASONS = [
   "Other",
 ];
 
+export const CURRENCIES = ["FJD", "WST", "TOP", "VUV", "SBD", "PGK", "AUD", "NZD", "XPF", "USD"] as const;
+
+/** Approximate value of 1 FJD, used only to suggest prices in other currencies. */
+export const FJD_RATES: Record<string, number> = {
+  FJD: 1, WST: 1.2, TOP: 1.05, VUV: 53, SBD: 3.7, PGK: 1.7, AUD: 0.68, NZD: 0.74, XPF: 50, USD: 0.44,
+};
+
+export const currencyFor = (countryCode?: string | null) => countryByCode(countryCode ?? "FJ")?.currency ?? "FJD";
+
+export const PAYMENT_METHODS = {
+  mpaisa: "M-PAiSA",
+  mycash: "MyCash",
+  bank: "Bank transfer",
+  card: "Card",
+  cash: "Cash",
+  invoice: "Invoice",
+  free: "Included in plan",
+} as const;
+
+export const ORDER_KINDS = {
+  boost: "Promotion",
+  subscription: "Business account",
+  campaign: "Banner advertising",
+  posting_fee: "Posting fee",
+} as const;
+
+export const ROLES = {
+  user: "Member",
+  moderator: "Moderator",
+  sales: "Sales",
+  admin: "Admin",
+} as const;
+
+export const ROLE_DESCRIPTIONS = {
+  user: "Can post and manage their own ads.",
+  moderator: "Approves ads, handles reports, messages and the notice board. Can't see money.",
+  sales: "Manages payments, promotions, banner advertising and business accounts.",
+  admin: "Full access, including users, staff roles and settings.",
+} as const;
+
 export const PAGE_SIZE = 24;
 export const MAX_IMAGES = 8;
 export const IMAGE_BUCKET = "listing-images";

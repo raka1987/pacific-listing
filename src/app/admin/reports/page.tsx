@@ -1,3 +1,4 @@
+import { requireStaff, MOD_ROLES } from "@/lib/auth";
 import Link from "next/link";
 import { Check, EyeOff, Flag, Trash2, X } from "lucide-react";
 import { StatusBadge } from "@/components/status-badge";
@@ -20,6 +21,7 @@ type Report = {
 };
 
 export default async function AdminReports({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  await requireStaff(MOD_ROLES);
   const { status = "open" } = await searchParams;
   const supabase = await createClient();
   const { data } = await supabase

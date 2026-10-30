@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Heart, List, LogOut, Shield, User } from "lucide-react";
+import { ChevronDown, Heart, List, LogOut, Receipt, Shield, Store, User } from "lucide-react";
 import { Avatar } from "./avatar";
 
 export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl: string | null; isAdmin: boolean }) {
@@ -50,6 +50,12 @@ export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl
           </Link>
           <Link href="/profile" className={item} role="menuitem" onClick={() => setOpen(false)}>
             <User className="h-4 w-4" /> Profile
+          </Link>
+          <Link href="/orders" className={item} role="menuitem" onClick={() => setOpen(false)}>
+            <Receipt className="h-4 w-4" /> Payments
+          </Link>
+          <Link href="/business" className={item} role="menuitem" onClick={() => setOpen(false)}>
+            <Store className="h-4 w-4" /> Business account
           </Link>
           {isAdmin && (
             <Link href="/admin" className={`${item} text-lagoon-700`} role="menuitem" onClick={() => setOpen(false)}>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { CheckCircle2, Eye, EyeOff, Pencil, Trash2 } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, Pencil, Rocket, Trash2 } from "lucide-react";
 import { deleteListing, setListingStatus } from "@/app/actions";
 import type { ListingStatus } from "@/lib/types";
 
@@ -25,6 +25,11 @@ export function OwnerActions({ id, status, compact = false }: { id: string; stat
   const cls = compact ? "btn-secondary px-3 py-2 text-xs" : "btn-secondary";
   return (
     <div className={`flex flex-wrap gap-2 ${pending ? "pointer-events-none opacity-60" : ""}`}>
+      {status === "active" && (
+        <Link href={`/promote/${id}`} className={compact ? "btn-accent px-3 py-2 text-xs" : "btn-accent"}>
+          <Rocket className="h-4 w-4" /> Promote
+        </Link>
+      )}
       <Link href={`/listing/${id}/edit`} className={cls}>
         <Pencil className="h-4 w-4" /> Edit
       </Link>

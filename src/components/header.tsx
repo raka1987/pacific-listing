@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Heart, Plus } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
+import { getViewer, VIEWER_REGIONS } from "@/lib/location";
+import { CountryPicker } from "./country-picker";
 import { Logo } from "./logo";
 import { SearchBar } from "./search-bar";
 import { ThemeToggle } from "./theme-toggle";
@@ -10,6 +12,7 @@ import { UserMenu } from "./user-menu";
 export async function Header() {
   const current = await getCurrentUser();
   const profile = current?.profile;
+  const viewer = await getViewer();
 
   return (
     <header className="glass sticky top-0 z-40 border-b border-line pt-[env(safe-area-inset-top)]">
@@ -24,6 +27,7 @@ export async function Header() {
           <Link href="/search" className="btn-ghost hidden px-4 lg:inline-flex">
             Browse
           </Link>
+          <CountryPicker regions={VIEWER_REGIONS} current={{ code: viewer.country, flag: viewer.flag, currency: viewer.currency }} />
           <ThemeToggle />
           {current && (
             <Link
@@ -38,7 +42,7 @@ export async function Header() {
             <UserMenu
               name={profile?.full_name || current.user.email || "Account"}
               avatarUrl={profile?.avatar_url ?? null}
-              isAdmin={profile?.role === "admin"}
+              isAdmin={!!profile && profile.role !== "user"}
             />
           ) : (
             <Link href="/login" className="btn-ghost px-4">

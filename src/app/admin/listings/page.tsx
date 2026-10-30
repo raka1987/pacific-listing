@@ -1,3 +1,4 @@
+import { requireStaff, MOD_ROLES } from "@/lib/auth";
 import Link from "next/link";
 import { Check, EyeOff, ImageIcon, Search, Sparkles, Trash2, X } from "lucide-react";
 import { Pagination } from "@/components/pagination";
@@ -21,6 +22,7 @@ export default async function AdminListings({
 }: {
   searchParams: Promise<{ status?: string; q?: string; category?: string; page?: string }>;
 }) {
+  await requireStaff(MOD_ROLES);
   const { status = "all", q = "", category = "", page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
   const supabase = await createClient();

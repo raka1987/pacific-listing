@@ -2,12 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowRight, ArrowUpRight, Bell, Camera, MessageCircle, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { AdBanner } from "@/components/ad-banner";
 import { CategoryTiles } from "@/components/category-tiles";
 import { InstallAppCard } from "@/components/install-app";
 import { ListingGrid, ListingRail } from "@/components/listing-card";
 import { SearchBar } from "@/components/search-bar";
 import { COUNTRIES } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
+import { getViewer } from "@/lib/location";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { LISTING_CARD_COLUMNS, type ListingCardData, type Notice } from "@/lib/types";
@@ -26,14 +28,15 @@ export default async function HomePage() {
       .select(LISTING_CARD_COLUMNS)
       .eq("status", "active")
       .eq("is_featured", true)
-      .order("created_at", { ascending: false })
+      .order("sort_at", { ascending: false })
       .limit(8),
-    supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active").order("created_at", { ascending: false }).limit(12),
+    supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active").order("sort_at", { ascending: false }).limit(12),
     supabase.from("notices").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(3),
     supabase.from("listings").select("category").eq("status", "active").limit(5000),
     getFavoriteIds(supabase, user?.id),
   ]);
 
+  const viewer = await getViewer();
   const featuredListings = (featured.data ?? []) as ListingCardData[];
   const latestListings = (latest.data ?? []) as ListingCardData[];
   const noticeList = (notices.data ?? []) as Notice[];
@@ -68,7 +71,7 @@ export default async function HomePage() {
               </p>
               <div className="animate-fade-up mt-8" style={{ animationDelay: "240ms" }}>
                 <Suspense>
-                  <SearchBar size="lg" withCountry />
+                  <SearchBar size="lg" withCountry defaultCountry={viewer.pacificCountry} />
                 </Suspense>
               </div>
               <div className="animate-fade-up scrollbar-none -mx-5 mt-4 flex gap-2 overflow-x-auto px-5 text-sm sm:mx-0 sm:flex-wrap sm:px-0" style={{ animationDelay: "320ms" }}>
@@ -117,6 +120,10 @@ export default async function HomePage() {
           <ListingRail listings={featuredListings.slice(0, 4)} favoriteIds={favoriteIds} />
         </section>
       )}
+
+      <section className="container-page mt-14 sm:mt-20">
+        <AdBanner slot="home_banner" />
+      </section>
 
       {/* Latest */}
       <section className="container-page mt-14 sm:mt-20">

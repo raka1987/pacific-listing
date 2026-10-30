@@ -1,3 +1,4 @@
+import { requireStaff, STAFF_ROLES } from "@/lib/auth";
 import Link from "next/link";
 import { Archive, Check, Mail, Reply, Trash2 } from "lucide-react";
 import { formatDate } from "@/lib/format";
@@ -10,6 +11,7 @@ export const metadata = { title: "Messages" };
 type Message = { id: string; name: string; email: string; subject: string; message: string; status: string; created_at: string };
 
 export default async function AdminMessages({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  await requireStaff(STAFF_ROLES);
   const { status = "inbox" } = await searchParams;
   const supabase = await createClient();
   let query = supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(100);

@@ -5,11 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { COUNTRIES } from "@/lib/constants";
 
-export function SearchBar({ size = "md", withCountry = false }: { size?: "md" | "lg"; withCountry?: boolean }) {
+export function SearchBar({ size = "md", withCountry = false, defaultCountry }: { size?: "md" | "lg"; withCountry?: boolean; defaultCountry?: string | null }) {
   const router = useRouter();
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
-  const [country, setCountry] = useState(params.get("country") ?? "");
+  const [country, setCountry] = useState(params.get("country") ?? defaultCountry ?? "");
 
   function submit(e: React.FormEvent) {
     e.preventDefault();

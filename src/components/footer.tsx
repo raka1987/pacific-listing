@@ -24,6 +24,8 @@ export function Footer() {
           <FooterLink href="/about">About us</FooterLink>
           <FooterLink href="/notices">Notice board</FooterLink>
           <FooterLink href="/safety">Safety tips</FooterLink>
+          <FooterLink href="/advertise">Advertise with us</FooterLink>
+          <FooterLink href="/business">Business accounts</FooterLink>
           <FooterLink href="/contact">Contact &amp; feedback</FooterLink>
         </FooterCol>
         <FooterCol title="Legal">

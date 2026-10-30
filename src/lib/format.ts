@@ -11,6 +11,21 @@ export function formatPrice(price: number | null, priceType: PriceType, countryC
   return `${currency} ${amount}`;
 }
 
+export function formatMoney(amount: number | null | undefined, currency: string) {
+  if (amount == null) return "—";
+  const n = new Intl.NumberFormat("en", { maximumFractionDigits: amount % 1 === 0 ? 0 : 2, minimumFractionDigits: amount % 1 === 0 ? 0 : 2 }).format(amount);
+  return `${currency} ${n}`;
+}
+
+export function priceIn(prices: Record<string, number> | null | undefined, currency: string) {
+  const v = prices?.[currency];
+  return v == null ? null : Number(v);
+}
+
+export function isBusiness(businessUntil: string | null | undefined) {
+  return !!businessUntil && new Date(businessUntil) > new Date();
+}
+
 export function timeAgo(iso: string) {
   const seconds = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
   const units: [number, string][] = [

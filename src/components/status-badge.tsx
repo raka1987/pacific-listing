@@ -1,6 +1,7 @@
 import type { ListingStatus } from "@/lib/types";
 
 const STYLES: Record<ListingStatus, string> = {
+  awaiting_payment: "bg-orange-100 text-orange-700",
   active: "bg-emerald-100 text-emerald-700",
   pending: "bg-amber-100 text-amber-700",
   sold: "bg-subtle text-ink-2",
@@ -9,6 +10,7 @@ const STYLES: Record<ListingStatus, string> = {
 };
 
 const LABELS: Record<ListingStatus, string> = {
+  awaiting_payment: "Awaiting payment",
   active: "Live",
   pending: "In review",
   sold: "Sold",

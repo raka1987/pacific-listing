@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
-import { PROFILE_COLUMNS, type Profile } from "./types";
+import { PROFILE_COLUMNS, type Profile, type Role } from "./types";
 
 export const getCurrentUser = cache(async () => {
   const supabase = await createClient();
@@ -19,9 +19,20 @@ export async function requireUser(next: string) {
   return current;
 }
 
-export async function requireAdmin() {
+export const STAFF_ROLES: Role[] = ["admin", "moderator", "sales"];
+export const MOD_ROLES: Role[] = ["admin", "moderator"];
+export const SALES_ROLES: Role[] = ["admin", "sales"];
+
+/** Allows staff with one of the given roles; everyone else is sent away. */
+export async function requireStaff(roles: Role[] = STAFF_ROLES) {
   const current = await getCurrentUser();
   if (!current) redirect("/login?next=/admin");
-  if (current.profile?.role !== "admin" || current.profile.is_banned) redirect("/");
-  return current;
+  const role = current.profile?.role;
+  if (!role || current.profile?.is_banned || !STAFF_ROLES.includes(role)) redirect("/");
+  if (!roles.includes(role)) redirect("/admin");
+  return current as typeof current & { profile: Profile };
+}
+
+export async function requireAdmin() {
+  return requireStaff(["admin"]);
 }

@@ -43,10 +43,10 @@ export async function searchListings(supabase: SupabaseClient, f: SearchFilters)
       query = query.order("price", { ascending: false, nullsFirst: false });
       break;
     case "oldest":
-      query = query.order("created_at", { ascending: true });
+      query = query.order("sort_at", { ascending: true });
       break;
     default:
-      query = query.order("is_featured", { ascending: false }).order("created_at", { ascending: false });
+      query = query.order("is_featured", { ascending: false }).order("sort_at", { ascending: false });
   }
 
   const from = (page - 1) * PAGE_SIZE;
