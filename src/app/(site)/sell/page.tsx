@@ -55,7 +55,11 @@ export default async function SellPage() {
                 For businesses
               </Link>
             </div>
-            {(count ?? 0) > 0 && <p className="mt-5 text-sm text-white/60">{count!.toLocaleString()} ads live right now</p>}
+            {(count ?? 0) > 0 && (
+              <p className="mt-5 text-sm text-white/60">
+                {count!.toLocaleString()} {count === 1 ? "ad" : "ads"} live right now
+              </p>
+            )}
           </div>
         </div>
       </section>
