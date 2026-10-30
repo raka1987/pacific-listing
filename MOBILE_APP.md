@@ -150,7 +150,7 @@ So inside the apps, the **Promote** buttons, **Business plans** sign-up, **Payme
 |---|---|
 | Google Play developer account | US$25 once |
 | Apple Developer Program | US$99 per year |
-| Codemagic | Free plan (500 build minutes a month, enough for several releases) |
+| Codemagic | Free plan (500 Mac build minutes a month; all builds use Mac machines, enough for several releases) |
 
 ## If Apple rejects the app
 Apple sometimes rejects apps that mostly show a website ("guideline 4.2"). The usual fix is adding

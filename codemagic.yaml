@@ -8,7 +8,7 @@ workflows:
   #    Use this for the very first release (Google requires the first upload to be manual).
   android-build:
     name: Android - build only
-    instance_type: linux_x2
+    instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       android_signing:
@@ -35,7 +35,7 @@ workflows:
   #    (Internal testing track, as a draft you can review and promote).
   android-release:
     name: Android - build and send to Google Play
-    instance_type: linux_x2
+    instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       android_signing:
