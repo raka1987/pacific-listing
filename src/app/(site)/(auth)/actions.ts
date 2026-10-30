@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { COUNTRIES, HEARD_FROM, SITE } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthState = { error?: string; message?: string; values?: Record<string, string> };
+export type AuthState = { error?: string; message?: string; values?: Record<string, string>; unconfirmed?: boolean };
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
@@ -33,10 +33,10 @@ export async function login(_: AuthState, fd: FormData): Promise<AuthState> {
   const { error } = await supabase.auth.signInWithPassword({ email: str(fd, "email"), password: String(fd.get("password") ?? "") });
   if (error) {
     if (friendly(error.message) === CONNECTION_ERROR) return { error: CONNECTION_ERROR, values: typed(fd) };
-    return {
-      error: error.message === "Email not confirmed" ? "Please confirm your email first — check your inbox." : "Wrong email or password.",
-      values: typed(fd),
-    };
+    if (error.code === "email_not_confirmed" || error.message === "Email not confirmed") {
+      return { error: "Please confirm your email first: check your inbox (and spam folder), or send a new link below.", values: typed(fd), unconfirmed: true };
+    }
+    return { error: "Wrong email or password.", values: typed(fd) };
   }
   redirect(safeNext(str(fd, "next")));
 }
@@ -67,6 +67,22 @@ export async function signup(_: AuthState, fd: FormData): Promise<AuthState> {
   if (!data.session) return { message: `We've sent a confirmation link to ${email}. Click it to activate your account.` };
   const next = safeNext(str(fd, "next"));
   redirect(`${next}${next.includes("?") ? "&" : "?"}welcome=1`);
+}
+
+export async function resendConfirmation(_: AuthState, fd: FormData): Promise<AuthState> {
+  const email = str(fd, "email");
+  if (!email.includes("@")) return { error: "Enter your email address first.", values: typed(fd), unconfirmed: true };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: { emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(safeNext(str(fd, "next")))}` },
+  });
+  if (error) {
+    const wait = /security purposes|rate limit|after \d+ seconds/i.test(error.message);
+    return { error: wait ? "Please wait a minute before asking for another link." : friendly(error.message), values: typed(fd), unconfirmed: true };
+  }
+  return { message: `We've sent a new confirmation link to ${email}.`, values: typed(fd) };
 }
 
 export async function requestPasswordReset(_: AuthState, fd: FormData): Promise<AuthState> {

@@ -1,15 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { FormMessage } from "@/components/auth-card";
 import { SubmitButton } from "@/components/submit-button";
-import { login } from "../actions";
+import { login, resendConfirmation } from "../actions";
 
 export function LoginForm({ next }: { next: string }) {
-  const [state, action] = useActionState(login, {});
+  const [loginState, action] = useActionState(login, {});
+  const [resendState, resend] = useActionState(resendConfirmation, {});
+  const [last, setLast] = useState<"login" | "resend">("login");
+  const state = last === "resend" ? resendState : loginState;
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} onSubmit={(e) => setLast((e.nativeEvent as SubmitEvent).submitter?.hasAttribute("data-resend") ? "resend" : "login")} className="space-y-4">
       <FormMessage {...state} />
       <input type="hidden" name="next" value={next} />
       <div>
@@ -24,6 +27,11 @@ export function LoginForm({ next }: { next: string }) {
         <input id="password" name="password" type="password" autoComplete="current-password" required className="input" />
       </div>
       <SubmitButton className="btn-primary w-full py-3" pendingText="Logging in…">Log in</SubmitButton>
+      {(loginState.unconfirmed || resendState.unconfirmed) && (
+        <button formAction={resend} formNoValidate data-resend className="btn-secondary w-full">
+          Send a new confirmation link
+        </button>
+      )}
     </form>
   );
 }
