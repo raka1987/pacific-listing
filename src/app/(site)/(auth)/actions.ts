@@ -63,6 +63,12 @@ export async function signup(_: AuthState, fd: FormData): Promise<AuthState> {
       emailRedirectTo: `${await origin()}/auth/callback?next=${encodeURIComponent(safeNext(str(fd, "next")))}`,
     },
   });
+  // Supabase doesn't say outright when an email is taken (so it can't be used to look up members);
+  // it returns a user with no logins attached instead, and sends no email.
+  const taken = /already registered|already exists/i.test(error?.message ?? "") || (!!data?.user && data.user.identities?.length === 0);
+  if (taken) {
+    return { error: "This email already has an account. Log in instead, or use \"Forgot password\" if you can't remember it.", values: typed(fd) };
+  }
   if (error) return { error: friendly(error.message), values: typed(fd) };
   if (!data.session) return { message: `We've sent a confirmation link to ${email}. Click it to activate your account.` };
   const next = safeNext(str(fd, "next"));
