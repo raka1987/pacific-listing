@@ -12,14 +12,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
   const categories = CATEGORIES.map((c) => ({ url: `${SITE.url}/category/${c.slug}`, changeFrequency: "hourly" as const, priority: 0.8 }));
 
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-  const { data } = await supabase
-    .from("listings")
-    .select("id, updated_at")
-    .eq("status", "active")
-    .order("updated_at", { ascending: false })
-    .limit(5000);
-  const listings = (data ?? []).map((l) => ({ url: `${SITE.url}/listing/${l.id}`, lastModified: l.updated_at, priority: 0.6 }));
+  // Listing pages are added when the database is reachable; the sitemap still works without them.
+  let listings: MetadataRoute.Sitemap = [];
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (url && key) {
+    try {
+      const supabase = createClient(url, key);
+      const { data } = await supabase
+        .from("listings")
+        .select("id, updated_at")
+        .eq("status", "active")
+        .order("updated_at", { ascending: false })
+        .limit(5000);
+      listings = (data ?? []).map((l) => ({ url: `${SITE.url}/listing/${l.id}`, lastModified: l.updated_at, priority: 0.6 }));
+    } catch (e) {
+      console.error("sitemap: could not load listings", e);
+    }
+  }
 
   return [...staticPages, ...categories, ...listings];
 }
