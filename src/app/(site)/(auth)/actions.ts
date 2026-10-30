@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { COUNTRIES, HEARD_FROM, SITE } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthState = { error?: string; message?: string; values?: Record<string, string>; unconfirmed?: boolean };
+export type AuthState = { error?: string; message?: string; values?: Record<string, string>; unconfirmed?: boolean; sentTo?: string };
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 
@@ -70,7 +70,7 @@ export async function signup(_: AuthState, fd: FormData): Promise<AuthState> {
     return { error: "This email already has an account. Log in instead, or use \"Forgot password\" if you can't remember it.", values: typed(fd) };
   }
   if (error) return { error: friendly(error.message), values: typed(fd) };
-  if (!data.session) return { message: `We've sent a confirmation link to ${email}. Click it to activate your account.` };
+  if (!data.session) return { message: `We've sent a confirmation link to ${email}. Click it to activate your account.`, sentTo: email };
   const next = safeNext(str(fd, "next"));
   redirect(`${next}${next.includes("?") ? "&" : "?"}welcome=1`);
 }

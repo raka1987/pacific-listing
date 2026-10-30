@@ -25,8 +25,4 @@ export function AuthLink({ href, children }: { href: string; children: React.Rea
   );
 }
 
-export function FormMessage({ error, message }: { error?: string; message?: string }) {
-  if (error) return <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>;
-  if (message) return <p className="rounded-xl bg-lagoon-50 p-3 text-sm text-lagoon-800" role="status">{message}</p>;
-  return null;
-}
+export { FormMessage } from "./form-message";

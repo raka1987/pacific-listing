@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { AuthCard, AuthLink, FormMessage } from "@/components/auth-card";
+import { CheckEmail } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { requestPasswordReset } from "../actions";
 
@@ -12,7 +13,10 @@ export default function ForgotPasswordPage() {
   return (
     <AuthCard title="Reset your password" subtitle="We'll email you a link to choose a new one." footer={<AuthLink href="/login">Back to log in</AuthLink>}>
       {state.message ? (
-        <FormMessage message={state.message} />
+        <CheckEmail>
+          <p>{state.message}</p>
+          <p className="text-muted">Check your Spam or Promotions folder if it isn&apos;t in your inbox within a minute.</p>
+        </CheckEmail>
       ) : (
         <form action={action} className="space-y-4">
           <FormMessage error={state.error} />

@@ -3,13 +3,24 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { FormMessage } from "@/components/auth-card";
+import { CheckEmail } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { COUNTRIES, HEARD_FROM } from "@/lib/constants";
 import { signup } from "../actions";
 
 export function SignupForm({ next }: { next: string }) {
   const [state, action] = useActionState(signup, {});
-  if (state.message) return <FormMessage message={state.message} />;
+  if (state.message) {
+    return (
+      <CheckEmail>
+        <p>
+          We&apos;ve sent a link to <strong className="break-all text-ink">{state.sentTo}</strong>. Tap it to activate your account.
+        </p>
+        <p className="text-muted">It usually arrives within a minute. If you can&apos;t see it, check your Spam or Promotions folder.</p>
+        <Link href="/login" className="btn-primary mt-2 w-full">Go to log in</Link>
+      </CheckEmail>
+    );
+  }
   return (
     <form action={action} className="space-y-4">
       <FormMessage {...state} />
