@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { ArrowRight, Camera } from "lucide-react";
 import { AdBanner } from "@/components/ad-banner";
 import { CategoryTiles } from "@/components/category-tiles";
+import { getSearchCountry } from "@/lib/location";
 import { InstallAppCard } from "@/components/install-app";
 import { ListingGrid, ListingRail } from "@/components/listing-card";
 import { SearchBar } from "@/components/search-bar";
@@ -21,7 +22,7 @@ export default async function HomePage() {
   const supabase = await createClient();
   const user = await getAuthUser();
 
-  const [featured, latest, notices, favoriteIds] = await Promise.all([
+  const [featured, latest, notices, favoriteIds, searchCountry] = await Promise.all([
     supabase
       .from("listings")
       .select(LISTING_CARD_COLUMNS)
@@ -32,6 +33,7 @@ export default async function HomePage() {
     supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active").order("sort_at", { ascending: false }).limit(12),
     supabase.from("notices").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(3),
     getFavoriteIds(supabase, user?.id),
+    getSearchCountry(),
   ]);
 
   const featuredListings = (featured.data ?? []) as ListingCardData[];
@@ -77,7 +79,7 @@ export default async function HomePage() {
               <p className="mt-4 max-w-xl text-base text-white/75 sm:text-lg">Cars, homes, jobs and everyday deals from people in your community.</p>
               <div className="mt-8">
                 <Suspense>
-                  <SearchBar size="lg" withCategory withCountry />
+                  <SearchBar key={searchCountry ?? "all"} size="lg" withCategory withCountry defaultCountry={searchCountry} />
                 </Suspense>
               </div>
               <p className="mt-4 text-sm text-white/60">
@@ -99,7 +101,7 @@ export default async function HomePage() {
       {/* Categories */}
       <section className="container-page mt-14 sm:mt-20">
         <SectionTitle title="Categories" href="/search" />
-        <CategoryTiles />
+        <CategoryTiles country={searchCountry} />
       </section>
 
       {/* Featured */}

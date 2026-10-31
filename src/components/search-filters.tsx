@@ -4,6 +4,7 @@ import { Globe2, LayoutGrid, SlidersHorizontal, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CATEGORIES, categoryBySlug, COUNTRIES } from "@/lib/constants";
+import { rememberSearchCountry } from "@/lib/search-country";
 import type { SearchFilters } from "@/lib/queries";
 import { CategoryIcon } from "./category-icon";
 import { Dropdown, type DropdownOption } from "./dropdown";
@@ -18,6 +19,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
       const v = String(fd.get(key) ?? "").trim();
       if (v && !(lockCategory && key === "category")) params.set(key, v);
     }
+    rememberSearchCountry(String(fd.get("country") ?? ""));
     setOpen(false);
     router.push(`${basePath}${params.size ? `?${params}` : ""}`);
   }

@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { COUNTRIES, FJD_RATES } from "./constants";
+import { SEARCH_COUNTRY_COOKIE } from "./search-country";
 
 export const COUNTRY_COOKIE = "pl_country";
 
@@ -33,6 +34,18 @@ export const getViewer = cache(async () => {
     chosen: !!regionByCode(chosen),
   };
 });
+
+/**
+ * The country the search box should start on: the last one the person searched in, else the
+ * Pacific country they picked with the flag, else All Pacific (null).
+ */
+export async function getSearchCountry() {
+  const saved = (await cookies()).get(SEARCH_COUNTRY_COOKIE)?.value;
+  if (saved === "all") return null;
+  if (COUNTRIES.some((c) => c.code === saved)) return saved!;
+  const viewer = await getViewer();
+  return viewer.chosen ? viewer.pacificCountry : null;
+}
 
 /** Approximate conversion between two currencies, via Fiji dollars. */
 export function convert(amount: number, from: string, to: string) {

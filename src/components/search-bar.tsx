@@ -4,6 +4,7 @@ import { Globe2, LayoutGrid, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { CATEGORIES, COUNTRIES } from "@/lib/constants";
+import { rememberSearchCountry } from "@/lib/search-country";
 import { CategoryIcon } from "./category-icon";
 import { Dropdown, type DropdownOption } from "./dropdown";
 
@@ -29,6 +30,7 @@ export function SearchBar({
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (withCountry) rememberSearchCountry(country);
     const next = new URLSearchParams();
     if (q.trim()) next.set("q", q.trim());
     const c = withCountry ? country : params.get("country");

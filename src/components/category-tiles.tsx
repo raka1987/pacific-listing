@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
 
-export function CategoryTiles() {
+export function CategoryTiles({ country }: { country?: string | null }) {
   return (
     <div className="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-5 sm:gap-x-4 sm:gap-y-6 sm:overflow-visible sm:px-0">
       {CATEGORIES.map((c, i) => (
-        <Link key={c.slug} href={`/category/${c.slug}`} className="group w-[34%] shrink-0 snap-start sm:w-auto">
+        <Link key={c.slug} href={`/category/${c.slug}${country ? `?country=${country}` : ""}`} className="group w-[34%] shrink-0 snap-start sm:w-auto">
           <span className="relative block aspect-[4/3] overflow-hidden rounded-2xl bg-subtle">
             <Image
               src={`/images/cat-${c.slug}.jpg`}
