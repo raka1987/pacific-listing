@@ -148,6 +148,16 @@ export async function adminSetMessageStatus(id: string, status: "new" | "read" |
   done("/admin/messages");
 }
 
+export async function adminReplyToMessage(id: string, body: string): Promise<{ error?: string }> {
+  const { supabase, log } = await staff(STAFF_ROLES);
+  if (!body.trim()) return { error: "Write a reply first." };
+  const { error } = await supabase.rpc("reply_to_contact", { p_message: id, p_body: body });
+  if (error) return { error: error.message.includes("Could not find") ? "Run the support replies database update first." : error.message };
+  await log("message.reply", "message", id);
+  done("/admin/messages");
+  return {};
+}
+
 export async function adminDeleteMessage(id: string) {
   const { supabase, log } = await staff(STAFF_ROLES);
   await supabase.from("contact_messages").delete().eq("id", id);

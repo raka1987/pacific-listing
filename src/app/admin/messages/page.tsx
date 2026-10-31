@@ -1,23 +1,41 @@
 import { requireStaff, STAFF_ROLES } from "@/lib/auth";
 import Link from "next/link";
-import { Archive, Check, Mail, Reply, Trash2 } from "lucide-react";
-import { formatDate } from "@/lib/format";
+import { Archive, Check, CornerDownRight, Mail, Trash2 } from "lucide-react";
+import { formatDate, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import { adminDeleteMessage, adminSetMessageStatus } from "../actions";
 import { ActionButton, ConfirmButton } from "../ui";
+import { ReplyBox } from "./reply-box";
 
 export const metadata = { title: "Messages" };
 
-type Message = { id: string; name: string; email: string; subject: string; message: string; status: string; created_at: string };
+type Message = {
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: string;
+  created_at: string;
+  replies: { id: string; body: string; created_at: string; staff: { full_name: string } | null }[];
+};
 
 export default async function AdminMessages({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   await requireStaff(STAFF_ROLES);
   const { status = "inbox" } = await searchParams;
   const supabase = await createClient();
-  let query = supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(100);
+  let query = supabase
+    .from("contact_messages")
+    .select("*, replies:contact_replies(id, body, created_at, staff:profiles(full_name))")
+    .order("created_at", { ascending: false })
+    .order("created_at", { referencedTable: "contact_replies", ascending: true })
+    .limit(100);
   query = status === "archived" ? query.eq("status", "archived") : query.in("status", ["new", "read"]);
   const { data } = await query;
-  const messages = (data ?? []) as Message[];
+  // Older databases without the replies table: show messages without replies.
+  const messages = ((data ?? (await supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(100)).data) ?? []).map(
+    (m) => ({ ...m, replies: m.replies ?? [] }),
+  ) as Message[];
   const btn = "inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-2 hover:bg-subtle";
 
   return (
@@ -48,9 +66,6 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
-                  <a href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject}`)}`} className={btn}>
-                    <Reply className="h-3.5 w-3.5" /> Reply
-                  </a>
                   {m.status === "new" && (
                     <form action={adminSetMessageStatus.bind(null, m.id, "read")}>
                       <ActionButton className={btn}><Check className="h-3.5 w-3.5" /> Mark read</ActionButton>
@@ -67,6 +82,24 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
                 </div>
               </div>
               <p className="mt-3 whitespace-pre-line text-sm text-ink-2">{m.message}</p>
+              {m.replies.length > 0 && (
+                <ul className="mt-4 space-y-2 border-t border-line pt-3">
+                  {m.replies.map((r) => (
+                    <li key={r.id} className="flex gap-2 text-sm">
+                      <CornerDownRight className="mt-0.5 h-4 w-4 shrink-0 text-lagoon-600" />
+                      <div className="min-w-0 flex-1 rounded-xl bg-lagoon-50 px-3 py-2 dark:bg-lagoon-500/10">
+                        <p className="text-xs text-muted">
+                          <span className="font-semibold text-lagoon-800 dark:text-lagoon-300">{r.staff?.full_name || "Staff"}</span> replied · {timeAgo(r.created_at)}
+                        </p>
+                        <p className="mt-0.5 whitespace-pre-line text-ink-2">{r.body}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="mt-3 flex">
+                <ReplyBox id={m.id} name={m.name} email={m.email} />
+              </div>
             </li>
           ))}
         </ul>
