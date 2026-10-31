@@ -28,11 +28,6 @@ CONTACT SELLERS DIRECTLY
 SELL IN A MINUTE
 • Post a free ad with up to 8 photos, straight from your camera
 • Mark items as sold, edit or remove your ads at any time
-• Promote your ad to the top, or add an Urgent badge, to sell faster
-
-FOR BUSINESSES
-• Business accounts for car yards, real estate agents and shops: more ads, a business badge and free bumps every month
-• Advertise to customers in your island, or across the whole Pacific
 
 SAFE AND LOCAL
 • Report suspicious ads; our team reviews every report
