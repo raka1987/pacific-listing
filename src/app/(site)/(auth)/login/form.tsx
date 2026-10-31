@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { FormMessage } from "@/components/auth-card";
 import { SubmitButton } from "@/components/submit-button";
 import { login, resendConfirmation } from "../actions";
+import { PasswordInput } from "@/components/password-input";
 
 export function LoginForm({ next }: { next: string }) {
   const [loginState, action] = useActionState(login, {});
@@ -24,7 +25,7 @@ export function LoginForm({ next }: { next: string }) {
           <label className="label" htmlFor="password">Password</label>
           <Link href="/forgot-password" className="mb-1.5 text-xs font-medium text-lagoon-700 hover:underline">Forgot password?</Link>
         </div>
-        <input id="password" name="password" type="password" autoComplete="current-password" required className="input" />
+        <PasswordInput autoComplete="current-password" />
       </div>
       <SubmitButton className="btn-primary w-full py-3" pendingText="Logging in…">Log in</SubmitButton>
       {(loginState.unconfirmed || resendState.unconfirmed) && (

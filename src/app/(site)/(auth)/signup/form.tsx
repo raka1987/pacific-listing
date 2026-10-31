@@ -7,6 +7,7 @@ import { CheckEmail } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { COUNTRIES, HEARD_FROM } from "@/lib/constants";
 import { signup } from "../actions";
+import { PasswordInput } from "@/components/password-input";
 
 export function SignupForm({ next }: { next: string }) {
   const [state, action] = useActionState(signup, {});
@@ -60,7 +61,7 @@ export function SignupForm({ next }: { next: string }) {
       </div>
       <div>
         <label className="label" htmlFor="password">Password</label>
-        <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required className="input" />
+        <PasswordInput autoComplete="new-password" minLength={8} />
         <p className="mt-1 text-xs text-muted">At least 8 characters.</p>
       </div>
       <SubmitButton className="btn-accent w-full py-3" pendingText="Creating account…">Create account</SubmitButton>
