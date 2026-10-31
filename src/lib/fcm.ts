@@ -8,16 +8,24 @@ type ServiceAccount = { project_id: string; client_email: string; private_key: s
 
 let cached: { token: string; expires: number } | null = null;
 
-export function serviceAccount(): ServiceAccount | null {
+/** Reads FIREBASE_SERVICE_ACCOUNT, or explains in plain words what's wrong with it. */
+export function readServiceAccount(): { sa?: ServiceAccount; problem?: string } {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
-  if (!raw) return null;
+  if (!raw) return { problem: "FIREBASE_SERVICE_ACCOUNT is not set in Vercel (or the site wasn't redeployed after adding it)" };
+  let sa: ServiceAccount & { type?: string; project_info?: unknown };
   try {
-    const sa = JSON.parse(raw) as ServiceAccount;
-    if (!sa.project_id || !sa.client_email || !sa.private_key) return null;
-    return { ...sa, private_key: sa.private_key.replace(/\\n/g, "\n") };
+    sa = JSON.parse(raw.replace(/^['"]|['"]$/g, ""));
   } catch {
-    return null;
+    return { problem: `FIREBASE_SERVICE_ACCOUNT isn't complete: it should start with { and end with } (it starts with "${raw.slice(0, 12)}…" and is ${raw.length} characters long)` };
   }
+  if (sa.project_info) return { problem: "FIREBASE_SERVICE_ACCOUNT has google-services.json in it; it needs the service account key file instead (Firebase > Project settings > Service accounts > Generate new private key)" };
+  if (sa.type !== "service_account" || !sa.client_email || !sa.private_key || !sa.project_id)
+    return { problem: "FIREBASE_SERVICE_ACCOUNT is JSON but not a service account key (Firebase > Project settings > Service accounts > Generate new private key)" };
+  return { sa: { ...sa, private_key: sa.private_key.replace(/\\n/g, "\n") } };
+}
+
+export function serviceAccount(): ServiceAccount | null {
+  return readServiceAccount().sa ?? null;
 }
 
 const b64url = (v: string | Buffer) => Buffer.from(v).toString("base64url");
@@ -45,8 +53,8 @@ export type PushMessage = { title: string; body: string; url?: string; tag?: str
 
 /** Sends to each phone; returns the phones Firebase says no longer exist. */
 export async function sendPush(tokens: string[], msg: PushMessage) {
-  const sa = serviceAccount();
-  if (!sa) throw new Error("FIREBASE_SERVICE_ACCOUNT is missing or not valid JSON");
+  const { sa, problem } = readServiceAccount();
+  if (!sa) throw new Error(problem);
   const auth = await accessToken(sa);
   const endpoint = process.env.FCM_ENDPOINT || `https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`;
   const dead: string[] = [];
