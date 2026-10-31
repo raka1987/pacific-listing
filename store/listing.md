@@ -92,7 +92,7 @@ Answer honestly. For a marketplace like this the answers are usually:
 | Photos | Yes | Photos the user adds to their ads or profile |
 | Other user content | Yes | Ad text, chat messages between members, reports, contact messages |
 | Purchase history | Yes | Promotions/plans they buy (no card details are stored) |
-| Approximate location | No | The country comes from the connection to set prices; it isn't stored |
+| Approximate location | Yes | Country only, from the internet connection (no GPS): sets local prices and counts visitors per country. Not shared. Purposes: App functionality, Analytics |
 | Device or other IDs | No | |
 
 **Data shared with third parties:** No. Supabase (database) and Vercel (hosting) are service providers processing data on our behalf.

@@ -33,6 +33,11 @@ export default function PrivacyPage() {
           Analytics to understand how the site is used, and the Meta (Facebook) Pixel to measure and show our ads to people who may be interested in
           Pacific Listing. You can choose &quot;No thanks&quot; and the site works the same. The phone apps don&apos;t use these tools.
         </p>
+        <p>
+          To count visitors, we also record which pages are opened, the country the visit comes from (worked out from the internet
+          connection, never GPS), the type of device and the website that linked to us. This doesn&apos;t use cookies or identify
+          you, and it&apos;s deleted after 13 months.
+        </p>
         <h2>Sharing</h2>
         <p>
           We don&apos;t sell your personal information. We use trusted service providers to host the site and store data, and
