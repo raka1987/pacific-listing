@@ -1,4 +1,5 @@
 import { ChatWatcher } from "@/components/chat-unread";
+import { ClearReloadFlag } from "@/components/crash-screen";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { InstallBanner } from "@/components/install-app";
@@ -32,6 +33,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <RegisterServiceWorker />
       <NativeApp />
       <PageView />
+      <ClearReloadFlag />
     </div>
   );
 }
