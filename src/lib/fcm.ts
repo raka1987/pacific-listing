@@ -80,7 +80,7 @@ export async function sendPush(tokens: string[], msg: PushMessage) {
       if (res.ok) sent++;
       else {
         const text = await res.text();
-        if (res.status === 404 || /UNREGISTERED|registration-token-not-registered|INVALID_ARGUMENT.*token/i.test(text)) dead.push(token);
+        if (res.status === 404 || /UNREGISTERED|registration-token-not-registered|not a valid FCM registration token|INVALID_ARGUMENT[\s\S]*token/i.test(text)) dead.push(token);
         else console.error("Push failed", res.status, text.slice(0, 300));
       }
     }),
