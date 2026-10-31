@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Clock, CreditCard, Flag, List, Mail, Megaphone, Store, TrendingUp, Users, Wallet } from "lucide-react";
+import { ArrowRight, BarChart3, Clock, CreditCard, Flag, List, Mail, Megaphone, Store, TrendingUp, Users, Wallet } from "lucide-react";
 import { requireStaff } from "@/lib/auth";
 import { ORDER_KINDS } from "@/lib/constants";
 import { CATEGORIES } from "@/lib/constants";
@@ -37,10 +37,12 @@ export default async function AdminDashboard() {
   const canSales = profile.role === "admin" || profile.role === "sales";
   const canMod = profile.role === "admin" || profile.role === "moderator";
   if (canSales) await supabase.rpc("expire_promotions");
-  const [{ data: rev }, { data: sources }] = await Promise.all([
+  const [{ data: rev }, { data: sources }, { data: traffic }] = await Promise.all([
     canSales ? supabase.rpc("admin_revenue") : Promise.resolve({ data: null }),
     supabase.rpc("admin_signup_sources"),
+    supabase.rpc("admin_traffic", { p_days: 7 }),
   ]);
+  const visits = traffic as { today: { visitors: number }; period: { visitors: number } } | null;
   const r = rev as Revenue | null;
   const [{ data: stats }, { data: pending }, { data: reports }] = await Promise.all([
     supabase.rpc("admin_stats"),
@@ -64,6 +66,7 @@ export default async function AdminDashboard() {
   const isAdmin = profile.role === "admin";
   // Each card links to a page; only show the ones this person can open.
   const cards = [
+    { label: "Visitors today", value: visits?.today.visitors ?? 0, sub: `${(visits?.period.visitors ?? 0).toLocaleString()} visits this week`, icon: BarChart3, href: "/admin/traffic", show: !!visits },
     { label: "Live ads", value: s.listings_active, sub: `+${s.listings_7d} this week`, icon: List, href: canMod ? "/admin/listings?status=active" : "/search", show: true },
     { label: "Users", value: s.users, sub: `+${s.users_7d} this week`, icon: Users, href: isAdmin ? "/admin/users" : "/admin", show: true },
     { label: "Awaiting review", value: s.listings_pending, sub: "Pending ads", icon: Clock, href: "/admin/listings?status=pending", alert: s.listings_pending > 0, show: canMod },
@@ -76,7 +79,7 @@ export default async function AdminDashboard() {
 
       {r && <RevenuePanel r={r} />}
 
-      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
         {cards.map(({ label, value, sub, icon: Icon, href, alert }) => (
           <Link key={label} href={href} className="card p-5 transition hover:shadow-md">
             <div className="flex items-center justify-between">

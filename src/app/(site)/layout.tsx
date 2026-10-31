@@ -4,6 +4,7 @@ import { Header } from "@/components/header";
 import { InstallBanner } from "@/components/install-app";
 import { MobileNav } from "@/components/mobile-nav";
 import { NativeApp } from "@/components/native-app";
+import { PageView } from "@/components/page-view";
 import { RegisterServiceWorker } from "@/components/register-sw";
 import { getAuthUser } from "@/lib/auth";
 import { getUnreadChats } from "@/lib/chat";
@@ -30,6 +31,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <InstallBanner />
       <RegisterServiceWorker />
       <NativeApp />
+      <PageView />
     </div>
   );
 }

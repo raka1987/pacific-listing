@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  BarChart3,
   Bell,
   ChevronDown,
   CreditCard,
@@ -29,7 +30,13 @@ const SALES: Role[] = ["admin", "sales"];
 const ALL: Role[] = ["admin", "moderator", "sales"];
 
 const GROUPS: { title: string; items: Item[] }[] = [
-  { title: "", items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ALL }] },
+  {
+    title: "",
+    items: [
+      { href: "/admin", label: "Dashboard", icon: LayoutDashboard, roles: ALL },
+      { href: "/admin/traffic", label: "Traffic", icon: BarChart3, roles: ALL },
+    ],
+  },
   {
     title: "Moderation",
     items: [
