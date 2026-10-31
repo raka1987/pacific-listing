@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "563706099600",
+    "project_id": "pacific-listing-9c5b9",
+    "storage_bucket": "pacific-listing-9c5b9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563706099600:android:b3913f2564baf8046ee515",
+        "android_client_info": {
+          "package_name": "com.pacificlisting.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0n7nMR6sL4WRv4XZQ6uhQkUyksGlBrhs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
