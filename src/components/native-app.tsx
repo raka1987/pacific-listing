@@ -3,6 +3,17 @@
 import { useEffect } from "react";
 import { capacitor, isNativeApp } from "@/lib/native";
 
+/** Runs a phone feature call without letting a missing or old plugin crash the page. */
+function safely(fn: () => unknown) {
+  try {
+    const r = fn();
+    if (r && typeof (r as Promise<unknown>).catch === "function") (r as Promise<unknown>).catch(() => {});
+    return r;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Makes the website behave like an app when opened inside the phone apps. */
 export function NativeApp() {
   useEffect(() => {
@@ -13,17 +24,20 @@ export function NativeApp() {
 
     // Android back button: go back a page, or close the app from the first page.
     let back: { remove: () => void } | undefined;
-    plugins?.App?.addListener("backButton", ({ canGoBack }) => {
-      if (canGoBack) history.back();
-      else plugins.App?.exitApp();
-    }).then((l) => (back = l));
+    const added = safely(() =>
+      plugins?.App?.addListener("backButton", ({ canGoBack }) => {
+        if (canGoBack) history.back();
+        else safely(() => plugins.App?.exitApp());
+      }),
+    ) as Promise<{ remove: () => void }> | undefined;
+    if (added && typeof added.then === "function") added.then((l) => (back = l)).catch(() => {});
 
     // Status bar text follows light/dark mode.
     const syncStatusBar = () => {
       const dark = root.classList.contains("dark");
-      plugins?.StatusBar?.setStyle({ style: dark ? "DARK" : "LIGHT" }).catch(() => {});
-      if (capacitor()?.getPlatform?.() === "android") {
-        plugins?.StatusBar?.setBackgroundColor({ color: dark ? "#0a0f17" : "#ffffff" }).catch(() => {});
+      safely(() => plugins?.StatusBar?.setStyle({ style: dark ? "DARK" : "LIGHT" }));
+      if (safely(() => capacitor()?.getPlatform?.()) === "android") {
+        safely(() => plugins?.StatusBar?.setBackgroundColor({ color: dark ? "#0a0f17" : "#ffffff" }));
       }
     };
     syncStatusBar();
@@ -31,7 +45,7 @@ export function NativeApp() {
     watch.observe(root, { attributes: true, attributeFilter: ["class"] });
 
     return () => {
-      back?.remove();
+      safely(() => back?.remove());
       watch.disconnect();
     };
   }, []);

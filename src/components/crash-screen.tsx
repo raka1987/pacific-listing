@@ -31,6 +31,10 @@ export function CrashScreen({ error, reset }: { error: Error & { digest?: string
         <img src="/icons/icon-192.png" alt="" className="mx-auto h-14 w-14 rounded-2xl" />
         <h1 className="mt-5 text-2xl font-semibold text-ink">Something went wrong</h1>
         <p className="mt-2 text-sm text-muted">This page didn&apos;t load properly. Reloading usually fixes it.</p>
+        <p className="mt-3 text-xs break-words text-faint">
+          Error details: {error.message || error.name || "unknown"}
+          {error.digest ? ` (${error.digest})` : ""}
+        </p>
         <div className="mt-6 flex justify-center gap-2">
           <button
             onClick={() => {

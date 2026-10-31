@@ -41,7 +41,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
   const [menu, setMenu] = useState(false);
   const bottom = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
-  const lastId = useRef(initialMessages.at(-1)?.id ?? 0);
+  const lastId = useRef(initialMessages[initialMessages.length - 1]?.id ?? 0);
 
   const add = useCallback((incoming: ChatMessage[]) => {
     if (!incoming.length) return;
@@ -229,7 +229,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
             const newDay = !prev || day(prev.created_at) !== day(m.created_at);
             return (
               <li key={m.id}>
-                {newDay && <p className="my-3 text-center text-[11px] font-semibold tracking-wide text-faint uppercase">{day(m.created_at)}</p>}
+                {newDay && <p suppressHydrationWarning className="my-3 text-center text-[11px] font-semibold tracking-wide text-faint uppercase">{day(m.created_at)}</p>}
                 <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                   <div
                     className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug shadow-sm sm:max-w-[70%] ${
@@ -237,7 +237,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
                     }`}
                   >
                     <p className="break-words whitespace-pre-line">{m.body}</p>
-                    <p className={`mt-0.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>{time(m.created_at)}</p>
+                    <p suppressHydrationWarning className={`mt-0.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>{time(m.created_at)}</p>
                   </div>
                 </div>
               </li>
