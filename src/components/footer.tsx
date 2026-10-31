@@ -31,6 +31,7 @@ export function Footer() {
         <FooterCol title="Legal">
           <FooterLink href="/terms">Terms of service</FooterLink>
           <FooterLink href="/privacy">Privacy policy</FooterLink>
+          <FooterLink href="/delete-account">Delete your account</FooterLink>
           <FooterLink href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</FooterLink>
         </FooterCol>
       </div>

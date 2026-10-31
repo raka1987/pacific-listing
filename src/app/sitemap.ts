@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     page("", 1),
     page("/search", 0.6),
     page("/sell", 0.7, "weekly"),
-    ...["/about", "/contact", "/safety", "/notices", "/business", "/advertise", "/terms", "/privacy"].map((p) => page(p, 0.4, "weekly")),
+    ...["/about", "/contact", "/safety", "/notices", "/business", "/advertise", "/terms", "/privacy", "/delete-account"].map((p) => page(p, 0.4, "weekly")),
   ];
   const categories = CATEGORIES.map((c) => page(`/category/${c.slug}`, 0.7, "hourly"));
   // Every country's main page is always listed.

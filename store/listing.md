@@ -58,7 +58,7 @@ marketplace,classifieds,buy,sell,fiji,samoa,tonga,vanuatu,cars,property,rent,job
 - **Privacy policy:** https://pacificlisting.com/privacy
 - **Support / contact:** https://pacificlisting.com/contact
 - **Marketing / website:** https://pacificlisting.com
-- **Account deletion page** (Google asks for this): https://pacificlisting.com/profile (people log in, then "Delete account" at the bottom). In the app it's at **Account → Profile → Delete account**.
+- **Account deletion page** (Google asks for this): https://www.pacificlisting.com/delete-account (explains the steps; people log in, then "Delete account" at the bottom of their profile). In the app it's at **Account → Profile → Delete account**.
 
 ## Images (in this folder)
 
