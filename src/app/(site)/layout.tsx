@@ -1,3 +1,4 @@
+import { AuthLinkHandler } from "@/components/auth-link-handler";
 import { ChatWatcher } from "@/components/chat-unread";
 import { ClearReloadFlag } from "@/components/crash-screen";
 import { Footer } from "@/components/footer";
@@ -34,6 +35,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <NativeApp />
       <PageView />
       <ClearReloadFlag />
+      <AuthLinkHandler />
     </div>
   );
 }

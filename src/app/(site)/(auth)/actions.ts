@@ -104,6 +104,10 @@ export async function updatePassword(_: AuthState, fd: FormData): Promise<AuthSt
   if (password.length < 8) return { error: "Password must be at least 8 characters." };
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) return { error: friendly(error.message) };
+  if (error) {
+    if (/session|not authenticated|jwt/i.test(error.message)) return { error: "This reset link has expired or was opened in a different browser. Please ask for a new one from \"Forgot password\"." };
+    if (/different from the old|same password/i.test(error.message)) return { error: "Choose a password that's different from your old one." };
+    return { error: friendly(error.message) };
+  }
   redirect("/profile?password=updated");
 }
