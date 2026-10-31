@@ -22,6 +22,18 @@ export function priceIn(prices: Record<string, number> | null | undefined, curre
   return v == null ? null : Number(v);
 }
 
+/** True when the price went down in the last 14 days. */
+export function recentPriceDrop(l: { price: number | null; previous_price?: number | null; price_dropped_at?: string | null; status?: string }) {
+  return (
+    l.status !== "sold" &&
+    l.previous_price != null &&
+    l.price != null &&
+    Number(l.price) < Number(l.previous_price) &&
+    !!l.price_dropped_at &&
+    Date.now() - new Date(l.price_dropped_at).getTime() < 14 * 864e5
+  );
+}
+
 export function isBusiness(businessUntil: string | null | undefined) {
   return !!businessUntil && new Date(businessUntil) > new Date();
 }

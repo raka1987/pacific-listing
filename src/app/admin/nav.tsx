@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
+  BadgeCheck,
   BarChart3,
   Bell,
   ChevronDown,
@@ -42,6 +43,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
     items: [
       { href: "/admin/listings", label: "Listings", icon: List, badge: "pending", roles: MOD },
       { href: "/admin/reports", label: "Reports", icon: Flag, badge: "reports", roles: MOD },
+      { href: "/admin/verification", label: "Verification", icon: BadgeCheck, badge: "verify", roles: MOD },
       { href: "/admin/messages", label: "Messages", icon: Mail, badge: "messages", roles: ALL },
       { href: "/admin/notices", label: "Notice board", icon: Bell, roles: MOD },
     ],

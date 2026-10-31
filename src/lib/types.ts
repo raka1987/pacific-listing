@@ -43,6 +43,8 @@ export type Listing = {
   urgent_until: string | null;
   sort_at: string;
   views: number;
+  previous_price: number | null;
+  price_dropped_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -58,11 +60,11 @@ export const PROFILE_COLUMNS =
   "id, full_name, avatar_url, phone, whatsapp, country, city, bio, role, is_banned, is_verified, created_at, business_name, business_until, plan_id";
 
 export const LISTING_CARD_COLUMNS =
-  "id, title, price, price_type, category, subcategory, country, city, images, status, is_featured, is_urgent, created_at, condition";
+  "id, title, price, price_type, category, subcategory, country, city, images, status, is_featured, is_urgent, created_at, condition, previous_price, price_dropped_at";
 
 export type ListingCardData = Pick<
   Listing,
-  "id" | "title" | "price" | "price_type" | "category" | "subcategory" | "country" | "city" | "images" | "status" | "is_featured" | "is_urgent" | "created_at" | "condition"
+  "id" | "title" | "price" | "price_type" | "category" | "subcategory" | "country" | "city" | "images" | "status" | "is_featured" | "is_urgent" | "created_at" | "condition" | "previous_price" | "price_dropped_at"
 >;
 
 export type Prices = Record<string, number>;

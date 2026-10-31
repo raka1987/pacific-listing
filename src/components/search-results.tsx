@@ -12,6 +12,9 @@ import { Pagination } from "./pagination";
 import { SearchBar } from "./search-bar";
 import { SearchFiltersPanel, SortSelect } from "./search-filters";
 import { Suspense } from "react";
+import { searchRow } from "@/app/alerts-actions";
+import { searchHref } from "@/lib/saved-search";
+import { SaveSearchButton } from "./save-search-button";
 
 export async function SearchResults({
   filters,
@@ -42,6 +45,15 @@ export async function SearchResults({
     searchListings(supabase, filters),
     getFavoriteIds(supabase, user?.id),
   ]);
+
+  // Is this exact search already saved?
+  const row = await searchRow(filters);
+  let saved = false;
+  if (user) {
+    let q = supabase.from("saved_searches").select("id", { count: "exact", head: true }).eq("user_id", user.id);
+    for (const [k, v] of Object.entries(row)) q = v == null ? q.is(k, null) : q.eq(k, v);
+    saved = ((await q).count ?? 0) > 0;
+  }
 
   const qs = (overrides: Record<string, string | undefined>) => {
     const p = new URLSearchParams();
@@ -85,6 +97,7 @@ export async function SearchResults({
               {intro && <div className="mt-2 max-w-2xl text-sm text-ink-2">{intro}</div>}
             </div>
             <div className="flex items-center gap-2">
+              <SaveSearchButton filters={filters} back={searchHref(row)} saved={saved} />
               <SortSelect value={filters.sort} />
             </div>
           </div>

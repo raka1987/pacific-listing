@@ -7,7 +7,7 @@ import { reportChat } from "@/app/chat-actions";
 import { CHAT_REPORT_REASONS, REPORT_REASONS } from "@/lib/constants";
 
 /** Report an ad, or (with conversationId) a chat. */
-export function ReportDialog({ listingId, conversationId }: { listingId?: string; conversationId?: string }) {
+export function ReportDialog({ listingId, conversationId, triggerClassName }: { listingId?: string; conversationId?: string; triggerClassName?: string }) {
   const what = conversationId ? "chat" : "ad";
   const reasons = conversationId ? CHAT_REPORT_REASONS : REPORT_REASONS;
   const [open, setOpen] = useState(false);
@@ -29,7 +29,7 @@ export function ReportDialog({ listingId, conversationId }: { listingId?: string
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-red-600">
+      <button onClick={() => setOpen(true)} className={triggerClassName ?? "inline-flex items-center gap-1.5 text-sm text-muted hover:text-red-600"}>
         <Flag className="h-4 w-4" /> Report this {what}
       </button>
       {open && (

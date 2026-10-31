@@ -17,11 +17,14 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const chat = data as unknown as Conversation | null;
   if (!chat || ![chat.buyer_id, chat.seller_id].includes(user.id)) notFound();
 
-  const [{ data: messages }, { data: listing }] = await Promise.all([
+  const otherId = chat.seller_id === user.id ? chat.buyer_id : chat.seller_id;
+  const [{ data: messages }, { data: listing }, { data: rating }, { data: myReview }] = await Promise.all([
     supabase.from("messages").select("id, conversation_id, sender_id, body, created_at").eq("conversation_id", id).order("id").limit(500),
     chat.listing_id
       ? supabase.from("listings").select("id, price, price_type, country, status").eq("id", chat.listing_id).maybeSingle()
       : Promise.resolve({ data: null }),
+    supabase.from("member_ratings").select("average, total").eq("member_id", otherId).maybeSingle(),
+    supabase.from("reviews").select("rating, comment").eq("reviewer_id", user.id).eq("reviewee_id", otherId).maybeSingle(),
   ]);
 
   const selling = chat.seller_id === user.id;
@@ -36,9 +39,12 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
         conversationId={chat.id}
         me={user.id}
         other={{
+          id: otherId,
+          verified: !!other?.is_verified,
+          rating: rating as { average: number; total: number } | null,
           name,
           avatarUrl: other?.avatar_url ?? null,
-          href: other && !selling ? `/seller/${other.id}` : null,
+          href: other ? `/seller/${other.id}` : null,
           role: selling ? "Interested in your ad" : business ? "Business seller" : "Seller",
         }}
         listing={{
@@ -49,6 +55,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
           sold: listing?.status === "sold",
         }}
         initialMessages={(messages ?? []) as ChatMessage[]}
+        myReview={myReview as { rating: number; comment: string | null } | null}
         blockedBy={chat.blocked_by}
         starter={selling ? "" : `Hi! Is "${chat.listing_title}" still available?`}
       />

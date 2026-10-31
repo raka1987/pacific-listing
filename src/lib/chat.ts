@@ -3,7 +3,7 @@ import { getAuthUser } from "./auth";
 import { createClient } from "./supabase/server";
 import type { Profile } from "./types";
 
-export type ChatPerson = Pick<Profile, "id" | "full_name" | "avatar_url" | "business_name" | "business_until">;
+export type ChatPerson = Pick<Profile, "id" | "full_name" | "avatar_url" | "business_name" | "business_until" | "is_verified">;
 
 export type Conversation = {
   id: string;
@@ -24,7 +24,7 @@ export type Conversation = {
 
 export type ChatMessage = { id: number; conversation_id: string; sender_id: string; body: string; created_at: string };
 
-const PERSON = "id, full_name, avatar_url, business_name, business_until";
+const PERSON = "id, full_name, avatar_url, business_name, business_until, is_verified";
 export const CONVERSATION_COLUMNS =
   "id, listing_id, listing_title, listing_image, last_message, last_message_at, last_sender_id, buyer_id, seller_id, buyer_read_at, seller_read_at, blocked_by, " +
   `buyer:profiles!conversations_buyer_id_fkey(${PERSON}), seller:profiles!conversations_seller_id_fkey(${PERSON})`;

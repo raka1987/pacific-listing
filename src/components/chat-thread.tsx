@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Ban, ExternalLink, MoreVertical, SendHorizontal, ShieldCheck, Trash2 } from "lucide-react";
+import { ArrowLeft, Ban, BadgeCheck, ExternalLink, MoreVertical, SendHorizontal, ShieldCheck, Star, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { deleteChat, setChatBlocked } from "@/app/chat-actions";
 import type { ChatMessage } from "@/lib/chat";
 import { createClient } from "@/lib/supabase/client";
 import { track } from "@/lib/track";
 import { Avatar } from "./avatar";
+import { RateMember } from "./rate-member";
 import { ReportDialog } from "./report-dialog";
 
 type Props = {
   conversationId: string;
   me: string;
-  other: { name: string; avatarUrl: string | null; href: string | null; role: string };
+  other: { id: string; name: string; avatarUrl: string | null; href: string | null; role: string; verified: boolean; rating: { average: number; total: number } | null };
+  myReview: { rating: number; comment: string | null } | null;
   listing: { href: string | null; title: string; image: string | null; price: string | null; sold: boolean };
   initialMessages: ChatMessage[];
   blockedBy: string | null;
@@ -30,7 +32,7 @@ function day(iso: string) {
   return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: d.getFullYear() === today.getFullYear() ? undefined : "numeric" });
 }
 
-export function ChatThread({ conversationId, me, other, listing, initialMessages, blockedBy, starter }: Props) {
+export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState(initialMessages);
   const [text, setText] = useState(initialMessages.length ? "" : starter);
@@ -124,6 +126,8 @@ export function ChatThread({ conversationId, me, other, listing, initialMessages
   }
 
   const blockedByMe = blockedBy === me;
+  // Ratings open once both people have said something.
+  const canRate = messages.some((m) => m.sender_id === me) && messages.some((m) => m.sender_id !== me);
   const menuItem = "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-ink-2 hover:bg-subtle";
 
   return (
@@ -136,11 +140,26 @@ export function ChatThread({ conversationId, me, other, listing, initialMessages
         <Avatar name={other.name} url={other.avatarUrl} size={40} />
         <div className="min-w-0 flex-1">
           {other.href ? (
-            <Link href={other.href} className="block truncate font-semibold text-ink hover:underline">{other.name}</Link>
+            <Link href={other.href} className="flex min-w-0 items-center gap-1 font-semibold text-ink hover:underline">
+              <span className="truncate">{other.name}</span>
+              {other.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-lagoon-600" aria-label="Verified" />}
+            </Link>
           ) : (
-            <p className="truncate font-semibold text-ink">{other.name}</p>
+            <p className="flex min-w-0 items-center gap-1 font-semibold text-ink">
+              <span className="truncate">{other.name}</span>
+              {other.verified && <BadgeCheck className="h-4 w-4 shrink-0 text-lagoon-600" aria-label="Verified" />}
+            </p>
           )}
-          <p className="truncate text-xs text-muted">{other.role}</p>
+          <p className="flex items-center gap-1 truncate text-xs text-muted">
+            {other.rating && other.rating.total > 0 && (
+              <>
+                <Star className="h-3 w-3 text-amber-400" fill="currentColor" strokeWidth={0} />
+                <span className="font-semibold text-ink-2">{Number(other.rating.average).toFixed(1)}</span>
+                <span>({other.rating.total}) ·</span>
+              </>
+            )}
+            {other.role}
+          </p>
         </div>
         <div className="relative">
           <button onClick={() => setMenu((m) => !m)} className="flex h-9 w-9 items-center justify-center rounded-full text-ink-2 hover:bg-subtle" aria-label="Chat options" aria-expanded={menu}>
@@ -155,14 +174,13 @@ export function ChatThread({ conversationId, me, other, listing, initialMessages
                     <ExternalLink className="h-4 w-4" /> View ad
                   </Link>
                 )}
+                {canRate && <RateMember conversationId={conversationId} name={other.name} existing={myReview} className={menuItem} />}
                 <form action={setChatBlocked.bind(null, conversationId, !blockedByMe)} onSubmit={() => setMenu(false)}>
                   <button className={menuItem} role="menuitem">
                     <Ban className="h-4 w-4" /> {blockedByMe ? "Unblock" : "Block"} {other.name.split(" ")[0]}
                   </button>
                 </form>
-                <div className="px-3 py-2">
-                  <ReportDialog conversationId={conversationId} />
-                </div>
+                <ReportDialog conversationId={conversationId} triggerClassName={menuItem} />
                 <form
                   action={deleteChat.bind(null, conversationId)}
                   onSubmit={(e) => {

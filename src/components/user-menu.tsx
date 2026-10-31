@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Heart, List, LogOut, MessagesSquare, Receipt, Shield, Store, User } from "lucide-react";
+import { Bell, ChevronDown, Heart, List, LogOut, MessagesSquare, Receipt, Shield, Store, User } from "lucide-react";
 import { Avatar } from "./avatar";
 
 export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl: string | null; isAdmin: boolean }) {
@@ -49,7 +49,10 @@ export function UserMenu({ name, avatarUrl, isAdmin }: { name: string; avatarUrl
             <MessagesSquare className="h-4 w-4" /> Messages
           </Link>
           <Link href="/favorites" className={item} role="menuitem" onClick={() => setOpen(false)}>
-            <Heart className="h-4 w-4" /> Saved
+            <Heart className="h-4 w-4" /> Saved ads
+          </Link>
+          <Link href="/saved-searches" className={item} role="menuitem" onClick={() => setOpen(false)}>
+            <Bell className="h-4 w-4" /> Saved searches
           </Link>
           <Link href="/profile" className={item} role="menuitem" onClick={() => setOpen(false)}>
             <User className="h-4 w-4" /> Profile

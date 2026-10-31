@@ -4,12 +4,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { AdBanner } from "@/components/ad-banner";
-import { AlertTriangle, Store, Zap, BadgeCheck, CalendarDays, CheckCircle2, ChevronRight, Clock, Eye, MapPin, ShieldCheck, Tag } from "lucide-react";
+import { AlertTriangle, Store, Zap, BadgeCheck, CalendarDays, CheckCircle2, ChevronRight, Clock, Eye, MapPin, ShieldCheck, Tag, TrendingDown } from "lucide-react";
 import { Avatar } from "@/components/avatar";
 import { ContactBar } from "@/components/contact-bar";
 import { ContactSeller } from "@/components/contact-seller";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ImageGallery } from "@/components/image-gallery";
+import { RatingSummary } from "@/components/stars";
 import { approxPrice, ListingGrid } from "@/components/listing-card";
 import { OwnerActions } from "@/components/owner-actions";
 import { ReportDialog } from "@/components/report-dialog";
@@ -18,7 +19,7 @@ import { ShareLinks } from "@/components/share-links";
 import { StatusBadge } from "@/components/status-badge";
 import { ViewTracker } from "@/components/view-tracker";
 import { categoryBySlug, countryByCode, SITE, subcategoryBySlug } from "@/lib/constants";
-import { formatDate, formatPrice, isBusiness, locationLabel, timeAgo } from "@/lib/format";
+import { formatDate, formatPrice, isBusiness, locationLabel, recentPriceDrop, timeAgo } from "@/lib/format";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { LISTING_CARD_COLUMNS, type ListingCardData, type ListingWithSeller } from "@/lib/types";
@@ -60,7 +61,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
   const user = await getAuthUser();
   const isOwner = user?.id === listing.user_id;
 
-  const [{ data: similar }, favoriteIds] = await Promise.all([
+  const [{ data: similar }, favoriteIds, { data: sellerRating }] = await Promise.all([
     supabase
       .from("listings")
       .select(LISTING_CARD_COLUMNS)
@@ -70,6 +71,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
       .order("created_at", { ascending: false })
       .limit(4),
     getFavoriteIds(supabase, user?.id),
+    supabase.from("member_ratings").select("average, total").eq("member_id", listing.user_id).maybeSingle(),
   ]);
 
   const category = categoryBySlug(listing.category);
@@ -208,6 +210,12 @@ export default async function ListingPage({ params, searchParams }: Props) {
               </p>
               {listing.status !== "active" && <StatusBadge status={listing.status} />}
             </div>
+            {recentPriceDrop(listing) && (
+              <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-emerald-700">
+                <TrendingDown className="h-4 w-4" /> Price dropped from{" "}
+                <span className="line-through">{formatPrice(listing.previous_price, listing.price_type, listing.country)}</span>
+              </p>
+            )}
             {approx && <p className="mt-0.5 text-sm text-muted">About {approx} · approximate conversion</p>}
             <div className="mt-1 flex flex-wrap items-center gap-2">
               {listing.price_type === "negotiable" && <p className="text-sm font-medium text-lagoon-700">Price negotiable</p>}
@@ -256,6 +264,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
                 ) : (
                   <p className="text-sm text-muted">Member since {formatDate(listing.seller.created_at)}</p>
                 )}
+                <RatingSummary rating={sellerRating as { average: number; total: number } | null} size={13} />
               </div>
               <ChevronRight className="h-5 w-5 text-faint" />
             </Link>

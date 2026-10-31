@@ -13,6 +13,9 @@ export default function PrivacyPage() {
         <ul>
           <li><strong>Account details</strong> — your name, email, and optionally your phone, WhatsApp number, country and photo.</li>
           <li><strong>Ads you post</strong> — text, photos, price, location and the contact numbers you choose to show.</li>
+          <li><strong>Verification</strong> (optional): if you ask for a verified tick, your phone number and a photo of an ID document. The photo is only seen by our team and is deleted as soon as we&apos;ve checked it.</li>
+          <li><strong>Ratings</strong>: ratings and comments you leave for other members are public, with your name.</li>
+          <li><strong>Saved searches</strong>: the searches you save, so we can email you new matching ads.</li>
           <li><strong>Usage</strong> — basic information such as ad views and saved ads, so the site works and we can improve it.</li>
           <li><strong>Messages</strong> — anything you send us through the contact or report forms, and chats you have with other members. Chats are private to the two people in them; our team only reads a chat if one of them reports it.</li>
         </ul>
@@ -21,6 +24,7 @@ export default function PrivacyPage() {
           <li>To run your account and show your ads to buyers.</li>
           <li>To keep the site safe — reviewing reports and stopping scams and spam.</li>
           <li>To reply to you and send important account emails (like password resets).</li>
+          <li>To email you about new chat messages, new ads matching your saved searches and price drops on ads you saved. You can turn these off in your profile, or with the link in any of these emails.</li>
         </ul>
         <h2>What&apos;s public</h2>
         <p>

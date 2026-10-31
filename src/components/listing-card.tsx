@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Camera, ImageIcon, MapPin, Sparkles, Zap } from "lucide-react";
+import { Camera, ImageIcon, MapPin, Sparkles, TrendingDown, Zap } from "lucide-react";
 import { categoryBySlug, currencyFor, subcategoryBySlug } from "@/lib/constants";
 import { convert, getViewer } from "@/lib/location";
-import { formatMoney, formatPrice, locationLabel, timeAgo } from "@/lib/format";
+import { formatMoney, formatPrice, locationLabel, recentPriceDrop, timeAgo } from "@/lib/format";
 import type { ListingCardData } from "@/lib/types";
 import { FavoriteButton } from "./favorite-button";
 
@@ -11,6 +11,7 @@ export async function ListingCard({ listing, isFavorite }: { listing: ListingCar
   const category = categoryBySlug(listing.category);
   const sub = subcategoryBySlug(listing.category, listing.subcategory);
   const approx = await approxPrice(listing);
+  const dropped = recentPriceDrop(listing);
   return (
     <article className="group relative flex flex-col">
       <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-subtle sm:rounded-3xl">
@@ -40,6 +41,11 @@ export async function ListingCard({ listing, isFavorite }: { listing: ListingCar
             </span>
           )}
           {listing.status === "sold" && <span className="badge bg-slate-900/85 text-white">Sold</span>}
+          {dropped && (
+            <span className="badge bg-emerald-600 text-white shadow-sm">
+              <TrendingDown className="h-3 w-3" /> Price drop
+            </span>
+          )}
         </div>
         {listing.images.length > 1 && (
           <span className="badge absolute bottom-2.5 left-2.5 bg-black/50 text-white backdrop-blur">
@@ -54,6 +60,11 @@ export async function ListingCard({ listing, isFavorite }: { listing: ListingCar
       <div className="flex flex-1 flex-col px-0.5 pt-3">
         <p className="text-[15px] font-semibold tracking-tight text-ink">
           {formatPrice(listing.price, listing.price_type, listing.country)}
+          {dropped && (
+            <span className="ml-1.5 text-xs font-medium text-muted line-through">
+              {formatPrice(listing.previous_price, listing.price_type, listing.country)}
+            </span>
+          )}
           {approx && <span className="ml-1.5 font-sans text-xs font-medium text-muted">≈ {approx}</span>}
         </p>
         <h3 className="mt-0.5 line-clamp-2 text-sm leading-snug text-ink-2">

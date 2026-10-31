@@ -24,7 +24,11 @@ export default async function FavoritesPage() {
 
   return (
     <div className="container-page py-8">
-      <PageHeader title="Saved ads" description="Ads you've tapped the heart on." />
+      <PageHeader
+        title="Saved ads"
+        description="Ads you've tapped the heart on. We'll email you if the price drops."
+        action={<Link href="/saved-searches" className="btn-secondary">Saved searches</Link>}
+      />
       {listings.length ? (
         <ListingGrid listings={listings} favoriteIds={ids} />
       ) : (
