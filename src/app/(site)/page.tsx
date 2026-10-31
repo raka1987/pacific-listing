@@ -10,7 +10,6 @@ import { ListingGrid, ListingRail } from "@/components/listing-card";
 import { SearchBar } from "@/components/search-bar";
 import { COUNTRIES, SITE } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
-import { getViewer } from "@/lib/location";
 import { landingPath } from "@/lib/places";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -22,7 +21,7 @@ export default async function HomePage() {
   const supabase = await createClient();
   const user = await getAuthUser();
 
-  const [featured, latest, notices, favoriteIds, viewer] = await Promise.all([
+  const [featured, latest, notices, favoriteIds] = await Promise.all([
     supabase
       .from("listings")
       .select(LISTING_CARD_COLUMNS)
@@ -33,7 +32,6 @@ export default async function HomePage() {
     supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active").order("sort_at", { ascending: false }).limit(12),
     supabase.from("notices").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(3),
     getFavoriteIds(supabase, user?.id),
-    getViewer(),
   ]);
 
   const featuredListings = (featured.data ?? []) as ListingCardData[];
@@ -79,7 +77,7 @@ export default async function HomePage() {
               <p className="mt-4 max-w-xl text-base text-white/75 sm:text-lg">Cars, homes, jobs and everyday deals from people in your community.</p>
               <div className="mt-8">
                 <Suspense>
-                  <SearchBar size="lg" withCategory withCountry defaultCountry={viewer.pacificCountry} />
+                  <SearchBar size="lg" withCategory withCountry />
                 </Suspense>
               </div>
               <p className="mt-4 text-sm text-white/60">
