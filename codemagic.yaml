@@ -20,6 +20,12 @@ workflows:
         script: npm ci
       - name: Copy app settings into the Android project
         script: npx cap sync android
+      - name: Check the Firebase file for notifications is there
+        script: |
+          if [ ! -f android/app/google-services.json ]; then
+            echo "android/app/google-services.json is missing. Download it from Firebase (Project settings > Your apps > Android) and add it to the repository first."
+            exit 1
+          fi
       - name: Version number
         script: |
           echo "VERSION_CODE=$((BUILD_NUMBER + 1))" >> $CM_ENV
@@ -51,6 +57,12 @@ workflows:
         script: npm ci
       - name: Copy app settings into the Android project
         script: npx cap sync android
+      - name: Check the Firebase file for notifications is there
+        script: |
+          if [ ! -f android/app/google-services.json ]; then
+            echo "android/app/google-services.json is missing. Download it from Firebase (Project settings > Your apps > Android) and add it to the repository first."
+            exit 1
+          fi
       - name: Version number (one higher than what's on Google Play)
         script: |
           LATEST=$(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks internal,alpha,beta,production 2>/dev/null || echo 1)

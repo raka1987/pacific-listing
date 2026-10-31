@@ -43,10 +43,10 @@ export function EmailSettings({ initial }: { initial: { chat: boolean; alerts: b
   return (
     <section className="card mt-6 p-5">
       <h2 className="flex items-center gap-2 font-bold text-ink">
-        <Bell className="h-4 w-4 text-lagoon-600" /> Email notifications
+        <Bell className="h-4 w-4 text-lagoon-600" /> Notifications
       </h2>
       <div className="mt-1 divide-y divide-line">
-        {row("chat", "New chat messages", "If a message waits unread for a few minutes, we'll email you.")}
+        {row("chat", "New chat messages", "A phone notification in the app, and an email if a message waits unread for a few minutes.")}
         {row("alerts", "Saved searches and price drops", "One email a day at most, with new ads for your saved searches and price drops on ads you saved.")}
       </div>
       {saved && <p className="text-sm text-lagoon-700">Saved.</p>}

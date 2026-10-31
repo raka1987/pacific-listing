@@ -2,7 +2,7 @@
 // The app shell injects window.Capacitor and adds "PacificListingApp" to the user agent.
 
 type Listener = { remove: () => void };
-type NativePlugins = {
+export type NativePlugins = {
   App?: {
     addListener: (event: "backButton", cb: (e: { canGoBack: boolean }) => void) => Promise<Listener>;
     exitApp: () => Promise<void>;
@@ -13,7 +13,21 @@ type NativePlugins = {
   };
 };
 
-type CapacitorGlobal = { isNativePlatform?: () => boolean; getPlatform?: () => string; Plugins?: NativePlugins };
+export type PushPlugin = {
+  checkPermissions: () => Promise<{ receive: string }>;
+  requestPermissions: () => Promise<{ receive: string }>;
+  register: () => Promise<void>;
+  createChannel?: (c: { id: string; name: string; description?: string; importance?: number; sound?: string; vibration?: boolean }) => Promise<void>;
+  addListener: (event: string, cb: (e: never) => void) => Promise<Listener>;
+};
+
+type CapacitorGlobal = {
+  isNativePlatform?: () => boolean;
+  getPlatform?: () => string;
+  isPluginAvailable?: (name: string) => boolean;
+  registerPlugin?: (name: string) => unknown;
+  Plugins?: NativePlugins & Record<string, unknown>;
+};
 
 export function capacitor(): CapacitorGlobal | undefined {
   if (typeof window === "undefined") return undefined;
@@ -23,4 +37,16 @@ export function capacitor(): CapacitorGlobal | undefined {
 export function isNativeApp() {
   if (typeof window === "undefined") return false;
   return !!capacitor()?.isNativePlatform?.() || navigator.userAgent.includes("PacificListingApp");
+}
+
+/** A phone feature by name, or undefined when this app version doesn't have it. */
+export function nativePlugin<T>(name: string): T | undefined {
+  const cap = capacitor();
+  if (!cap) return undefined;
+  try {
+    if (cap.isPluginAvailable && !cap.isPluginAvailable(name)) return undefined;
+    return (cap.Plugins?.[name] ?? cap.registerPlugin?.(name)) as T | undefined;
+  } catch {
+    return undefined;
+  }
 }

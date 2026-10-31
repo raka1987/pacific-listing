@@ -20,6 +20,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Look of push notifications: small status-bar icon and brand colour. -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_stat_notify" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_color" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="messages" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -35,4 +40,6 @@
     <!-- Lets sellers take photos for their ads. The app still works without a camera. -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <!-- Notifications for new chat messages (Android 13+ asks the person first). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

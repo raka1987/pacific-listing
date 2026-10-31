@@ -156,3 +156,27 @@ So inside the apps, the **Promote** buttons, **Business plans** sign-up, **Payme
 Apple sometimes rejects apps that mostly show a website ("guideline 4.2"). The usual fix is adding
 more phone features, such as **push notifications** ("Your ad is live", "Payment confirmed") and a native share button. Reply to the
 reviewer, and ask your developer to add these. The app project is ready for them.
+
+---
+
+## Phone notifications (push)
+
+New chat messages are sent to people's phones through Firebase (free).
+
+1. **Firebase project:** console.firebase.google.com → **Add project** → name it `Pacific Listing`
+   (Google Analytics can be off).
+2. **Android:** in the project, click the **Android** icon → package name `com.pacificlisting.app` →
+   **Register app** → **Download google-services.json**. Put it in the repository at
+   `android/app/google-services.json` (the Codemagic build stops if it's missing).
+3. **Sending key:** Firebase → ⚙️ **Project settings → Service accounts → Generate new private key**.
+   In **Vercel → Settings → Environment Variables**, add `FIREBASE_SERVICE_ACCOUNT` with the whole
+   contents of that file, and `PUSH_SECRET` with a long random password. Redeploy.
+4. **Database settings** (Supabase → SQL Editor), using the same `PUSH_SECRET`:
+   ```sql
+   select vault.create_secret('https://www.pacificlisting.com/api/push', 'push_url');
+   select vault.create_secret('YOUR_PUSH_SECRET', 'push_secret');
+   ```
+5. Build a new app version in Codemagic and upload it to Google Play.
+6. **iPhone (later):** Apple Developer → Keys → new key with **Apple Push Notifications service (APNs)**,
+   upload it in Firebase → Project settings → Cloud Messaging → Apple app configuration, and add the
+   iPhone app (`com.pacificlisting.app`) to the Firebase project.

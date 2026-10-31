@@ -35,6 +35,10 @@ const config: CapacitorConfig = {
       splashFullScreen: false,
       splashImmersive: false,
     },
+    PushNotifications: {
+      // On iPhone, still show the notification while the app is open.
+      presentationOptions: ["badge", "sound", "alert"],
+    },
     StatusBar: {
       overlaysWebView: false,
       style: "DEFAULT",

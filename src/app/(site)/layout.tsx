@@ -32,7 +32,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       {user && <ChatWatcher userId={user.id} />}
       <InstallBanner />
       <RegisterServiceWorker />
-      <NativeApp />
+      <NativeApp userId={user?.id ?? null} />
       <PageView />
       <ClearReloadFlag />
       <AuthLinkHandler />
