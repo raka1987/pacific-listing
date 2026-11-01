@@ -95,7 +95,6 @@ workflows:
         BUNDLE_ID: com.pacificlisting.app
         APP_STORE_APPLE_ID: "6829414964"
       node: 22
-      xcode: "26.5"
     scripts:
       - name: Install packages
         script: npm ci
