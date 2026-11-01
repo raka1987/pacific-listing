@@ -1,3 +1,4 @@
+import { withPickedCountry } from "@/lib/location";
 import type { Metadata } from "next";
 import { SearchResults } from "@/components/search-results";
 import { categoryBySlug, countryByCode } from "@/lib/constants";
@@ -12,7 +13,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const filters = await searchParams;
+  const filters = await withPickedCountry(await searchParams);
   const country = countryByCode(filters.country);
   const title = filters.q
     ? `Results for “${filters.q}”`

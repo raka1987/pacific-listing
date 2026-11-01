@@ -68,6 +68,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
       .select(LISTING_CARD_COLUMNS)
       .eq("status", "active")
       .eq("category", listing.category)
+      .eq("country", listing.country)
       .neq("id", listing.id)
       .order("created_at", { ascending: false })
       .limit(4),

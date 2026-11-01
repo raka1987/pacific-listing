@@ -22,7 +22,7 @@ export function SearchBar({
   const router = useRouter();
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
-  const [country, setCountry] = useState(params.get("country") ?? defaultCountry ?? "");
+  const [country, setCountry] = useState(params.get("country") === "all" ? "" : (params.get("country") ?? defaultCountry ?? ""));
   // "property" or "property:for-rent"
   const [category, setCategory] = useState(
     [params.get("category"), params.get("sub")].filter(Boolean).join(":"),

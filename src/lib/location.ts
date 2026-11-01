@@ -47,6 +47,17 @@ export async function getSearchCountry() {
   return viewer.chosen ? viewer.pacificCountry : null;
 }
 
+/**
+ * Search filters with the visitor's picked country filled in when the link doesn't name one.
+ * "country=all" means they chose All Pacific on purpose.
+ */
+export async function withPickedCountry<T extends { country?: string }>(filters: T): Promise<T> {
+  if (filters.country === "all") return { ...filters, country: undefined };
+  if (filters.country) return filters;
+  const picked = await getSearchCountry();
+  return picked ? { ...filters, country: picked } : filters;
+}
+
 /** Approximate conversion between two currencies, via Fiji dollars. */
 export function convert(amount: number, from: string, to: string) {
   const a = FJD_RATES[from];

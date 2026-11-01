@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SearchResults } from "@/components/search-results";
 import { categoryBySlug, countryByCode, subcategoryBySlug } from "@/lib/constants";
+import { withPickedCountry } from "@/lib/location";
 import type { SearchFilters } from "@/lib/queries";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<SearchFilters> };
@@ -25,7 +26,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const category = categoryBySlug(slug);
   if (!category) notFound();
-  const filters = { ...(await searchParams), category: slug };
+  const filters = { ...(await withPickedCountry(await searchParams)), category: slug };
   const country = countryByCode(filters.country);
   const sub = subcategoryBySlug(slug, filters.sub);
   const name = sub ? (slug === "property" ? `Property ${sub.name.toLowerCase()}` : sub.name) : category.name;

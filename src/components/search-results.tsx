@@ -62,7 +62,9 @@ export async function SearchResults({
 
   const qs = (overrides: Record<string, string | undefined>) => {
     const p = new URLSearchParams();
-    const merged = { ...filters, ...overrides };
+    const merged: Record<string, string | undefined> = { ...filters, ...overrides };
+    // No country means All Pacific was chosen; say so, or their picked country would come back.
+    if (!landingCountry && !merged.country) merged.country = "all";
     for (const [k, v] of Object.entries(merged)) if (v && !(lockCategory && k === "category")) p.set(k, v);
     return `${basePath}${p.size ? `?${p}` : ""}`;
   };
@@ -73,7 +75,7 @@ export async function SearchResults({
     chips.push({ label: categoryBySlug(filters.category)?.name ?? filters.category, remove: { category: undefined, sub: undefined } });
   const sub = subcategoryBySlug(filters.category, filters.sub);
   if (sub) chips.push({ label: sub.name, remove: { sub: undefined } });
-  if (filters.country) chips.push({ label: countryByCode(filters.country)?.name ?? filters.country, remove: { country: undefined } });
+  if (filters.country) chips.push({ label: countryByCode(filters.country)?.name ?? filters.country, remove: { country: undefined, city: undefined, km: undefined } });
   const place = findPlace(filters.country, filters.city);
   const radius = place && (DISTANCES as readonly number[]).includes(Number(filters.km)) ? Number(filters.km) : 0;
   if (filters.city) chips.push({ label: radius ? `${filters.city} + ${radius} km` : filters.city, remove: { city: undefined, km: undefined } });
@@ -89,9 +91,9 @@ export async function SearchResults({
           <SearchBar />
         </Suspense>
       </div>
-      <CategoryChips active={filters.category} q={filters.q} country={filters.country} landingCountry={landingCountry} />
+      <CategoryChips active={filters.category} q={filters.q} country={filters.country ?? (landingCountry ? undefined : "all")} landingCountry={landingCountry} />
       {filters.category && (
-        <SubcategoryChips category={filters.category} active={filters.sub} q={filters.q} country={filters.country} landingCountry={landingCountry} />
+        <SubcategoryChips category={filters.category} active={filters.sub} q={filters.q} country={filters.country ?? (landingCountry ? undefined : "all")} landingCountry={landingCountry} />
       )}
       {towns.length > 0 && (
         <nav aria-label="Towns" className="scrollbar-none -mx-4 -mt-3 mb-6 flex items-center gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
