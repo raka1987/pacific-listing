@@ -30,7 +30,7 @@ export async function Header() {
             Browse
           </Link>
           <CountryPicker regions={VIEWER_REGIONS} current={{ code: viewer.country, flag: viewer.flag, currency: viewer.currency, name: viewer.chosen || viewer.country ? viewer.name : "All Pacific" }} />
-          <ThemeToggle />
+          <ThemeToggle className="max-[359px]:hidden" />
           {current && (
             <Link href="/messages" className="relative hidden h-10 w-10 items-center justify-center rounded-full text-ink-2 hover:bg-subtle sm:flex" aria-label="Messages">
               <MessagesSquare className="h-5 w-5" />
