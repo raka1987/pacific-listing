@@ -41,7 +41,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         </div>
         {!profile.is_verified && <Link href="/verify" className="btn-secondary">Get verified</Link>}
       </div>
-      <PushSetup />
+      <PushSetup account={user.email ?? "your account"} />
       {prefs && <EmailSettings initial={prefs as { chat: boolean; alerts: boolean }} />}
       <div className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-5">
         <div>

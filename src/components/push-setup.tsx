@@ -42,7 +42,7 @@ const store = {
  * "Turn on phone notifications" in the app's profile page. Each step is remembered before it
  * runs, so if the app ever closes during setup, the next visit says exactly where it stopped.
  */
-export function PushSetup() {
+export function PushSetup({ account }: { account: string }) {
   const [available, setAvailable] = useState(false);
   const [oldApp, setOldApp] = useState(false);
   const [on, setOn] = useState(false);
@@ -54,9 +54,19 @@ export function PushSetup() {
     if (!isNativeApp()) return;
     if (!nativePlugin<PushPlugin>("PushNotifications")) return setOldApp(true);
     setAvailable(true);
-    setOn(!!store.get(PUSH_TOKEN_KEY));
     const last = store.get(STEP_KEY);
     if (last) setStoppedAt(last);
+    // Re-save the phone each visit, so "On" is only shown when the server really has it.
+    const token = store.get(PUSH_TOKEN_KEY);
+    if (!token) return;
+    savePushToken(token, capacitor()?.getPlatform?.() ?? "android")
+      .then((r) => {
+        if (r?.error) {
+          setError(`Notifications aren't working yet: ${r.error}. Tap the button to set them up again.`);
+          setOn(false);
+        } else setOn(true);
+      })
+      .catch(() => setOn(false));
   }, []);
 
   if (oldApp) {
@@ -141,10 +151,10 @@ export function PushSetup() {
       </h2>
       {on ? (
         <p className="mt-2 flex items-center gap-2 text-sm text-lagoon-700">
-          <CheckCircle2 className="h-4 w-4" /> On. This phone buzzes when you get a new message.
+          <CheckCircle2 className="h-4 w-4" /> On for {account}. This phone buzzes when you get a new message.
         </p>
       ) : (
-        <p className="mt-1 text-sm text-muted">Get a notification on this phone when someone messages you.</p>
+        <p className="mt-1 text-sm text-muted">Get a notification on this phone when someone messages {account}.</p>
       )}
       {stoppedAt && (
         <p className="mt-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
