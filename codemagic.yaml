@@ -81,17 +81,18 @@ workflows:
         submit_as_draft: true
 
   # 3) iPhone app: builds on Codemagic's Mac and uploads to TestFlight.
+  #    Signing is automatic: the build creates (or reuses) the certificate and App Store
+  #    profile itself, using the "app_store_credentials" group in this app's
+  #    Environment variables (see MOBILE_APP.md). No Codemagic team settings needed.
   ios-release:
     name: iPhone - build and send to TestFlight
     instance_type: mac_mini_m2
     max_build_duration: 60
-    integrations:
-      app_store_connect: Pacific Listing
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.pacificlisting.app
+      groups:
+        - app_store_credentials
       vars:
+        BUNDLE_ID: com.pacificlisting.app
         APP_STORE_APPLE_ID: "0000000000"
       node: 22
       xcode: latest
@@ -100,8 +101,12 @@ workflows:
         script: npm ci
       - name: Copy app settings into the iPhone project
         script: npx cap sync ios
-      - name: Use the signing certificate and profile
-        script: xcode-project use-profiles
+      - name: Get the signing certificate and App Store profile (created if missing)
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          keychain add-certificates
+          xcode-project use-profiles
       - name: Build number (one higher than TestFlight)
         script: |
           LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0)
@@ -113,5 +118,7 @@ workflows:
       - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
-        auth: integration
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true

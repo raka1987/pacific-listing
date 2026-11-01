@@ -102,15 +102,21 @@ You don't need a Mac: **Codemagic** builds both apps in the cloud from this GitH
    developer (or Claude), who puts it in `codemagic.yaml` as `APP_STORE_APPLE_ID`.
 
 ### 4. Connect Codemagic to Apple
-1. In App Store Connect, go to **Users and Access → Integrations → App Store Connect API → +**.
-   Name it `Codemagic` with access **App Manager**, then click **Generate**.
-2. **Download the .p8 key file** (Apple only lets you download it once). Note the **Key ID** and **Issuer ID**.
-3. In Codemagic, go to **Team settings → Team integrations → Developer Portal → Connect**, upload the
-   .p8, enter the Key ID and Issuer ID, and name it **`Pacific Listing`** (exactly).
-4. In Codemagic, go to **Team settings → codemagic.yaml settings → Code signing identities →
-   iOS certificates → Generate certificate**. Choose the key above and type **Apple Distribution**.
-   Then on the **iOS provisioning profiles** tab, click **Fetch profiles** and fetch the App Store
-   profile for `com.pacificlisting.app` (create it if offered).
+The iPhone build signs itself: it creates (or reuses) the distribution certificate and App Store
+profile on each build. It only needs four saved values, so no Codemagic team settings are needed.
+
+1. In App Store Connect, go to **Users and Access → Integrations → App Store Connect API → Team Keys → +**.
+   Name it `Codemagic`, access **Admin**, then **Generate**. **Download the .p8 key file** (only possible
+   once) and note the **Key ID** and the **Issuer ID**.
+2. In Codemagic, open the app, then the **Environment variables** tab. Add these four variables, all
+   in the group **`app_store_credentials`**, and tick **Secret** on each:
+   | Variable name | Value |
+   |---|---|
+   | `APP_STORE_CONNECT_ISSUER_ID` | the Issuer ID |
+   | `APP_STORE_CONNECT_KEY_IDENTIFIER` | the Key ID |
+   | `APP_STORE_CONNECT_PRIVATE_KEY` | the whole contents of the .p8 file (open it in Notepad, copy everything) |
+   | `CERTIFICATE_PRIVATE_KEY` | the whole contents of the certificate key file (`-----BEGIN RSA PRIVATE KEY-----` … `-----END RSA PRIVATE KEY-----`) |
+3. Keep the certificate key file safe and private: every build uses the same one.
 
 ### 5. Build and test on your iPhone (TestFlight)
 1. In Codemagic, click **Start new build → iPhone - build and send to TestFlight**.
