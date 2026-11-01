@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BadgeCheck, ExternalLink, KeyRound } from "lucide-react";
 import { DeleteAccount } from "@/components/delete-account";
 import { EmailSettings } from "@/components/email-settings";
+import { PushSetup } from "@/components/push-setup";
 import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -40,6 +41,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         </div>
         {!profile.is_verified && <Link href="/verify" className="btn-secondary">Get verified</Link>}
       </div>
+      <PushSetup />
       {prefs && <EmailSettings initial={prefs as { chat: boolean; alerts: boolean }} />}
       <div className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-5">
         <div>

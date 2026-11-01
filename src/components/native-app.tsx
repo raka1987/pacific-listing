@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { removePushToken, savePushToken } from "@/app/push-actions";
+import { removePushToken } from "@/app/push-actions";
+import { PUSH_TOKEN_KEY } from "./push-setup";
 import { capacitor, isNativeApp, nativePlugin, type NativePlugins, type PushPlugin } from "@/lib/native";
 
-const TOKEN_KEY = "pl_push_token";
-// Temporarily off while we check an app start-up problem after the notifications update.
-const PUSH_ENABLED = false;
 
 /** Runs a phone feature call without letting a missing or old plugin crash the page. */
 function safely(fn: () => unknown) {
@@ -55,61 +53,37 @@ export function NativeApp({ userId }: { userId: string | null }) {
     };
   }, []);
 
-  // Phone notifications: register this phone for the logged-in member.
+  // Phone notifications are switched on from the profile page (PushSetup). Here: open the chat
+  // when a notification is tapped, and stop notifications for this phone after logging out.
   useEffect(() => {
-    if (!isNativeApp() || !PUSH_ENABLED) return;
-    const push = nativePlugin<PushPlugin>("PushNotifications");
-    if (!push) return;
+    if (!isNativeApp()) return;
     const stored = (() => {
       try {
-        return localStorage.getItem(TOKEN_KEY);
+        return localStorage.getItem(PUSH_TOKEN_KEY);
       } catch {
         return null;
       }
     })();
-    // Logged out: this phone stops getting the previous member's notifications.
+    if (!stored) return;
     if (!userId) {
-      if (stored) {
-        removePushToken(stored).catch(() => {});
-        try {
-          localStorage.removeItem(TOKEN_KEY);
-        } catch {}
-      }
+      removePushToken(stored).catch(() => {});
+      try {
+        localStorage.removeItem(PUSH_TOKEN_KEY);
+      } catch {}
       return;
     }
-
-    const listeners: { remove: () => void }[] = [];
-    const keep = (p: Promise<{ remove: () => void }> | undefined) => p?.then((l) => listeners.push(l)).catch(() => {});
-    keep(
-      safely(() =>
-        push.addListener("registration", ((t: { value: string }) => {
-          try {
-            localStorage.setItem(TOKEN_KEY, t.value);
-          } catch {}
-          savePushToken(t.value, capacitor()?.getPlatform?.() ?? "android").catch(() => {});
-        }) as (e: never) => void),
-      ) as Promise<{ remove: () => void }> | undefined,
-    );
-    // Tapping a notification opens the chat it's about.
-    keep(
-      safely(() =>
-        push.addListener("pushNotificationActionPerformed", ((a: { notification?: { data?: { url?: string } } }) => {
-          const url = a.notification?.data?.url;
-          if (url && url.startsWith("/")) location.href = url;
-        }) as (e: never) => void),
-      ) as Promise<{ remove: () => void }> | undefined,
-    );
-
-    (async () => {
-      try {
-        await push.createChannel?.({ id: "messages", name: "Messages", description: "New chat messages", importance: 5, vibration: true });
-        let perm = await push.checkPermissions();
-        if (perm.receive === "prompt" || perm.receive === "prompt-with-rationale") perm = await push.requestPermissions();
-        if (perm.receive === "granted") await push.register();
-      } catch {}
-    })();
-
-    return () => listeners.forEach((l) => safely(() => l.remove()));
+    const push = nativePlugin<PushPlugin>("PushNotifications");
+    let listener: { remove: () => void } | undefined;
+    const added = safely(() =>
+      push?.addListener("pushNotificationActionPerformed", ((a: { notification?: { data?: { url?: string } } }) => {
+        const url = a.notification?.data?.url;
+        if (url && url.startsWith("/")) location.href = url;
+      }) as (e: never) => void),
+    ) as Promise<{ remove: () => void }> | undefined;
+    if (added && typeof added.then === "function") added.then((l) => (listener = l)).catch(() => {});
+    return () => {
+      safely(() => listener?.remove());
+    };
   }, [userId]);
   return null;
 }
