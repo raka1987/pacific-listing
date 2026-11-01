@@ -39,7 +39,6 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [menu, setMenu] = useState(false);
-  const bottom = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
   const lastId = useRef(initialMessages[initialMessages.length - 1]?.id ?? 0);
 
@@ -99,9 +98,35 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
     };
   }, [supabase, conversationId, me, add, markRead]);
 
+  // Keep the newest messages in view: when new ones arrive, and when the keyboard opens or the
+  // message box grows (which shrinks the chat area), unless the person has scrolled up to read.
+  const list = useRef<HTMLDivElement>(null);
+  const atBottom = useRef(true);
+  const toBottom = useCallback(() => {
+    const el = list.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
   useEffect(() => {
-    bottom.current?.scrollIntoView({ block: "end" });
-  }, [messages.length]);
+    toBottom();
+  }, [messages.length, toBottom]);
+  useEffect(() => {
+    const el = list.current;
+    if (!el) return;
+    const keep = () => atBottom.current && toBottom();
+    const onScroll = () => {
+      atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(keep) : null;
+    ro?.observe(el);
+    if (el.firstElementChild) ro?.observe(el.firstElementChild);
+    window.visualViewport?.addEventListener("resize", keep);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      ro?.disconnect();
+      window.visualViewport?.removeEventListener("resize", keep);
+    };
+  }, [toBottom]);
 
   async function send(e?: React.FormEvent) {
     e?.preventDefault();
@@ -216,7 +241,8 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5">
+      <div ref={list} className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5">
+        <div>
         <p className="mx-auto mb-4 flex max-w-sm items-start gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
           <span>Meet in a public place and check the item before paying. Never send money in advance.</span>
@@ -244,7 +270,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
             );
           })}
         </ul>
-        <div ref={bottom} />
+        </div>
       </div>
 
       {/* Composer */}
@@ -259,6 +285,10 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
               ref={input}
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onFocus={() => {
+                atBottom.current = true;
+                setTimeout(toBottom, 300);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing && window.matchMedia("(pointer: fine)").matches) {
                   e.preventDefault();
