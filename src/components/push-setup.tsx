@@ -44,19 +44,33 @@ const store = {
  */
 export function PushSetup() {
   const [available, setAvailable] = useState(false);
+  const [oldApp, setOldApp] = useState(false);
   const [on, setOn] = useState(false);
   const [step, setStep] = useState(-1);
   const [stoppedAt, setStoppedAt] = useState<string | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isNativeApp() || !nativePlugin<PushPlugin>("PushNotifications")) return;
+    if (!isNativeApp()) return;
+    if (!nativePlugin<PushPlugin>("PushNotifications")) return setOldApp(true);
     setAvailable(true);
     setOn(!!store.get(PUSH_TOKEN_KEY));
     const last = store.get(STEP_KEY);
     if (last) setStoppedAt(last);
   }, []);
 
+  if (oldApp) {
+    return (
+      <section className="card mt-6 p-5">
+        <h2 className="flex items-center gap-2 font-bold text-ink">
+          <BellRing className="h-4 w-4 text-lagoon-600" /> Phone notifications
+        </h2>
+        <p className="mt-2 text-sm text-ink-2">
+          This version of the app can&apos;t do notifications yet. Update Pacific Listing in the Play Store, then come back here.
+        </p>
+      </section>
+    );
+  }
   if (!available) return null;
 
   async function run() {
@@ -107,7 +121,8 @@ export function PushSetup() {
       const value = await token;
 
       mark(6);
-      await savePushToken(value, capacitor()?.getPlatform?.() ?? "android");
+      const saved = await savePushToken(value, capacitor()?.getPlatform?.() ?? "android");
+      if (saved?.error) throw new Error(saved.error);
       store.set(PUSH_TOKEN_KEY, value);
       store.del(STEP_KEY);
       setStep(-1);
