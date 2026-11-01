@@ -64,7 +64,7 @@ export default async function AdvertisePage() {
         ))}
       </div>
 
-      <h2 className="font-display mt-12 mb-5 text-2xl font-semibold">Ad spots and prices</h2>
+      <h2 className="font-display mt-12 mb-5 text-2xl font-semibold">{slots.some((s) => s.show_price !== false) ? "Ad spots and prices" : "Ad spots"}</h2>
       <div className="grid gap-5 md:grid-cols-3">
         {slots.map((s) => (
           <div key={s.code} className="card flex flex-col p-5">
@@ -75,28 +75,64 @@ export default async function AdvertisePage() {
               <LayoutTemplate className="mr-1 inline h-3.5 w-3.5" />
               Image size {s.size_hint}
             </p>
-            <dl className="mt-3 divide-y divide-line rounded-2xl border border-line text-sm">
-              <div className="flex items-baseline justify-between gap-2 px-3.5 py-2.5">
-                <dt className="text-muted">One country</dt>
-                <dd>
-                  <span className="font-display text-lg font-semibold text-ink">{formatMoney(priceIn(s.prices, currency), currency)}</span>
-                  <span className="text-muted"> / week</span>
-                </dd>
+            {s.show_price === false ? (
+              <div className="mt-3 rounded-2xl border border-line p-3.5 text-sm">
+                <p className="font-display text-lg font-semibold text-ink">Price on request</p>
+                <p className="text-muted">Local or Pacific-wide. Tell us what you need and we&apos;ll send a quote.</p>
+                <Link
+                  href={`/contact?subject=${encodeURIComponent(`Advertising: ${s.name}`)}`}
+                  className="btn-secondary mt-3 w-full"
+                >
+                  Contact us for pricing
+                </Link>
               </div>
-              <div className="flex items-baseline justify-between gap-2 px-3.5 py-2.5">
-                <dt className="text-muted">All countries</dt>
-                <dd>
-                  <span className="font-display text-lg font-semibold text-ink">{formatMoney(priceIn(s.global_prices, currency), currency)}</span>
-                  <span className="text-muted"> / week</span>
-                </dd>
-              </div>
-            </dl>
+            ) : (
+              <dl className="mt-3 divide-y divide-line rounded-2xl border border-line text-sm">
+                <div className="flex items-baseline justify-between gap-2 px-3.5 py-2.5">
+                  <dt className="text-muted">One country</dt>
+                  <dd>
+                    <span className="font-display text-lg font-semibold text-ink">{formatMoney(priceIn(s.prices, currency), currency)}</span>
+                    <span className="text-muted"> / week</span>
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-2 px-3.5 py-2.5">
+                  <dt className="text-muted">All countries</dt>
+                  <dd>
+                    <span className="font-display text-lg font-semibold text-ink">{formatMoney(priceIn(s.global_prices, currency), currency)}</span>
+                    <span className="text-muted"> / week</span>
+                  </dd>
+                </div>
+              </dl>
+            )}
           </div>
         ))}
       </div>
       <p className="mt-3 text-sm text-muted">
-        Prices in {currency}. A country banner is only shown to visitors in that country; a global banner is shown to everyone. Discounts for longer bookings on request.
+        {slots.some((s) => s.show_price !== false) && <>Prices in {currency}. </>} A country banner is only shown to visitors in that country; a global banner is shown to everyone. Discounts for longer bookings on request.
       </p>
+
+      <div className="mt-10 grid gap-6 rounded-3xl border border-line bg-surface p-7 sm:p-9 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+        <div>
+          <p className="text-xs font-semibold tracking-wider text-coral-600 uppercase">For larger campaigns</p>
+          <h2 className="font-display mt-2 text-2xl font-semibold text-ink">Bigger campaign or multinational brand?</h2>
+          <p className="mt-2 text-ink-2">
+            We put together custom packages for airlines, telcos, banks, travel and regional brands: every ad spot, several or all
+            Pacific countries, and bookings by the month or season, with reporting on views and clicks.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3">
+          <ul className="space-y-1.5 text-sm text-ink-2">
+            {["All spots or your choice of spots", "One country, several, or the whole Pacific", "Monthly and seasonal packages", "Results report for every campaign"].map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-lagoon-600" /> {t}
+              </li>
+            ))}
+          </ul>
+          <Link href="/contact?subject=Advertising%3A%20large%20or%20multi-country%20campaign" className="btn-primary w-full sm:w-fit">
+            Talk to us about a package
+          </Link>
+        </div>
+      </div>
 
       <div className="mt-12 flex flex-col items-start gap-4 rounded-3xl bg-ocean-900 p-7 text-white sm:flex-row sm:items-center sm:justify-between sm:p-9">
         <div>

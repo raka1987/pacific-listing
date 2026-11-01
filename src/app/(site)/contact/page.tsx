@@ -9,11 +9,15 @@ export const metadata: Metadata = { title: "Contact & feedback", description: "G
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ subject?: string }> }) {
   const current = await getCurrentUser();
-  const { subject } = await searchParams;
+  const { subject: asked } = await searchParams;
+  // Advertising links pass what the person asked about; file it under the advertising topic and start the message for them.
+  const advertising = asked?.startsWith("Advertising: ");
+  const subject = advertising ? "Advertising & business" : asked;
+  const message = advertising ? `Hi, I'd like pricing for: ${asked!.slice("Advertising: ".length)}.\n\nOur business: \nCountries we'd like to reach: \nHow long for: ` : undefined;
   return (
     <ContentPage title="Contact & feedback" intro="Questions, problems or ideas to make Pacific Listing better? We'd love to hear from you.">
       <div className="grid gap-6 md:grid-cols-[1fr_260px]">
-        <ContactForm name={current?.profile?.full_name} email={current?.user.email} subject={subject} />
+        <ContactForm name={current?.profile?.full_name} email={current?.user.email} subject={subject} message={message} />
         <div className="space-y-4">
           <div className="card p-5">
             <Mail className="h-5 w-5 text-lagoon-600" />

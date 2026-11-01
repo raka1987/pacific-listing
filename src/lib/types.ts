@@ -103,6 +103,8 @@ export type AdSlot = {
   prices: Prices;
   /** Per week, shown in every country */
   global_prices: Prices;
+  /** false: the public page says "Price on request" instead of showing prices */
+  show_price?: boolean;
   is_active: boolean;
   sort: number;
 };

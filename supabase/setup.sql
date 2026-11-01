@@ -3088,3 +3088,8 @@ exception when others then null;
 end;
 $$;
 select cron.schedule('email-alerts', '* * * * *', $$select public.queue_chat_alerts(); select public.flush_email_outbox();$$);
+
+
+-- ========== 20261116000000_ad_price_on_request.sql ==========
+-- Pacific Listing: banner spots can show "Price on request" instead of weekly prices.
+alter table public.ad_slots add column if not exists show_price boolean not null default true;

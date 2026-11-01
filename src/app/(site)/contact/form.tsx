@@ -6,7 +6,7 @@ import { sendContactMessage } from "@/app/actions";
 import { FormMessage } from "@/components/auth-card";
 import { SubmitButton } from "@/components/submit-button";
 
-export function ContactForm({ name, email, subject }: { name?: string; email?: string; subject?: string }) {
+export function ContactForm({ name, email, subject, message }: { name?: string; email?: string; subject?: string; message?: string }) {
   const [state, action] = useActionState(sendContactMessage, {});
   if (state.ok) {
     return (
@@ -40,7 +40,7 @@ export function ContactForm({ name, email, subject }: { name?: string; email?: s
       </div>
       <div>
         <label className="label" htmlFor="message">Message</label>
-        <textarea id="message" name="message" rows={6} required maxLength={5000} defaultValue={state.values?.message} className="input" />
+        <textarea id="message" name="message" rows={6} required maxLength={5000} defaultValue={state.values?.message ?? message} className="input" />
       </div>
       {/* Honeypot field: hidden from people, filled in by spam bots */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />

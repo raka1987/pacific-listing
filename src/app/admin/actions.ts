@@ -360,10 +360,10 @@ export async function adminSavePlan(id: string, fd: FormData) {
 // Banner advertising ----------------------------------------------------------
 export async function adminSaveSlot(code: string, fd: FormData) {
   const { supabase, log } = await staff(SALES_ROLES);
-  await supabase
-    .from("ad_slots")
-    .update({ is_active: fd.get("is_active") === "on", prices: readPrices(fd), global_prices: readPrices(fd, "global_") })
-    .eq("code", code);
+  const values = { is_active: fd.get("is_active") === "on", prices: readPrices(fd), global_prices: readPrices(fd, "global_") };
+  const { error } = await supabase.from("ad_slots").update({ ...values, show_price: fd.get("show_price") === "on" }).eq("code", code);
+  // Before the "price on request" database update, save everything else.
+  if (error) await supabase.from("ad_slots").update(values).eq("code", code);
   await log("pricing.ad_slot", "ad_slot", code);
   done("/admin/ads", "/advertise");
 }

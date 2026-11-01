@@ -113,6 +113,10 @@ export default async function AdminAds() {
                 <label className="mt-2 flex items-center gap-2 text-sm text-ink-2">
                   <input type="checkbox" name="is_active" defaultChecked={x.is_active} className="h-4 w-4 accent-lagoon-600" /> Available
                 </label>
+                <label className="mt-1.5 flex items-center gap-2 text-sm text-ink-2">
+                  <input type="checkbox" name="show_price" defaultChecked={x.show_price !== false} className="h-4 w-4 accent-lagoon-600" /> Show prices on the website
+                </label>
+                {x.show_price === false && <p className="mt-1 text-xs text-muted">Shows &quot;Price on request&quot; publicly.</p>}
               </div>
               <div className="space-y-4">
                 <div>
