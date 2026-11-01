@@ -6,6 +6,7 @@ import { useState } from "react";
 import { CATEGORIES, categoryBySlug, COUNTRIES } from "@/lib/constants";
 import { rememberSearchCountry } from "@/lib/search-country";
 import type { SearchFilters } from "@/lib/queries";
+import { TOWNS } from "@/lib/places";
 import { CategoryIcon } from "./category-icon";
 import { Dropdown, type DropdownOption } from "./dropdown";
 
@@ -45,7 +46,12 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
       </div>
       <div>
         <label className="label" htmlFor="f-city">Town / city</label>
-        <input id="f-city" name="city" defaultValue={filters.city} className="input" placeholder="e.g. Suva, Apia" />
+        <input id="f-city" name="city" list="f-city-list" defaultValue={filters.city} className="input" placeholder="e.g. Suva, Apia" />
+        <datalist id="f-city-list">
+          {(filters.country ? (TOWNS[filters.country] ?? []) : Object.values(TOWNS).flat()).map((t) => (
+            <option key={t} value={t} />
+          ))}
+        </datalist>
       </div>
       <div>
         <span className="label">Price</span>

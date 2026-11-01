@@ -1,6 +1,6 @@
 import { getAuthUser } from "@/lib/auth";
 import Link from "next/link";
-import { SearchX, X } from "lucide-react";
+import { MapPin, SearchX, X } from "lucide-react";
 import { categoryBySlug, countryByCode, subcategoryBySlug } from "@/lib/constants";
 import { getFavoriteIds, searchListings, type SearchFilters } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -14,6 +14,7 @@ import { SearchFiltersPanel, SortSelect } from "./search-filters";
 import { Suspense } from "react";
 import { searchRow } from "@/app/alerts-actions";
 import { searchHref } from "@/lib/saved-search";
+import { TOWNS } from "@/lib/places";
 import { SaveSearchButton } from "./save-search-button";
 
 export async function SearchResults({
@@ -41,9 +42,12 @@ export async function SearchResults({
 }) {
   const supabase = await createClient();
   const user = await getAuthUser();
-  const [{ listings, total, page, totalPages }, favoriteIds] = await Promise.all([
+  // Towns to narrow a country down by (not on country landing pages, which have their own town pages).
+  const townCountry = !landingCountry && filters.country ? filters.country : null;
+  const [{ listings, total, page, totalPages }, favoriteIds, towns] = await Promise.all([
     searchListings(supabase, filters),
     getFavoriteIds(supabase, user?.id),
+    townCountry ? townsWithAds(supabase, townCountry) : Promise.resolve([]),
   ]);
 
   // Is this exact search already saved?
@@ -84,6 +88,26 @@ export async function SearchResults({
       <CategoryChips active={filters.category} q={filters.q} country={filters.country} landingCountry={landingCountry} />
       {filters.category && (
         <SubcategoryChips category={filters.category} active={filters.sub} q={filters.q} country={filters.country} landingCountry={landingCountry} />
+      )}
+      {towns.length > 0 && (
+        <nav aria-label="Towns" className="scrollbar-none -mx-4 -mt-3 mb-6 flex items-center gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+          <MapPin className="h-4 w-4 shrink-0 text-muted" />
+          {[{ name: "", label: `All of ${countryByCode(townCountry)?.name ?? ""}` }, ...towns.map((t) => ({ name: t, label: t }))].map((t) => {
+            const on = (filters.city ?? "").toLowerCase() === t.name.toLowerCase();
+            return (
+              <Link
+                key={t.label}
+                href={qs({ city: t.name || undefined, page: undefined })}
+                aria-current={on ? "page" : undefined}
+                className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm transition ${
+                  on ? "border-lagoon-600 bg-lagoon-600 text-white" : "border-line bg-surface text-ink-2 hover:border-faint hover:text-ink"
+                }`}
+              >
+                {t.label}
+              </Link>
+            );
+          })}
+        </nav>
       )}
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <SearchFiltersPanel filters={filters} basePath={basePath} lockCategory={lockCategory} />
@@ -152,4 +176,26 @@ export async function SearchResults({
       {children}
     </div>
   );
+}
+
+/** The main towns in a country plus any others people have listed ads in, busiest first. */
+async function townsWithAds(supabase: Awaited<ReturnType<typeof createClient>>, country: string) {
+  const { data } = await supabase.from("listings").select("city").eq("status", "active").eq("country", country).not("city", "is", null).limit(2000);
+  const counts = new Map<string, { name: string; n: number }>();
+  for (const t of TOWNS[country] ?? []) counts.set(t.toLowerCase(), { name: t, n: 0 });
+  for (const r of (data ?? []) as { city: string }[]) {
+    const name = r.city.trim().replace(/\s+/g, " ");
+    if (name.length < 2 || name.length > 30) continue;
+    const key = name.toLowerCase();
+    const c = counts.get(key) ?? { name, n: 0 };
+    c.n++;
+    counts.set(key, c);
+  }
+  const main = new Set((TOWNS[country] ?? []).map((t) => t.toLowerCase()));
+  return [...counts.entries()]
+    // Main towns always show; other places once two or more ads mention them.
+    .filter(([k, c]) => main.has(k) || c.n >= 2)
+    .sort((a, b) => b[1].n - a[1].n)
+    .slice(0, 14)
+    .map(([, c]) => c.name);
 }
