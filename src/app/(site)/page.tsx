@@ -2,7 +2,7 @@ import { getAuthUser } from "@/lib/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowRight, Camera } from "lucide-react";
+import { ArrowRight, Camera, Clock, MessagesSquare, Sparkles, Tag } from "lucide-react";
 import { AdBanner } from "@/components/ad-banner";
 import { CategoryTiles } from "@/components/category-tiles";
 import { getSearchCountry } from "@/lib/location";
@@ -22,7 +22,7 @@ export default async function HomePage() {
   const supabase = await createClient();
   const user = await getAuthUser();
 
-  const [featured, latest, notices, favoriteIds, searchCountry] = await Promise.all([
+  const [featured, latest, notices, favoriteIds, searchCountry, offer] = await Promise.all([
     supabase
       .from("listings")
       .select(LISTING_CARD_COLUMNS)
@@ -34,7 +34,11 @@ export default async function HomePage() {
     supabase.from("notices").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(3),
     getFavoriteIds(supabase, user?.id),
     getSearchCountry(),
+    supabase.from("site_settings").select("launch_offer_days, free_ad_limit").eq("id", 1).maybeSingle(),
   ]);
+  const offerDays = (offer.data as { launch_offer_days?: number } | null)?.launch_offer_days ?? 0;
+  // "Free live ads per person" from Admin -> Settings (none set means no limit).
+  const freeAds = (offer.data as { free_ad_limit?: number | null } | null)?.free_ad_limit ?? null;
 
   const featuredListings = (featured.data ?? []) as ListingCardData[];
   const latestListings = (latest.data ?? []) as ListingCardData[];
@@ -104,6 +108,33 @@ export default async function HomePage() {
         <CategoryTiles country={searchCountry} />
       </section>
 
+      {/* List it today */}
+      <section className="container-page mt-12 sm:mt-16">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-coral-500 to-coral-600 p-6 text-white shadow-lg shadow-coral-500/20 sm:p-10">
+          <div className="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full bg-white/10" />
+          <div className="pointer-events-none absolute -bottom-20 right-24 h-40 w-40 rounded-full bg-white/10" />
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-xl">
+              <h2 className="font-display text-3xl leading-tight font-semibold text-white sm:text-4xl">Have something to sell? List it today.</h2>
+              <p className="mt-2 text-white/90 sm:text-lg">Snap a photo, add a price and you&apos;re live in about a minute. Buyers across the Pacific can chat with you straight away.</p>
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-white/95">
+                <li className="flex items-center gap-1.5"><Tag className="h-4 w-4" /> {freeAds ? `Free for up to ${freeAds} ads` : "Free to post"}</li>
+                <li className="flex items-center gap-1.5"><Clock className="h-4 w-4" /> About a minute</li>
+                <li className="flex items-center gap-1.5"><MessagesSquare className="h-4 w-4" /> Chat with buyers</li>
+              </ul>
+              {offerDays > 0 && (
+                <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-sm font-semibold">
+                  <Sparkles className="h-4 w-4" /> New sellers: your first ad is featured free for {offerDays} days
+                </p>
+              )}
+            </div>
+            <Link href="/post" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-lg font-semibold text-coral-600 shadow-md transition hover:bg-white/90">
+              List an item free <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Featured */}
       {featuredListings.length > 0 && (
         <section className="container-page mt-16 sm:mt-24">
@@ -143,7 +174,7 @@ export default async function HomePage() {
         <div className="grid gap-10 rounded-3xl bg-subtle p-7 sm:p-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:p-14">
           <div>
             <h2 className="font-display text-3xl font-semibold sm:text-4xl">Selling something?</h2>
-            <p className="mt-3 max-w-md text-ink-2">Post for free in about a minute. Buyers call or WhatsApp you directly, with no fees on the sale.</p>
+            <p className="mt-3 max-w-md text-ink-2">Post for free in about a minute. Buyers chat with you in the app, or call and WhatsApp you directly, with no fees on the sale.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/post" className="btn-accent px-6 py-3">
                 Post an ad
@@ -156,7 +187,7 @@ export default async function HomePage() {
           <ol className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line">
             {[
               ["Add photos and a price", "Up to 8 photos. Set your location so local buyers find you."],
-              ["Buyers get in touch", "They call or message you on WhatsApp. No middleman."],
+              ["Buyers get in touch", "They chat with you in the app, or call or WhatsApp you. No middleman."],
               ["Meet and sell safely", "Meet somewhere public and check the money before handing over."],
             ].map(([title, text], i) => (
               <li key={title} className="flex gap-4 bg-surface p-5">
