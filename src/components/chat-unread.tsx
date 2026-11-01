@@ -35,8 +35,11 @@ export function ChatWatcher({ userId }: { userId: string }) {
     });
     const onVisible = () => document.visibilityState === "visible" && refresh();
     document.addEventListener("visibilitychange", onVisible);
+    // Backup if the live connection drops: refresh the unread count now and then.
+    const poll = setInterval(() => document.visibilityState === "visible" && refresh(), 20000);
     return () => {
       alive = false;
+      clearInterval(poll);
       document.removeEventListener("visibilitychange", onVisible);
       supabase.removeChannel(channel);
     };

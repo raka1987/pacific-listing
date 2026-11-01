@@ -91,8 +91,13 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
       if (document.visibilityState === "visible") catchUp();
     };
     document.addEventListener("visibilitychange", onVisible);
+    // Backup for phones and networks that drop the live connection: check every few seconds.
+    const poll = setInterval(() => {
+      if (document.visibilityState === "visible") catchUp();
+    }, 3000);
     return () => {
       alive = false;
+      clearInterval(poll);
       document.removeEventListener("visibilitychange", onVisible);
       supabase.removeChannel(channel);
     };
