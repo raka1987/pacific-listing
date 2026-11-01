@@ -67,7 +67,7 @@ export function ListingForm({
       </Section>
 
       <Section title="Category">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {CATEGORIES.map((c) => (
             <label key={c.slug} className="cursor-pointer">
               <input

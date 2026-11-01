@@ -8,7 +8,7 @@ export function GET() {
   const u = (p: string) => `${SITE.url}${p}`;
   const text = `# ${SITE.name}
 
-> ${SITE.name} is a free online marketplace for the Pacific Islands. People buy and sell vehicles, property (for sale and rent), electronics, furniture, clothes, boats and pets, find jobs and local services, and post lost & found notices. Sellers are contacted directly by phone or WhatsApp. Prices are shown in each country's own currency.
+> ${SITE.name} is a free online marketplace for the Pacific Islands. People buy and sell vehicles, property (for sale and rent), electronics, furniture, clothes, boats, sports gear and pets, find jobs and local services, and post lost & found notices. Sellers are contacted directly by phone or WhatsApp. Prices are shown in each country's own currency.
 
 Countries covered: ${COUNTRIES.map((c) => c.name).join(", ")}.
 

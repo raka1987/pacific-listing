@@ -100,6 +100,15 @@ const SUBCATEGORIES: Record<string, Subcategory[]> = {
     ["water-sports", "Diving & water sports"],
     ["charters", "Charters & tours"],
   ),
+  sports: subs(
+    ["team-sports", "Rugby, football & team sports"],
+    ["gym", "Gym & fitness"],
+    ["bikes", "Bikes & cycling"],
+    ["golf", "Golf"],
+    ["outdoors", "Camping & outdoors"],
+    ["kids-toys", "Kids' sports & toys"],
+    ["other", "Other sports gear"],
+  ),
   "lost-found": subs(["lost", "Lost"], ["found", "Found"], ["lost-pets", "Lost pets"]),
 };
 
@@ -113,6 +122,7 @@ export const CATEGORIES: Category[] = [
   { slug: "services", name: "Services", icon: "wrench", color: "bg-orange-100 text-orange-700", hasCondition: false, subcategories: [] },
   { slug: "pets", name: "Pets & Animals", icon: "paw", color: "bg-lime-100 text-lime-700", hasCondition: false, subcategories: [] },
   { slug: "boats", name: "Boats & Marine", icon: "sailboat", color: "bg-cyan-100 text-cyan-700", hasCondition: true, subcategories: [] },
+  { slug: "sports", name: "Sports & Fitness", icon: "dumbbell", color: "bg-red-100 text-red-700", hasCondition: true, subcategories: [] },
   { slug: "lost-found", name: "Lost & Found", icon: "search", color: "bg-rose-100 text-rose-700", hasCondition: false, subcategories: [] },
 ];
 
