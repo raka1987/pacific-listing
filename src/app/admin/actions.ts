@@ -141,6 +141,33 @@ export async function adminHideReportedListing(listingId: string) {
   done("/admin/reports", "/admin/listings");
 }
 
+// Phone notifications ---------------------------------------------------------
+export async function adminSendTestPush(userId: string): Promise<string> {
+  const { supabase } = await staff(["admin"]);
+  const { data, error } = await supabase.rpc("admin_push_tokens", { p_user: userId });
+  if (error) return `Couldn't read their phones: ${error.message}`;
+  const tokens = ((data ?? []) as { token: string }[]).map((t) => t.token);
+  if (!tokens.length) return "This member hasn't switched on phone notifications.";
+  const { sendPush } = await import("@/lib/fcm");
+  try {
+    const { sent, dead } = await sendPush(tokens, {
+      title: "Pacific Listing test",
+      body: "If you can see this, phone notifications are working.",
+      url: "/messages",
+      tag: "test",
+    });
+    if (dead.length) {
+      const secret = process.env.PUSH_SECRET?.trim();
+      if (secret) await supabase.rpc("remove_dead_push_tokens", { p_secret: secret, p_tokens: dead });
+    }
+    return sent
+      ? `Google accepted it for ${sent} ${sent === 1 ? "phone" : "phones"}. It should appear within a few seconds.${dead.length ? ` ${dead.length} old phone(s) removed.` : ""}`
+      : `Google didn't accept it. ${dead.length ? "Their phone registration is no longer valid; they should turn notifications on again in the app." : "Check FIREBASE_SERVICE_ACCOUNT in Vercel."}`;
+  } catch (e) {
+    return `Couldn't send: ${(e as Error).message}`;
+  }
+}
+
 // Messages ------------------------------------------------------------------
 export async function adminSetMessageStatus(id: string, status: "new" | "read" | "archived") {
   const { supabase } = await staff(STAFF_ROLES);

@@ -20,6 +20,7 @@ import {
   adminUpdateUserLimits,
 } from "../../actions";
 import { ActionButton, ConfirmButton } from "../../ui";
+import { PushTest } from "./push-test";
 
 export const metadata = { title: "User" };
 
@@ -60,6 +61,8 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
   ]);
   const u = d as Detail | null;
   if (!u) notFound();
+  const { data: phoneRows, error: phoneErr } = await supabase.rpc("admin_push_tokens", { p_user: id });
+  const phones = phoneErr ? null : ((phoneRows ?? []) as { platform: string; updated_at: string }[]);
   const listings = (l ?? []) as Listing[];
   const orders = (o ?? []) as Order[];
   const notes = (n ?? []) as unknown as { id: string; body: string; created_at: string; author: { full_name: string } | null }[];
@@ -163,6 +166,7 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
         </div>
 
         <div className="space-y-6">
+          <PushTest userId={u.id} phones={phones} />
           <section className="card space-y-3 p-5">
             <h2 className="font-bold">Role</h2>
             {self ? (
