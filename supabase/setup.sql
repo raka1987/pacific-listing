@@ -3094,6 +3094,7 @@ select cron.schedule('email-alerts', '* * * * *', $$select public.queue_chat_ale
 -- Pacific Listing: banner spots can show "Price on request" instead of weekly prices.
 alter table public.ad_slots add column if not exists show_price boolean not null default true;
 
+-- ========== 20261117000000_private_numbers.sql ==========
 -- Pacific Listing: private phone numbers.
 -- Sellers can keep their number private: buyers see part of it (+679 92•• •••) and ask for it
 -- in the chat; the seller shares it with that one buyer. Full numbers are never sent to anyone
