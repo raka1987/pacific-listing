@@ -3,7 +3,7 @@
 import { MessagesSquare } from "lucide-react";
 import { useEffect, useState } from "react";
 import { removePushToken } from "@/app/push-actions";
-import { PUSH_TOKEN_KEY } from "./push-setup";
+import { PUSH_AUTO_KEY, PUSH_STEP_KEY, PUSH_TOKEN_KEY, pushStore, runPushSetup } from "@/lib/push-flow";
 import { capacitor, isNativeApp, nativePlugin, type NativePlugins, type PushPlugin } from "@/lib/native";
 
 
@@ -55,7 +55,20 @@ export function NativeApp({ userId }: { userId: string | null }) {
     };
   }, []);
 
-  // Phone notifications are switched on from the profile page (PushSetup). Here: open the chat
+  // Switch phone notifications on by themselves after login, once per phone. Not if the person
+  // turned them off, and not if an earlier try closed the app (a step was left unfinished);
+  // the Profile button still works in both cases.
+  useEffect(() => {
+    if (!isNativeApp() || !userId || !nativePlugin<PushPlugin>("PushNotifications")) return;
+    if (pushStore.get(PUSH_TOKEN_KEY) || pushStore.get(PUSH_AUTO_KEY) || pushStore.get(PUSH_STEP_KEY)) return;
+    pushStore.set(PUSH_AUTO_KEY, "1");
+    const t = setTimeout(() => {
+      runPushSetup().catch(() => {});
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [userId]);
+
+  // Open the chat
   // when a notification is tapped, and stop notifications for this phone after logging out.
   useEffect(() => {
     if (!isNativeApp()) return;
@@ -66,14 +79,17 @@ export function NativeApp({ userId }: { userId: string | null }) {
         return null;
       }
     })();
-    if (!stored) return;
+    // Logged out: this phone stops getting that person's notifications, and the next person to
+    // log in gets them switched on automatically (their own choice, not the previous person's).
     if (!userId) {
-      removePushToken(stored).catch(() => {});
-      try {
-        localStorage.removeItem(PUSH_TOKEN_KEY);
-      } catch {}
+      if (pushStore.get(PUSH_AUTO_KEY) !== "1" || stored) pushStore.del(PUSH_AUTO_KEY);
+      if (stored) {
+        removePushToken(stored).catch(() => {});
+        pushStore.del(PUSH_TOKEN_KEY);
+      }
       return;
     }
+    if (!stored) return;
     const push = nativePlugin<PushPlugin>("PushNotifications");
     const listeners: { remove: () => void }[] = [];
     const listen = (event: string, cb: (e: never) => void) => {
