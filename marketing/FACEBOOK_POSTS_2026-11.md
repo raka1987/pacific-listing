@@ -78,6 +78,29 @@ No prices appear in any image. Post one every 2–3 days rather than all at once
 
 ---
 
+## 6. App coming soon (images: `post-f-apps-coming-soon.png` for the feed, `story-f-apps.png` for Stories and WhatsApp Status)
+
+> 📱 **The Pacific Listing app is coming soon to Android and iPhone!**
+>
+> Buy, sell and chat from your phone, and get a notification the moment someone's interested in your ad.
+>
+> 💬 Chat with buyers and sellers
+> 🔔 Instant message notifications
+> 📸 List an item straight from your camera
+> ✅ Verified sellers and ratings
+>
+> Can't wait? Pacific Listing already works great on your phone's browser 👉 **pacificlisting.com**
+>
+> Follow this page so you're the first to know when it's out! 🌴
+>
+> #PacificListing #ComingSoon #Fiji #Samoa #Tonga #Vanuatu #BuyAndSell
+
+**Story or WhatsApp Status caption:** Our app is coming soon to Android and iPhone 📱 Until then: pacificlisting.com
+
+**When the app is out:** swap "coming soon" for the real store links, and only then use Google's and Apple's official "Get it on Google Play" and "Download on the App Store" badges. Both companies only allow those badges for apps that are actually available.
+
+---
+
 ## Shorter versions (for groups, comments or paid ads)
 
 - **Chat:** Chat with sellers right in the app. No need to swap numbers. Free 👉 pacificlisting.com
