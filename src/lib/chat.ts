@@ -22,7 +22,7 @@ export type Conversation = {
   seller: ChatPerson | null;
 };
 
-export type ChatMessage = { id: number; conversation_id: string; sender_id: string; body: string; created_at: string };
+export type ChatMessage = { id: number; conversation_id: string; sender_id: string; body: string; created_at: string; edited_at?: string | null };
 
 const PERSON = "id, full_name, avatar_url, business_name, business_until, is_verified";
 export const CONVERSATION_COLUMNS =

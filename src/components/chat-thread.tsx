@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Ban, BadgeCheck, ExternalLink, MoreVertical, SendHorizontal, ShieldCheck, Star, Trash2 } from "lucide-react";
+import { ArrowLeft, Ban, BadgeCheck, Check, ExternalLink, MoreVertical, Pencil, SendHorizontal, ShieldCheck, Star, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { deleteChat, setChatBlocked } from "@/app/chat-actions";
 import type { ChatMessage } from "@/lib/chat";
@@ -24,6 +24,7 @@ type Props = {
 
 // Times use the reader's own time zone, so they're only filled in on the phone or computer
 // (the server's time zone would be wrong for most people).
+const EDIT_WINDOW = 15 * 60 * 1000;
 const noop = () => () => {};
 const useOnDevice = () => useSyncExternalStore(noop, () => true, () => false);
 
@@ -42,6 +43,10 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
   const onDevice = useOnDevice();
   const [messages, setMessages] = useState(initialMessages);
   const [text, setText] = useState(initialMessages.length ? "" : starter);
+  // Your own message that's showing its Edit button, and the one being edited.
+  const [picked, setPicked] = useState<number | null>(null);
+  const [editing, setEditing] = useState<number | null>(null);
+  const canEdit = (m: ChatMessage) => m.sender_id === me && Date.now() - new Date(m.created_at).getTime() < EDIT_WINDOW;
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [menu, setMenu] = useState(false);
@@ -51,11 +56,19 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
   const add = useCallback((incoming: ChatMessage[]) => {
     if (!incoming.length) return;
     setMessages((prev) => {
-      const seen = new Set(prev.map((m) => m.id));
-      const fresh = incoming.filter((m) => !seen.has(m.id));
-      if (!fresh.length) return prev;
-      lastId.current = Math.max(lastId.current, ...fresh.map((m) => m.id));
-      return [...prev, ...fresh].sort((a, b) => a.id - b.id);
+      const byId = new Map(prev.map((m) => [m.id, m]));
+      let changed = false;
+      for (const m of incoming) {
+        const old = byId.get(m.id);
+        // New message, or an edited one (keep whichever version is newer).
+        if (!old || (m.edited_at && m.edited_at !== old.edited_at && m.body !== old.body)) {
+          byId.set(m.id, { ...old, ...m });
+          changed = true;
+        }
+      }
+      if (!changed) return prev;
+      lastId.current = Math.max(lastId.current, ...incoming.map((m) => m.id));
+      return [...byId.values()].sort((a, b) => a.id - b.id);
     });
   }, []);
 
@@ -66,13 +79,15 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
   // Live messages, plus a catch-up whenever the screen comes back into view.
   useEffect(() => {
     let alive = true;
+    let editsSince = new Date().toISOString();
     const catchUp = async () => {
-      const { data } = await supabase
-        .from("messages")
-        .select("id, conversation_id, sender_id, body, created_at")
-        .eq("conversation_id", conversationId)
-        .gt("id", lastId.current)
-        .order("id");
+      const since = editsSince;
+      editsSince = new Date().toISOString();
+      const [{ data }, { data: edits }] = await Promise.all([
+        supabase.from("messages").select("*").eq("conversation_id", conversationId).gt("id", lastId.current).order("id"),
+        supabase.from("messages").select("*").eq("conversation_id", conversationId).gt("edited_at", since),
+      ]);
+      if (alive && edits?.length) add(edits as ChatMessage[]);
       if (alive && data?.length) {
         add(data as ChatMessage[]);
         markRead();
@@ -86,6 +101,10 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
         add([m]);
         if (m.sender_id !== me) markRead();
       },
+    ).on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
+      (payload) => add([payload.new as ChatMessage]),
     );
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!alive || !session) return;
@@ -145,10 +164,20 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
     if (!body || sending) return;
     setSending(true);
     setError("");
+    if (editing) {
+      const { data: saved, error: editError } = await supabase.rpc("edit_message", { p_id: editing, p_body: body });
+      setSending(false);
+      if (editError) return setError(editError.message.includes("function") ? "Editing isn't switched on yet." : editError.message);
+      const original = messages.find((m) => m.id === editing);
+      if (original && saved) add([{ ...original, ...(saved as Partial<ChatMessage>) } as ChatMessage]);
+      setEditing(null);
+      setText("");
+      return;
+    }
     const { data, error } = await supabase
       .from("messages")
       .insert({ conversation_id: conversationId, sender_id: me, body })
-      .select("id, conversation_id, sender_id, body, created_at")
+      .select("*")
       .single();
     setSending(false);
     if (error) {
@@ -267,15 +296,34 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
             return (
               <li key={m.id}>
                 {newDay && <p className="my-3 h-4 text-center text-[11px] font-semibold tracking-wide text-faint uppercase">{onDevice ? day(m.created_at) : ""}</p>}
-                <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+                <div className={`flex flex-col ${mine ? "items-end" : "items-start"}`}>
                   <div
+                    onClick={() => onDevice && canEdit(m) && !blockedBy && setPicked(picked === m.id ? null : m.id)}
                     className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug shadow-sm sm:max-w-[70%] ${
                       mine ? "rounded-br-md bg-lagoon-600 text-white" : "rounded-bl-md bg-surface text-ink ring-1 ring-line"
-                    }`}
+                    } ${editing === m.id ? "ring-2 ring-coral-400" : ""} ${onDevice && canEdit(m) ? "cursor-pointer" : ""}`}
                   >
                     <p className="break-words whitespace-pre-line">{m.body}</p>
-                    <p className={`mt-0.5 h-3.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>{onDevice ? time(m.created_at) : ""}</p>
+                    <p className={`mt-0.5 h-3.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>
+                      {m.edited_at ? "edited · " : ""}
+                      {onDevice ? time(m.created_at) : ""}
+                    </p>
                   </div>
+                  {picked === m.id && canEdit(m) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditing(m.id);
+                        setText(m.body);
+                        setPicked(null);
+                        setError("");
+                        input.current?.focus();
+                      }}
+                      className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-xs font-semibold text-ink-2 shadow-sm ring-1 ring-line"
+                    >
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                  )}
                 </div>
               </li>
             );
@@ -291,6 +339,24 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
             {blockedByMe ? "You blocked this person. Unblock them from the menu to chat again." : "You can't reply to this chat."}
           </p>
         ) : (
+          <>
+          {editing && (
+            <div className="mb-2 flex items-center gap-2 rounded-xl bg-coral-500/10 px-3 py-2 text-sm font-medium text-coral-700 dark:text-coral-400">
+              <Pencil className="h-4 w-4 shrink-0" />
+              <span className="flex-1">Editing your message</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditing(null);
+                  setText("");
+                }}
+                className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-coral-500/20"
+                aria-label="Cancel editing"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <form onSubmit={send} className="flex items-end gap-2">
             <textarea
               ref={input}
@@ -312,10 +378,11 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
               aria-label="Message"
               className="input max-h-36 min-h-11 flex-1 resize-none rounded-2xl py-2.5"
             />
-            <button disabled={sending || !text.trim()} className="btn-primary h-11 w-11 shrink-0 rounded-full p-0" aria-label="Send">
-              <SendHorizontal className="h-5 w-5" />
+            <button disabled={sending || !text.trim()} className="btn-primary h-11 w-11 shrink-0 rounded-full p-0" aria-label={editing ? "Save changes" : "Send"}>
+              {editing ? <Check className="h-5 w-5" /> : <SendHorizontal className="h-5 w-5" />}
             </button>
           </form>
+          </>
         )}
         {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}
       </div>

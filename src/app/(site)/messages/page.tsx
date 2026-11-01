@@ -51,7 +51,7 @@ export default async function MessagesPage() {
                       <span className={`shrink-0 text-xs ${unread ? "font-semibold text-lagoon-700" : "text-faint"}`}>{timeAgo(c.last_message_at!)}</span>
                     </div>
                     <p className="truncate text-xs text-muted">
-                      <span className={`mr-1.5 rounded px-1 py-px text-[10px] font-semibold uppercase ${selling ? "bg-coral-50 text-coral-700" : "bg-lagoon-50 text-lagoon-700"}`}>
+                      <span className={`mr-1.5 rounded px-1 py-px text-[10px] font-semibold uppercase ${selling ? "bg-coral-500/10 text-coral-700" : "bg-lagoon-50 text-lagoon-700"}`}>
                         {selling ? "Selling" : "Buying"}
                       </span>
                       {c.listing_title}

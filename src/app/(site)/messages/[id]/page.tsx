@@ -19,7 +19,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
 
   const otherId = chat.seller_id === user.id ? chat.buyer_id : chat.seller_id;
   const [{ data: messages }, { data: listing }, { data: rating }, { data: myReview }] = await Promise.all([
-    supabase.from("messages").select("id, conversation_id, sender_id, body, created_at").eq("conversation_id", id).order("id").limit(500),
+    supabase.from("messages").select("*").eq("conversation_id", id).order("id").limit(500),
     chat.listing_id
       ? supabase.from("listings").select("id, price, price_type, country, status").eq("id", chat.listing_id).maybeSingle()
       : Promise.resolve({ data: null }),

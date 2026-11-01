@@ -145,7 +145,7 @@ export default async function AdminListings({
                       </form>
                     )}
                     <form action={adminToggleFeatured.bind(null, l.id, !l.is_featured)}>
-                      <ActionButton className={`${iconBtn} ${l.is_featured ? "border-coral-200 bg-coral-500/10 text-coral-600" : ""}`} title={l.is_featured ? "Remove from featured" : "Feature on homepage"}>
+                      <ActionButton className={`${iconBtn} ${l.is_featured ? "border-coral-400/40 bg-coral-500/10 text-coral-600" : ""}`} title={l.is_featured ? "Remove from featured" : "Feature on homepage"}>
                         <Sparkles className="h-4 w-4" />
                       </ActionButton>
                     </form>
