@@ -5,6 +5,8 @@ import { removePushToken, savePushToken } from "@/app/push-actions";
 import { capacitor, isNativeApp, nativePlugin, type NativePlugins, type PushPlugin } from "@/lib/native";
 
 const TOKEN_KEY = "pl_push_token";
+// Temporarily off while we check an app start-up problem after the notifications update.
+const PUSH_ENABLED = false;
 
 /** Runs a phone feature call without letting a missing or old plugin crash the page. */
 function safely(fn: () => unknown) {
@@ -55,7 +57,7 @@ export function NativeApp({ userId }: { userId: string | null }) {
 
   // Phone notifications: register this phone for the logged-in member.
   useEffect(() => {
-    if (!isNativeApp()) return;
+    if (!isNativeApp() || !PUSH_ENABLED) return;
     const push = nativePlugin<PushPlugin>("PushNotifications");
     if (!push) return;
     const stored = (() => {
