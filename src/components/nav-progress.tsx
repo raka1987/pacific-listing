@@ -13,10 +13,12 @@ export function NavProgress() {
   const [width, setWidth] = useState(0);
   const [visible, setVisible] = useState(false);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const giveUp = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // A new page has arrived: finish the bar and fade it out.
   useEffect(() => {
     if (timer.current) clearInterval(timer.current);
+    if (giveUp.current) clearTimeout(giveUp.current);
     timer.current = null;
     setWidth((w) => (w > 0 ? 100 : 0));
     const t = setTimeout(() => {
@@ -33,6 +35,14 @@ export function NavProgress() {
       setWidth(12);
       // Creep towards 90% while waiting.
       timer.current = setInterval(() => setWidth((w) => (w < 90 ? w + (90 - w) * 0.12 : w)), 200);
+      // If no new page arrives (the click didn't navigate after all), finish quietly.
+      if (giveUp.current) clearTimeout(giveUp.current);
+      giveUp.current = setTimeout(() => {
+        if (timer.current) clearInterval(timer.current);
+        timer.current = null;
+        setVisible(false);
+        setWidth(0);
+      }, 10000);
     }
     function onClick(e: MouseEvent) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -47,7 +57,9 @@ export function NavProgress() {
     }
     function onSubmit(e: SubmitEvent) {
       const form = e.target as HTMLFormElement;
-      if (form.getAttribute("role") === "search" || form.method.toLowerCase() === "get") start();
+      // Only forms that load another page: search boxes, and forms with a real address to go to.
+      // (A form without one, like sending a chat message, has method "get" by default but stays put.)
+      if (form.getAttribute("role") === "search" || (form.method.toLowerCase() === "get" && form.hasAttribute("action"))) start();
     }
     document.addEventListener("click", onClick, true);
     document.addEventListener("submit", onSubmit, true);
