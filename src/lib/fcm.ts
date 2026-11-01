@@ -24,10 +24,6 @@ export function readServiceAccount(): { sa?: ServiceAccount; problem?: string } 
   return { sa: { ...sa, private_key: sa.private_key.replace(/\\n/g, "\n") } };
 }
 
-export function serviceAccount(): ServiceAccount | null {
-  return readServiceAccount().sa ?? null;
-}
-
 const b64url = (v: string | Buffer) => Buffer.from(v).toString("base64url");
 
 async function accessToken(sa: ServiceAccount) {

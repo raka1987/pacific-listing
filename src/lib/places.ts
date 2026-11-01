@@ -39,7 +39,6 @@ export const slugify = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-export const countrySlug = (code: string) => SLUGS[code];
 export const countryFromSlug = (slug: string): Country | undefined =>
   COUNTRIES.find((c) => SLUGS[c.code] === slug);
 

@@ -1,4 +1,4 @@
-import { CATEGORIES, categoryBySlug, countryByCode, type Category, type Subcategory } from "./constants";
+import { categoryBySlug, countryByCode, type Category, type Subcategory } from "./constants";
 import { countryFromSlug, TOWNS, townFromSlug } from "./places";
 
 export type Landing = {
@@ -70,4 +70,3 @@ export function landingDescription(l: Landing, count: number) {
   return `Browse ${n}${what} in ${where} on Pacific Listing${towns && !l.town ? `, from ${towns} and across the islands` : ""}. Contact sellers directly by phone or WhatsApp, or post your own ad free.`;
 }
 
-export const allCategoriesFor = () => CATEGORIES;

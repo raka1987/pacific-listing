@@ -39,7 +39,3 @@ export async function requireStaff(roles: Role[] = STAFF_ROLES) {
   if (!roles.includes(role)) redirect("/admin");
   return current as typeof current & { profile: Profile };
 }
-
-export async function requireAdmin() {
-  return requireStaff(["admin"]);
-}

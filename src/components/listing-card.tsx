@@ -106,21 +106,6 @@ export function ListingRail({ listings, favoriteIds }: { listings: ListingCardDa
   );
 }
 
-export function ListingGridSkeleton({ count = 8 }: { count?: number }) {
-  return (
-    <div className="grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-4">
-      {Array.from({ length: count }).map((_, i) => (
-        <div key={i}>
-          <div className="skeleton aspect-[4/3] sm:rounded-3xl" />
-          <div className="skeleton mt-3 h-4 w-1/3 rounded-full" />
-          <div className="skeleton mt-2 h-3.5 w-4/5 rounded-full" />
-          <div className="skeleton mt-2 h-3 w-1/2 rounded-full" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 /** "FJD 2,450" when the ad is priced in another currency than the visitor's. */
 export async function approxPrice(listing: Pick<ListingCardData, "price" | "price_type" | "country">) {
   if (listing.price == null || listing.price_type === "free" || listing.price_type === "contact") return null;
