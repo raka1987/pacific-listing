@@ -99,14 +99,6 @@ function parseListing(fd: FormData) {
   };
 }
 
-// Before the private-numbers database update, the phone_private column doesn't exist yet.
-const noPrivateColumn = (e: { message?: string } | null) => !!e && /phone_private/.test(e.message ?? "");
-const withoutPrivate = <T extends { phone_private?: boolean }>(v: T) => {
-  const rest = { ...v };
-  delete rest.phone_private;
-  return rest;
-};
-
 export async function createListing(_: ListingFormState, fd: FormData): Promise<ListingFormState> {
   const supabase = await createClient();
   const {
@@ -117,18 +109,11 @@ export async function createListing(_: ListingFormState, fd: FormData): Promise<
   const { fieldErrors, values } = parseListing(fd);
   if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields.", values: typed(fd) };
 
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("listings")
     .insert({ ...values, user_id: user.id })
     .select("id, status")
     .single();
-  if (noPrivateColumn(error)) {
-    ({ data, error } = await supabase
-      .from("listings")
-      .insert({ ...withoutPrivate(values), user_id: user.id })
-      .select("id, status")
-      .single());
-  }
   if (error || !data) return { error: error?.message ?? "Couldn't save your ad. Please try again.", values: typed(fd) };
 
   revalidatePath("/");
@@ -161,8 +146,7 @@ export async function updateListing(id: string, _: ListingFormState, fd: FormDat
   const { fieldErrors, values } = parseListing(fd);
   if (Object.keys(fieldErrors).length) return { fieldErrors, error: "Please fix the highlighted fields.", values: typed(fd) };
 
-  let { error } = await supabase.from("listings").update(values).eq("id", id);
-  if (noPrivateColumn(error)) ({ error } = await supabase.from("listings").update(withoutPrivate(values)).eq("id", id));
+  const { error } = await supabase.from("listings").update(values).eq("id", id);
   if (error) return { error: error.message, values: typed(fd) };
 
   revalidatePath(`/listing/${id}`);
@@ -354,13 +338,7 @@ export async function deleteMyAccount(_: DeleteAccountState, fd: FormData): Prom
   }
 
   const { error } = await supabase.rpc("delete_my_account");
-  if (error) {
-    return {
-      error: /could not find|does not exist/i.test(error.message)
-        ? "Account deletion isn't switched on yet. Please contact support and we'll delete it for you."
-        : error.message,
-    };
-  }
+  if (error) return { error: error.message };
   await supabase.auth.signOut();
   revalidatePath("/", "layout");
   redirect("/account-deleted");

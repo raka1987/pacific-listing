@@ -6,8 +6,6 @@ import { removePushToken, savePushToken } from "@/app/push-actions";
 import { capacitor, isNativeApp, nativePlugin, type PushPlugin } from "@/lib/native";
 import { PUSH_AUTO_KEY, PUSH_STEP_KEY as STEP_KEY, PUSH_STEPS as STEPS, PUSH_TOKEN_KEY, pushStore as store, runPushSetup } from "@/lib/push-flow";
 
-export { PUSH_TOKEN_KEY };
-
 /**
  * "Turn on phone notifications" in the app's profile page. Each step is remembered before it
  * runs, so if the app ever closes during setup, the next visit says exactly where it stopped.

@@ -40,8 +40,7 @@ export default async function TrafficPage({ searchParams }: { searchParams: Prom
       <div>
         <h1 className="font-display mb-4 text-2xl font-semibold">Traffic</h1>
         <div className="card p-6 text-sm text-ink-2">
-          Traffic tracking isn&apos;t switched on yet. Run the database update{" "}
-          <code className="rounded bg-subtle px-1.5 py-0.5">20261105000000_traffic.sql</code> in Supabase → SQL Editor.
+          Couldn&apos;t load the traffic figures{error ? ` (${error.message})` : ""}. Please refresh the page.
         </div>
       </div>
     );

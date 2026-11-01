@@ -178,7 +178,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
     if (editing) {
       const { data: saved, error: editError } = await supabase.rpc("edit_message", { p_id: editing, p_body: body });
       setSending(false);
-      if (editError) return setError(editError.message.includes("function") ? "Editing isn't switched on yet." : editError.message);
+      if (editError) return setError(editError.message);
       const original = messages.find((m) => m.id === editing);
       if (original && saved) add([{ ...original, ...(saved as Partial<ChatMessage>) } as ChatMessage]);
       setEditing(null);

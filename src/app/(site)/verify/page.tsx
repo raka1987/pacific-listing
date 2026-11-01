@@ -65,7 +65,7 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
             ))}
           </div>
           <div className="card p-5 sm:p-6">
-            <VerifyForm phone={(await getMyContact(await createClient(), user.id)).phone ?? ""} />
+            <VerifyForm phone={(await getMyContact(await createClient())).phone ?? ""} />
           </div>
         </>
       )}

@@ -15,7 +15,7 @@ export function PushTest({ userId, phones }: { userId: string; phones: { platfor
         <BellRing className="h-4 w-4 text-lagoon-600" /> Phone notifications
       </h2>
       {phones === null ? (
-        <p className="text-sm text-muted">Run the database update 20261109000000_push_admin.sql to see this.</p>
+        <p className="text-sm text-muted">Couldn&apos;t load this member&apos;s phones. Please refresh the page.</p>
       ) : phones.length ? (
         <p className="text-sm text-ink-2">
           On for {phones.length} {phones.length === 1 ? "phone" : "phones"} (

@@ -19,6 +19,8 @@ export type Conversation = {
   seller_read_at: string;
   blocked_by: string | null;
   is_support?: boolean;
+  /** When the seller shared their private number in this chat. */
+  number_shared_at?: string | null;
   buyer: ChatPerson | null;
   seller: ChatPerson | null;
 };
@@ -26,7 +28,7 @@ export type Conversation = {
 export type ChatMessage = { id: number; conversation_id: string; sender_id: string; body: string; created_at: string; edited_at?: string | null };
 
 const PERSON = "id, full_name, avatar_url, business_name, business_until, is_verified";
-// "*" so newer columns (e.g. is_support) come through without breaking older databases.
+// Every conversation column, plus both people.
 export const CONVERSATION_COLUMNS =
   "*, " +
   `buyer:profiles!conversations_buyer_id_fkey(${PERSON}), seller:profiles!conversations_seller_id_fkey(${PERSON})`;

@@ -17,7 +17,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const { password } = await searchParams;
   if (!profile) return null;
   const supabase = await createClient();
-  const [{ data: prefs }, mine] = await Promise.all([supabase.rpc("get_my_notify_prefs"), getMyContact(supabase, user.id)]);
+  const [{ data: prefs }, mine] = await Promise.all([supabase.rpc("get_my_notify_prefs"), getMyContact(supabase)]);
   return (
     <div className="container-page max-w-3xl py-8">
       <PageHeader

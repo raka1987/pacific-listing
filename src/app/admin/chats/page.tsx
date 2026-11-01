@@ -23,7 +23,7 @@ export default async function AdminMemberChats() {
         Message this member.
       </p>
       {error ? (
-        <div className="card p-6 text-sm text-ink-2">Run the database update 20261113000000_support_chats.sql to switch this on.</div>
+        <div className="card p-6 text-sm text-ink-2">Couldn&apos;t load the support chats. Please refresh the page.</div>
       ) : chats.length ? (
         <ul className="card divide-y divide-line p-0">
           {chats.map((c) => (

@@ -32,14 +32,12 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   ]);
 
   const selling = chat.seller_id === user.id;
-  // Private numbers (both lookups quietly return nothing before the database update).
-  const [contact, { data: shared }] = await Promise.all([
-    !chat.is_support && chat.listing_id && listing ? getListingContact(supabase, chat.listing_id) : Promise.resolve(null),
-    selling ? supabase.from("conversations").select("number_shared_at").eq("id", chat.id).maybeSingle() : Promise.resolve({ data: null }),
-  ]);
-  const numbers = contact && chat.listing_id
-    ? { role: selling ? ("seller" as const) : ("buyer" as const), listingId: chat.listing_id, contact, sharedAt: (shared?.number_shared_at as string | null) ?? null }
-    : null;
+  // Private numbers: the buyer can ask for the seller's number and the seller can share it.
+  const contact = !chat.is_support && chat.listing_id && listing ? await getListingContact(supabase, chat.listing_id) : null;
+  const numbers =
+    contact && chat.listing_id
+      ? { role: selling ? ("seller" as const) : ("buyer" as const), listingId: chat.listing_id, contact, sharedAt: chat.number_shared_at ?? null }
+      : null;
   const other = selling ? chat.buyer : chat.seller;
   const business = !selling && isBusiness(other?.business_until) ? other?.business_name : null;
   const name = business || other?.full_name || "Pacific Listing member";

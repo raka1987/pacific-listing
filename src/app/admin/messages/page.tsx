@@ -32,10 +32,7 @@ export default async function AdminMessages({ searchParams }: { searchParams: Pr
     .limit(100);
   query = status === "archived" ? query.eq("status", "archived") : query.in("status", ["new", "read"]);
   const { data } = await query;
-  // Older databases without the replies table: show messages without replies.
-  const messages = ((data ?? (await supabase.from("contact_messages").select("*").order("created_at", { ascending: false }).limit(100)).data) ?? []).map(
-    (m) => ({ ...m, replies: m.replies ?? [] }),
-  ) as Message[];
+  const messages = (data ?? []).map((m) => ({ ...m, replies: m.replies ?? [] })) as Message[];
   const btn = "inline-flex items-center gap-1 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs font-medium text-ink-2 hover:bg-subtle";
 
   return (

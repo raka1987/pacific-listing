@@ -22,7 +22,7 @@ export default async function PostPage({ searchParams }: { searchParams: Promise
     );
   }
   const supabase = await createClient();
-  const [mine, picked] = await Promise.all([getMyContact(supabase, user.id), getSearchCountry()]);
+  const [mine, picked] = await Promise.all([getMyContact(supabase), getSearchCountry()]);
   // The country they've picked on the site comes first, then the one on their profile.
   const country = picked ?? profile?.country ?? null;
   const city = country && country === profile?.country ? (profile?.city ?? null) : null;

@@ -47,7 +47,7 @@ export function ChatWatcher({ userId }: { userId: string }) {
   return null;
 }
 
-export function useUnreadChats(initial: number) {
+function useUnreadChats(initial: number) {
   return useSyncExternalStore(
     subscribe,
     () => unread ?? initial,

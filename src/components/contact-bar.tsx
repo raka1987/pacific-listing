@@ -37,7 +37,7 @@ export function ContactBar({
         {whatsapp && (
           <a
             href={`https://wa.me/${phoneDigits(whatsapp)}?text=${message}`}
-          onClick={() => track("contact_seller", { method: "whatsapp" })}
+            onClick={() => track("contact_seller", { method: "whatsapp" })}
             target="_blank"
             rel="noopener noreferrer"
             className="btn h-11 w-11 bg-[#25D366] p-0 text-white shadow-md shadow-[#25D366]/30 hover:bg-[#1ebe5b]"

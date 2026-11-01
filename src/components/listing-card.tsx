@@ -6,7 +6,7 @@ import { formatMoney, formatPrice, locationLabel, recentPriceDrop, timeAgo } fro
 import type { ListingCardData } from "@/lib/types";
 import { FavoriteButton } from "./favorite-button";
 
-export async function ListingCard({ listing, isFavorite }: { listing: ListingCardData; isFavorite?: boolean }) {
+async function ListingCard({ listing, isFavorite }: { listing: ListingCardData; isFavorite?: boolean }) {
   const cover = listing.images[0];
   const category = categoryBySlug(listing.category);
   const sub = subcategoryBySlug(listing.category, listing.subcategory);

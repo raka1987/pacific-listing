@@ -181,7 +181,7 @@ export async function adminSendTestPush(userId: string): Promise<string> {
 export async function adminPushCheck(): Promise<string[]> {
   const { supabase } = await staff(["admin"]);
   const { data, error } = await supabase.rpc("admin_push_check");
-  if (error) return [`❌ Run the database update 20261110000000_push_check.sql first (${error.message}).`];
+  if (error) return [`❌ Couldn't run the check: ${error.message}`];
   const d = data as {
     push_url: string | null;
     push_secret_saved: boolean;
@@ -224,7 +224,7 @@ export async function adminReplyToMessage(id: string, body: string): Promise<{ e
   const { supabase, log } = await staff(STAFF_ROLES);
   if (!body.trim()) return { error: "Write a reply first." };
   const { error } = await supabase.rpc("reply_to_contact", { p_message: id, p_body: body });
-  if (error) return { error: error.message.includes("Could not find") ? "Run the support replies database update first." : error.message };
+  if (error) return { error: error.message };
   await log("message.reply", "message", id);
   done("/admin/messages");
   return {};
@@ -267,29 +267,24 @@ export async function adminUpdateSettings(fd: FormData) {
   const limit = num(fd, "free_ad_limit");
   const offer = num(fd, "launch_offer_days");
   const launch = offer == null ? null : Math.min(60, Math.max(1, Math.floor(offer)));
-  const values: Record<string, unknown> = {
-      launch_offer_days: launch,
-      require_approval: fd.get("require_approval") === "on",
-      announcement: str(fd, "announcement") || null,
-      free_ad_limit: limit == null ? null : Math.floor(limit),
-      card_payments_enabled: fd.get("card_payments_enabled") === "on",
-      payment_details: {
-        mpaisa_number: str(fd, "mpaisa_number"),
-        mycash_number: str(fd, "mycash_number"),
-        bank_name: str(fd, "bank_name"),
-        bank_account_name: str(fd, "bank_account_name"),
-        bank_account_number: str(fd, "bank_account_number"),
-        bank_branch: str(fd, "bank_branch"),
-        instructions: str(fd, "instructions"),
-      },
-      updated_at: new Date().toISOString(),
+  const values = {
+    launch_offer_days: launch,
+    require_approval: fd.get("require_approval") === "on",
+    announcement: str(fd, "announcement") || null,
+    free_ad_limit: limit == null ? null : Math.floor(limit),
+    card_payments_enabled: fd.get("card_payments_enabled") === "on",
+    payment_details: {
+      mpaisa_number: str(fd, "mpaisa_number"),
+      mycash_number: str(fd, "mycash_number"),
+      bank_name: str(fd, "bank_name"),
+      bank_account_name: str(fd, "bank_account_name"),
+      bank_account_number: str(fd, "bank_account_number"),
+      bank_branch: str(fd, "bank_branch"),
+      instructions: str(fd, "instructions"),
+    },
+    updated_at: new Date().toISOString(),
   };
-  let { error } = await supabase.from("site_settings").update(values).eq("id", 1);
-  // Before the launch-offer database update has been run, save everything else.
-  if (error && /launch_offer_days/.test(error.message)) {
-    delete values.launch_offer_days;
-    ({ error } = await supabase.from("site_settings").update(values).eq("id", 1));
-  }
+  const { error } = await supabase.from("site_settings").update(values).eq("id", 1);
   if (error) console.error("settings", error.message);
   await log("settings.update", "settings");
   done("/admin/settings");
@@ -360,10 +355,15 @@ export async function adminSavePlan(id: string, fd: FormData) {
 // Banner advertising ----------------------------------------------------------
 export async function adminSaveSlot(code: string, fd: FormData) {
   const { supabase, log } = await staff(SALES_ROLES);
-  const values = { is_active: fd.get("is_active") === "on", prices: readPrices(fd), global_prices: readPrices(fd, "global_") };
-  const { error } = await supabase.from("ad_slots").update({ ...values, show_price: fd.get("show_price") === "on" }).eq("code", code);
-  // Before the "price on request" database update, save everything else.
-  if (error) await supabase.from("ad_slots").update(values).eq("code", code);
+  await supabase
+    .from("ad_slots")
+    .update({
+      is_active: fd.get("is_active") === "on",
+      show_price: fd.get("show_price") === "on",
+      prices: readPrices(fd),
+      global_prices: readPrices(fd, "global_"),
+    })
+    .eq("code", code);
   await log("pricing.ad_slot", "ad_slot", code);
   done("/admin/ads", "/advertise");
 }

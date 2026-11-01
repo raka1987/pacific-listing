@@ -9,7 +9,7 @@ type ServiceAccount = { project_id: string; client_email: string; private_key: s
 let cached: { token: string; expires: number } | null = null;
 
 /** Reads FIREBASE_SERVICE_ACCOUNT, or explains in plain words what's wrong with it. */
-export function readServiceAccount(): { sa?: ServiceAccount; problem?: string } {
+function readServiceAccount(): { sa?: ServiceAccount; problem?: string } {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
   if (!raw) return { problem: "FIREBASE_SERVICE_ACCOUNT is not set in Vercel (or the site wasn't redeployed after adding it)" };
   let sa: ServiceAccount & { type?: string; project_info?: unknown };

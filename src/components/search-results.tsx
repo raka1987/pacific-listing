@@ -105,9 +105,7 @@ export async function SearchResults({
                 key={t.label}
                 href={qs({ city: t.name || undefined, km: t.name ? filters.km : undefined, page: undefined })}
                 aria-current={on ? "page" : undefined}
-                className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm transition ${
-                  on ? "border-lagoon-600 bg-lagoon-600 text-white" : "border-line bg-surface text-ink-2 hover:border-faint hover:text-ink"
-                }`}
+                className={placeChip(on)}
               >
                 {t.label}
               </Link>
@@ -124,9 +122,7 @@ export async function SearchResults({
                 key={d.v}
                 href={qs({ km: d.v ? String(d.v) : undefined, page: undefined })}
                 aria-current={radius === d.v ? "page" : undefined}
-                className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm transition ${
-                  radius === d.v ? "border-lagoon-600 bg-lagoon-600 text-white" : "border-line bg-surface text-ink-2 hover:border-faint hover:text-ink"
-                }`}
+                className={placeChip(radius === d.v)}
               >
                 {d.label}
               </Link>
@@ -203,6 +199,12 @@ export async function SearchResults({
     </div>
   );
 }
+
+/** A town or distance button; the chosen one is filled in. */
+const placeChip = (on: boolean) =>
+  `inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm transition ${
+    on ? "border-lagoon-600 bg-lagoon-600 text-white" : "border-line bg-surface text-ink-2 hover:border-faint hover:text-ink"
+  }`;
 
 /** The main towns in a country plus any others people have listed ads in, busiest first. */
 async function townsWithAds(supabase: Awaited<ReturnType<typeof createClient>>, country: string) {
