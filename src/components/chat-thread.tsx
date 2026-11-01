@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Ban, BadgeCheck, ExternalLink, MoreVertical, SendHorizontal, ShieldCheck, Star, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { deleteChat, setChatBlocked } from "@/app/chat-actions";
 import type { ChatMessage } from "@/lib/chat";
 import { createClient } from "@/lib/supabase/client";
@@ -22,6 +22,11 @@ type Props = {
   starter: string;
 };
 
+// Times use the reader's own time zone, so they're only filled in on the phone or computer
+// (the server's time zone would be wrong for most people).
+const noop = () => () => {};
+const useOnDevice = () => useSyncExternalStore(noop, () => true, () => false);
+
 const time = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 function day(iso: string) {
   const d = new Date(iso);
@@ -34,6 +39,7 @@ function day(iso: string) {
 
 export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter }: Props) {
   const supabase = useMemo(() => createClient(), []);
+  const onDevice = useOnDevice();
   const [messages, setMessages] = useState(initialMessages);
   const [text, setText] = useState(initialMessages.length ? "" : starter);
   const [sending, setSending] = useState(false);
@@ -260,7 +266,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
             const newDay = !prev || day(prev.created_at) !== day(m.created_at);
             return (
               <li key={m.id}>
-                {newDay && <p suppressHydrationWarning className="my-3 text-center text-[11px] font-semibold tracking-wide text-faint uppercase">{day(m.created_at)}</p>}
+                {newDay && <p className="my-3 h-4 text-center text-[11px] font-semibold tracking-wide text-faint uppercase">{onDevice ? day(m.created_at) : ""}</p>}
                 <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
                   <div
                     className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-[15px] leading-snug shadow-sm sm:max-w-[70%] ${
@@ -268,7 +274,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
                     }`}
                   >
                     <p className="break-words whitespace-pre-line">{m.body}</p>
-                    <p suppressHydrationWarning className={`mt-0.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>{time(m.created_at)}</p>
+                    <p className={`mt-0.5 h-3.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>{onDevice ? time(m.created_at) : ""}</p>
                   </div>
                 </div>
               </li>
