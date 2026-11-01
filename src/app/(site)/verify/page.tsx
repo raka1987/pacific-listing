@@ -4,6 +4,7 @@ import { BadgeCheck, Clock, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
+import { getMyContact } from "@/lib/contact";
 import { createClient } from "@/lib/supabase/server";
 import { VerifyForm } from "./form";
 
@@ -64,7 +65,7 @@ export default async function VerifyPage({ searchParams }: { searchParams: Promi
             ))}
           </div>
           <div className="card p-5 sm:p-6">
-            <VerifyForm phone={profile?.phone ?? ""} />
+            <VerifyForm phone={(await getMyContact(await createClient(), user.id)).phone ?? ""} />
           </div>
         </>
       )}

@@ -4,6 +4,7 @@ import { ListingForm } from "@/components/listing-form";
 import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
 import { isBusiness } from "@/lib/format";
+import { getMyContact } from "@/lib/contact";
 import { createClient } from "@/lib/supabase/server";
 import type { Prices } from "@/lib/types";
 
@@ -20,6 +21,7 @@ export default async function PostPage({ searchParams }: { searchParams: Promise
     );
   }
   const supabase = await createClient();
+  const mine = await getMyContact(supabase, user.id);
   const { data: feeRows } = await supabase.from("category_fees").select("category, prices").eq("is_active", true);
   let fees: Record<string, Prices> = Object.fromEntries((feeRows ?? []).map((r) => [r.category, r.prices as Prices]));
   if (isBusiness(profile?.business_until) && profile?.plan_id) {
@@ -35,8 +37,8 @@ export default async function PostPage({ searchParams }: { searchParams: Promise
         defaults={{
           country: profile?.country ?? null,
           city: profile?.city ?? null,
-          phone: profile?.phone ?? null,
-          whatsapp: profile?.whatsapp ?? null,
+          phone: mine.phone,
+          whatsapp: mine.whatsapp,
         }}
         fees={fees}
         initialCategory={category}

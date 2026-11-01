@@ -6,8 +6,9 @@ export type Profile = {
   id: string;
   full_name: string;
   avatar_url: string | null;
-  phone: string | null;
-  whatsapp: string | null;
+  /** Only via getMyContact() */
+  phone?: string | null;
+  whatsapp?: string | null;
   country: string | null;
   city: string | null;
   bio: string | null;
@@ -33,8 +34,10 @@ export type Listing = {
   country: string;
   city: string | null;
   images: string[];
-  contact_phone: string | null;
-  contact_whatsapp: string | null;
+  /** Not readable directly; see lib/contact.ts */
+  contact_phone?: string | null;
+  contact_whatsapp?: string | null;
+  phone_private?: boolean;
   status: ListingStatus;
   rejection_reason: string | null;
   is_featured: boolean;
@@ -50,14 +53,19 @@ export type Listing = {
 };
 
 export type ListingWithSeller = Listing & {
-  seller: Pick<Profile, "id" | "full_name" | "avatar_url" | "is_verified" | "created_at" | "phone" | "whatsapp" | "business_name" | "business_until"> | null;
+  seller: Pick<Profile, "id" | "full_name" | "avatar_url" | "is_verified" | "created_at" | "business_name" | "business_until"> | null;
 };
 
 export type Notice = { id: string; title: string; body: string; is_published: boolean; created_at: string };
 
 // Columns that can be read from `profiles` by API clients (email is private).
+// Phone and WhatsApp aren't included: they're private (see lib/contact.ts).
 export const PROFILE_COLUMNS =
-  "id, full_name, avatar_url, phone, whatsapp, country, city, bio, role, is_banned, is_verified, created_at, business_name, business_until, plan_id";
+  "id, full_name, avatar_url, country, city, bio, role, is_banned, is_verified, created_at, business_name, business_until, plan_id";
+
+// Every listing column people may read (the contact numbers are private; see lib/contact.ts).
+export const LISTING_COLUMNS =
+  "id, user_id, title, description, category, subcategory, price, price_type, condition, country, city, images, status, rejection_reason, is_featured, featured_until, is_urgent, urgent_until, sort_at, views, created_at, updated_at, previous_price, price_dropped_at";
 
 export const LISTING_CARD_COLUMNS =
   "id, title, price, price_type, category, subcategory, country, city, images, status, is_featured, is_urgent, created_at, condition, previous_price, price_dropped_at";

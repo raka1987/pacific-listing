@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { requireUser } from "@/lib/auth";
 import { formatDate, formatPrice, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import type { Listing, ListingStatus } from "@/lib/types";
+import { LISTING_COLUMNS, type Listing, type ListingStatus } from "@/lib/types";
 
 export const metadata: Metadata = { title: "My ads", robots: { index: false } };
 
@@ -23,7 +23,7 @@ export default async function MyAdsPage({ searchParams }: { searchParams: Promis
   const { user } = await requireUser("/my-ads");
   const { tab = "all" } = await searchParams;
   const supabase = await createClient();
-  const { data } = await supabase.from("listings").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+  const { data } = await supabase.from("listings").select(LISTING_COLUMNS).eq("user_id", user.id).order("created_at", { ascending: false });
   const all = (data ?? []) as Listing[];
   const { data: feeOrders } = await supabase
     .from("orders")

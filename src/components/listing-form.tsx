@@ -219,6 +219,21 @@ export function ListingForm({
             <input id="contact_whatsapp" name="contact_whatsapp" type="tel" defaultValue={typed("contact_whatsapp", listing?.contact_whatsapp ?? defaults.whatsapp)} className="input" placeholder="+679 123 4567" />
           </div>
         </div>
+        <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-canvas p-3">
+          <input
+            type="checkbox"
+            name="phone_private"
+            // After a failed submit, keep what they chose (unticked boxes aren't sent at all).
+            defaultChecked={state.values ? state.values.phone_private === "on" : (listing?.phone_private ?? true)}
+            className="mt-0.5 h-5 w-5 shrink-0 accent-lagoon-600"
+          />
+          <span className="text-sm">
+            <span className="font-semibold text-ink">Keep my number private until I share it</span>
+            <span className="mt-0.5 block text-muted">
+              Buyers see only part of your number (like +679 92•• •••) and message you in the chat. You choose who gets your full number.
+            </span>
+          </span>
+        </label>
       </Section>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">

@@ -18,7 +18,7 @@ type Request = {
   reason: string | null;
   created_at: string;
   reviewed_at: string | null;
-  member: { full_name: string; phone: string | null; created_at: string } | null;
+  member: { full_name: string; created_at: string } | null;
 };
 
 export default async function AdminVerification({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
@@ -27,7 +27,7 @@ export default async function AdminVerification({ searchParams }: { searchParams
   const supabase = await createClient();
   const { data } = await supabase
     .from("verification_requests")
-    .select("id, user_id, phone, business_name, document_path, status, reason, created_at, reviewed_at, member:profiles!verification_requests_user_id_fkey(full_name, phone, created_at)")
+    .select("id, user_id, phone, business_name, document_path, status, reason, created_at, reviewed_at, member:profiles!verification_requests_user_id_fkey(full_name, created_at)")
     .eq("status", status)
     .order("created_at", { ascending: status === "pending" })
     .limit(100);

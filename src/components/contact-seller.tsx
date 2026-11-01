@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MessageCircle, Phone } from "lucide-react";
+import { Lock, Mail, MessageCircle, Phone } from "lucide-react";
 import { useState } from "react";
 import { phoneDigits } from "@/lib/format";
 import { track } from "@/lib/track";
@@ -10,12 +10,15 @@ export function ContactSeller({
   listingId,
   phone,
   whatsapp,
+  maskedPhone = null,
   title,
   listingUrl,
 }: {
   listingId: string;
   phone: string | null;
   whatsapp: string | null;
+  /** Set when the seller keeps their number private: only part of it is shown. */
+  maskedPhone?: string | null;
   title: string;
   listingUrl: string;
 }) {
@@ -25,6 +28,15 @@ export function ContactSeller({
   return (
     <div className="space-y-2.5">
       <ChatButton listingId={listingId} className="btn-primary w-full py-3" />
+      {maskedPhone && (
+        <div className="flex items-center gap-3 rounded-xl border border-line px-4 py-2.5">
+          <Lock className="h-4 w-4 shrink-0 text-muted" />
+          <div className="min-w-0 text-sm">
+            <p className="font-semibold tracking-wide text-ink">{maskedPhone}</p>
+            <p className="text-xs text-muted">The seller keeps their number private. Ask for it in the chat.</p>
+          </div>
+        </div>
+      )}
       {whatsapp && (
         <a
           href={`https://wa.me/${phoneDigits(whatsapp)}?text=${message}`}

@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { CATEGORIES, categoryBySlug, subcategoryBySlug } from "@/lib/constants";
 import { formatPrice, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import type { Listing } from "@/lib/types";
+import { LISTING_COLUMNS, type Listing } from "@/lib/types";
 import { adminDeleteListing, adminSetListingStatus, adminToggleFeatured } from "../actions";
 import { ActionButton, ConfirmButton } from "../ui";
 
@@ -29,14 +29,14 @@ export default async function AdminListings({
 
   let query = supabase
     .from("listings")
-    .select("*, seller:profiles!listings_user_id_fkey(id, full_name)", { count: "exact" })
+    .select(`${LISTING_COLUMNS}, seller:profiles!listings_user_id_fkey(id, full_name)`, { count: "exact" })
     .order("created_at", { ascending: status === "pending" });
   if (status !== "all") query = query.eq("status", status);
   if (category) query = query.eq("category", category);
   const term = q.replace(/[%,()*"\\]/g, " ").trim();
   if (term) query = query.ilike("title", `%${term}%`);
   const { data, count } = await query.range((page - 1) * PER_PAGE, page * PER_PAGE - 1);
-  const rows = (data ?? []) as Row[];
+  const rows = (data ?? []) as unknown as Row[];
 
   const href = (o: Record<string, string | undefined>) => {
     const p = new URLSearchParams();

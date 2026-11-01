@@ -6,6 +6,7 @@ import { EmailSettings } from "@/components/email-settings";
 import { PushSetup } from "@/components/push-setup";
 import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
+import { getMyContact } from "@/lib/contact";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "./form";
 
@@ -16,7 +17,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const { password } = await searchParams;
   if (!profile) return null;
   const supabase = await createClient();
-  const { data: prefs } = await supabase.rpc("get_my_notify_prefs");
+  const [{ data: prefs }, mine] = await Promise.all([supabase.rpc("get_my_notify_prefs"), getMyContact(supabase, user.id)]);
   return (
     <div className="container-page max-w-3xl py-8">
       <PageHeader
@@ -29,7 +30,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         }
       />
       {password === "updated" && <p className="mb-4 rounded-xl bg-lagoon-50 p-3 text-sm text-lagoon-800">Your password has been changed.</p>}
-      <ProfileForm profile={profile} email={user.email ?? ""} />
+      <ProfileForm profile={{ ...profile, ...mine }} email={user.email ?? ""} />
       <div className="card mt-6 flex flex-wrap items-center justify-between gap-3 p-5">
         <div>
           <h2 className="flex items-center gap-2 font-bold text-ink">

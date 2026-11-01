@@ -9,7 +9,7 @@ import { requireStaff } from "@/lib/auth";
 import { countryByCode, ORDER_KINDS, ROLE_DESCRIPTIONS, ROLES } from "@/lib/constants";
 import { formatDate, formatMoney, formatPrice, isBusiness, timeAgo } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import type { Listing, Order, Plan, Role } from "@/lib/types";
+import { LISTING_COLUMNS, type Listing, type Order, type Plan, type Role } from "@/lib/types";
 import {
   adminStartSupportChat,
   adminAddUserNote,
@@ -55,7 +55,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
   const supabase = await createClient();
   const [{ data: d }, { data: l }, { data: o }, { data: n }, { data: pl }, { data: settings }] = await Promise.all([
     supabase.rpc("admin_user_detail", { p_id: id }),
-    supabase.from("listings").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(50),
+    supabase.from("listings").select(LISTING_COLUMNS).eq("user_id", id).order("created_at", { ascending: false }).limit(50),
     supabase.from("orders").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(50),
     supabase.from("user_notes").select("id, body, created_at, author:profiles!user_notes_author_id_fkey(full_name)").eq("user_id", id).order("created_at", { ascending: false }),
     supabase.from("plans").select("*").order("sort"),

@@ -22,7 +22,8 @@ import { categoryBySlug, countryByCode, SITE, subcategoryBySlug } from "@/lib/co
 import { formatDate, formatPrice, isBusiness, locationLabel, recentPriceDrop, timeAgo } from "@/lib/format";
 import { getFavoriteIds } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
-import { LISTING_CARD_COLUMNS, type ListingCardData, type ListingWithSeller } from "@/lib/types";
+import { getListingContact } from "@/lib/contact";
+import { LISTING_CARD_COLUMNS, LISTING_COLUMNS, type ListingCardData, type ListingWithSeller } from "@/lib/types";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ posted?: string; updated?: string; offer?: string }> };
 
@@ -31,7 +32,7 @@ const getListing = cache(async (id: string) => {
   const supabase = await createClient();
   const { data } = await supabase
     .from("listings")
-    .select("*, seller:profiles!listings_user_id_fkey(id, full_name, avatar_url, is_verified, created_at, phone, whatsapp, business_name, business_until)")
+    .select(`${LISTING_COLUMNS}, seller:profiles!listings_user_id_fkey(id, full_name, avatar_url, is_verified, created_at, business_name, business_until)`)
     .eq("id", id)
     .maybeSingle<ListingWithSeller>();
   return data;
@@ -61,7 +62,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
   const user = await getAuthUser();
   const isOwner = user?.id === listing.user_id;
 
-  const [{ data: similar }, favoriteIds, { data: sellerRating }] = await Promise.all([
+  const [{ data: similar }, favoriteIds, { data: sellerRating }, contact] = await Promise.all([
     supabase
       .from("listings")
       .select(LISTING_CARD_COLUMNS)
@@ -72,6 +73,7 @@ export default async function ListingPage({ params, searchParams }: Props) {
       .limit(4),
     getFavoriteIds(supabase, user?.id),
     supabase.from("member_ratings").select("average, total").eq("member_id", listing.user_id).maybeSingle(),
+    getListingContact(supabase, listing.id),
   ]);
 
   const category = categoryBySlug(listing.category);
@@ -79,8 +81,10 @@ export default async function ListingPage({ params, searchParams }: Props) {
   const country = countryByCode(listing.country);
   const approx = await approxPrice(listing);
   const url = `${SITE.url}/listing/${listing.id}`;
-  const phone = listing.contact_phone || listing.seller?.phone || null;
-  const whatsapp = listing.contact_whatsapp || listing.seller?.whatsapp || null;
+  // Full numbers only reach the browser when this viewer may see them; otherwise just the masked one.
+  const phone = contact?.visible ? contact.phone : null;
+  const whatsapp = contact?.visible ? contact.whatsapp : null;
+  const maskedPhone = contact && !contact.visible ? contact.masked_phone || contact.masked_whatsapp : null;
   const business = isBusiness(listing.seller?.business_until) ? listing.seller?.business_name : null;
   const sellerName = business || listing.seller?.full_name || "Pacific Listing member";
   let feeOrderId: string | null = null;
@@ -232,11 +236,19 @@ export default async function ListingPage({ params, searchParams }: Props) {
 
             <div className="mt-5">
               {isOwner ? (
-                <OwnerActions id={listing.id} status={listing.status} />
+                <>
+                  <OwnerActions id={listing.id} status={listing.status} />
+                  {contact?.private && (
+                    <p className="mt-3 rounded-xl bg-subtle p-3 text-xs text-ink-2">
+                      🔒 Your number is private. Buyers see {contact.masked_phone || contact.masked_whatsapp || "part of it"} and can ask for it in the chat.{" "}
+                      <Link href={`/listing/${listing.id}/edit`} className="font-semibold underline">Change</Link>
+                    </p>
+                  )}
+                </>
               ) : listing.status === "sold" ? (
                 <p className="rounded-xl bg-subtle p-3 text-center text-sm font-medium text-ink-2">This item has been sold.</p>
               ) : (
-                <ContactSeller listingId={listing.id} phone={phone} whatsapp={whatsapp} title={listing.title} listingUrl={url} />
+                <ContactSeller listingId={listing.id} phone={phone} whatsapp={whatsapp} maskedPhone={maskedPhone} title={listing.title} listingUrl={url} />
               )}
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2">

@@ -8,6 +8,7 @@ import type { ChatMessage } from "@/lib/chat";
 import { createClient } from "@/lib/supabase/client";
 import { track } from "@/lib/track";
 import { Avatar } from "./avatar";
+import { ASK_FOR_NUMBER, ChatNumbersStrip, type ChatNumbers } from "./chat-numbers";
 import { RateMember } from "./rate-member";
 import { ReportDialog } from "./report-dialog";
 
@@ -27,6 +28,8 @@ type Props = {
   backHref?: string;
   /** Staff view: who wrote each team message, for the record. */
   senderNames?: Record<string, string>;
+  /** Private phone numbers: lets the buyer ask and the seller share. */
+  numbers?: ChatNumbers | null;
 };
 
 // Times use the reader's own time zone, so they're only filled in on the phone or computer
@@ -45,7 +48,7 @@ function day(iso: string) {
   return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: d.getFullYear() === today.getFullYear() ? undefined : "numeric" });
 }
 
-export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter, support, memberId, backHref = "/messages", senderNames }: Props) {
+export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter, support, memberId, backHref = "/messages", senderNames, numbers }: Props) {
   const isMine = (m: ChatMessage) => (support === "staff" ? m.sender_id !== memberId : m.sender_id === me);
   const supabase = useMemo(() => createClient(), []);
   const onDevice = useOnDevice();
@@ -182,6 +185,15 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
       setText("");
       return;
     }
+    if (await post(body)) {
+      setText("");
+      input.current?.focus();
+    }
+  }
+
+  async function post(body: string) {
+    setSending(true);
+    setError("");
     const { data, error } = await supabase
       .from("messages")
       .insert({ conversation_id: conversationId, sender_id: me, body })
@@ -190,12 +202,11 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
     setSending(false);
     if (error) {
       setError(error.message.includes("row-level security") ? "Couldn't send. Please refresh the page and try again." : error.message);
-      return;
+      return false;
     }
     if (!messages.length) track("contact_seller", { method: "chat" });
     add([data as ChatMessage]);
-    setText("");
-    input.current?.focus();
+    return true;
   }
 
   const blockedByMe = blockedBy === me;
@@ -291,6 +302,16 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
           <p className="truncate text-xs text-muted">{support ? "Official messages from the Pacific Listing team" : listing.sold ? "Sold" : listing.href ? listing.price : "This ad has been removed"}</p>
         </div>
       </div>
+
+      {numbers && !support && !blockedBy && (
+        <ChatNumbersStrip
+          conversationId={conversationId}
+          numbers={numbers}
+          messageCount={messages.length}
+          asked={messages.some((m) => m.sender_id === me && m.body === ASK_FOR_NUMBER)}
+          onAsk={() => !sending && post(ASK_FOR_NUMBER)}
+        />
+      )}
 
       {/* Messages */}
       <div ref={list} className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5">

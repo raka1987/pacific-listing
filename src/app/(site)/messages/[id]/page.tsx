@@ -4,6 +4,7 @@ import { ChatThread } from "@/components/chat-thread";
 import { requireUser } from "@/lib/auth";
 import { CONVERSATION_COLUMNS, type ChatMessage, type Conversation } from "@/lib/chat";
 import { formatPrice, isBusiness } from "@/lib/format";
+import { getListingContact } from "@/lib/contact";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Chat", robots: { index: false } };
@@ -31,6 +32,14 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   ]);
 
   const selling = chat.seller_id === user.id;
+  // Private numbers (both lookups quietly return nothing before the database update).
+  const [contact, { data: shared }] = await Promise.all([
+    !chat.is_support && chat.listing_id && listing ? getListingContact(supabase, chat.listing_id) : Promise.resolve(null),
+    selling ? supabase.from("conversations").select("number_shared_at").eq("id", chat.id).maybeSingle() : Promise.resolve({ data: null }),
+  ]);
+  const numbers = contact && chat.listing_id
+    ? { role: selling ? ("seller" as const) : ("buyer" as const), listingId: chat.listing_id, contact, sharedAt: (shared?.number_shared_at as string | null) ?? null }
+    : null;
   const other = selling ? chat.buyer : chat.seller;
   const business = !selling && isBusiness(other?.business_until) ? other?.business_name : null;
   const name = business || other?.full_name || "Pacific Listing member";
@@ -79,6 +88,7 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
         myReview={myReview as { rating: number; comment: string | null } | null}
         blockedBy={chat.blocked_by}
         starter={selling ? "" : `Hi! Is "${chat.listing_title}" still available?`}
+        numbers={numbers}
       />
     </div>
   );

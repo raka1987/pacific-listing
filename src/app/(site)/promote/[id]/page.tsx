@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { currencyFor } from "@/lib/constants";
 import { formatDate, formatPrice, isBusiness } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
-import type { BoostPackage, Listing, Plan } from "@/lib/types";
+import { LISTING_COLUMNS, type BoostPackage, type Listing, type Plan } from "@/lib/types";
 import { PromoteForm } from "./form";
 
 export const metadata: Metadata = { title: "Promote your ad", robots: { index: false } };
@@ -17,7 +17,7 @@ export default async function PromotePage({ params }: { params: Promise<{ id: st
   const { user, profile } = await requireUser(`/promote/${id}`);
   const supabase = await createClient();
   const [{ data: listing }, { data: packages }, { data: settings }] = await Promise.all([
-    supabase.from("listings").select("*").eq("id", id).maybeSingle<Listing>(),
+    supabase.from("listings").select(LISTING_COLUMNS).eq("id", id).maybeSingle<Listing>(),
     supabase.from("boost_packages").select("*").eq("is_active", true).order("sort"),
     supabase.from("site_settings").select("card_payments_enabled").eq("id", 1).single(),
   ]);
