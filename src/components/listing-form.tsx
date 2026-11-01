@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import type { ListingFormState } from "@/app/actions";
 import { CATEGORIES, COUNTRIES, categoryBySlug, countryByCode } from "@/lib/constants";
@@ -31,6 +31,13 @@ export function ListingForm({
   initialCategory?: string;
 }) {
   const [state, formAction] = useActionState(action, {});
+  // On a phone the Post button is far below the fields, so jump to the first problem.
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (!state.error) return;
+    const target = formRef.current?.querySelector("[data-field-error]") ?? formRef.current?.querySelector('[role="alert"]');
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [state]);
   const [images, setImages] = useState<string[]>(listing?.images ?? []);
   const [category, setCategory] = useState(listing?.category ?? (categoryBySlug(initialCategory) ? initialCategory! : ""));
   const [subcategory, setSubcategory] = useState(listing?.subcategory ?? "");
@@ -45,7 +52,7 @@ export function ListingForm({
   const fee = !listing && category ? priceIn(fees[category], currency) : null;
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form ref={formRef} action={formAction} className="space-y-6">
       <input type="hidden" name="images" value={JSON.stringify(images)} />
 
       {state.error && (
@@ -237,5 +244,9 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 }
 
 function FieldError({ msg }: { msg?: string }) {
-  return msg ? <p className="mt-1.5 text-sm text-red-600">{msg}</p> : null;
+  return msg ? (
+    <p data-field-error className="mt-1.5 scroll-mt-24 text-sm font-medium text-red-600" role="alert">
+      {msg}
+    </p>
+  ) : null;
 }

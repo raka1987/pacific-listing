@@ -63,7 +63,7 @@ function parseListing(fd: FormData) {
   const cat = CATEGORIES.find((c) => c.slug === category);
   if (!cat) fieldErrors.category = "Choose a category.";
   else if (cat.subcategories.length && !cat.subcategories.some((s) => s.slug === subcategory)) {
-    fieldErrors.category = `Choose what kind of ${cat.name.toLowerCase()} this is.`;
+    fieldErrors.category = `Choose a type under ${cat.name}, e.g. ${cat.subcategories.slice(0, 2).map((x) => x.name).join(" or ")}.`;
   }
   if (!COUNTRIES.some((c) => c.code === country)) fieldErrors.country = "Choose a country.";
   if (!["fixed", "negotiable", "free", "contact"].includes(price_type)) fieldErrors.price_type = "Choose a price type.";
