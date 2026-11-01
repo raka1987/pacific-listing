@@ -58,6 +58,14 @@ function km([a, b]: [number, number], [c, d]: [number, number]) {
   return 12742 * Math.asin(Math.sqrt(x));
 }
 
+/** Every place we know in a country: the main towns first, then the rest A to Z. */
+export function placeNames(country: string, mainTowns: string[] = []) {
+  const rest = Object.keys(PLACES[country] ?? {})
+    .filter((p) => !mainTowns.includes(p))
+    .sort((a, b) => a.localeCompare(b));
+  return [...mainTowns, ...rest];
+}
+
 /** The known place matching a typed town, e.g. "suva" -> "Suva" in Fiji. */
 export function findPlace(country: string | undefined, town: string | undefined) {
   if (!country || !town) return null;
