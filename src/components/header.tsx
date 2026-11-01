@@ -29,7 +29,7 @@ export async function Header() {
           <Link href="/search" className="btn-ghost hidden px-4 lg:inline-flex">
             Browse
           </Link>
-          <CountryPicker regions={VIEWER_REGIONS} current={{ code: viewer.country, flag: viewer.flag, currency: viewer.currency }} />
+          <CountryPicker regions={VIEWER_REGIONS} current={{ code: viewer.country, flag: viewer.flag, currency: viewer.currency, name: viewer.chosen || viewer.country ? viewer.name : "All Pacific" }} />
           <ThemeToggle />
           {current && (
             <Link href="/messages" className="relative hidden h-10 w-10 items-center justify-center rounded-full text-ink-2 hover:bg-subtle sm:flex" aria-label="Messages">
@@ -44,7 +44,7 @@ export async function Header() {
               isAdmin={!!profile && profile.role !== "user"}
             />
           ) : (
-            <Link href="/login" className="btn-ghost px-4">
+            <Link href="/login" className="btn-ghost shrink-0 px-3 whitespace-nowrap sm:px-4">
               Log in
             </Link>
           )}

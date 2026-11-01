@@ -7,7 +7,13 @@ import { setViewerCountry } from "@/app/location-actions";
 
 type Region = { code: string; name: string; currency: string; flag: string };
 
-export function CountryPicker({ regions, current }: { regions: Region[]; current: { code: string | null; flag: string; currency: string } }) {
+// Shorter names so the header fits on a phone.
+const SHORT: Record<string, string> = {
+  PG: "PNG", SB: "Solomon Is.", NC: "New Caledonia", CK: "Cook Is.", PF: "Tahiti", MH: "Marshall Is.",
+  FM: "Micronesia", AS: "Am. Samoa", NZ: "NZ", AU: "Australia", US: "USA",
+};
+
+export function CountryPicker({ regions, current }: { regions: Region[]; current: { code: string | null; flag: string; currency: string; name: string } }) {
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
   const router = useRouter();
@@ -31,11 +37,13 @@ export function CountryPicker({ regions, current }: { regions: Region[]; current
         className={`flex h-10 items-center gap-1.5 rounded-full px-2.5 text-sm font-semibold text-ink-2 transition hover:bg-subtle hover:text-ink ${pending ? "opacity-60" : ""}`}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`Your country and currency: ${current.currency}. Change`}
+        aria-label={`Showing ${current.name}, prices in ${current.currency}. Change country`}
       >
         <span className="text-base leading-none">{current.flag}</span>
-        <span className="hidden sm:inline">{current.currency}</span>
-        <ChevronDown className="hidden h-3.5 w-3.5 sm:block" />
+        <span className="max-w-[7.5rem] truncate sm:hidden">{(current.code && SHORT[current.code]) || current.name}</span>
+        <span className="hidden sm:inline">{current.name}</span>
+        <span className="hidden font-normal text-muted lg:inline">· {current.currency}</span>
+        <ChevronDown className="h-3.5 w-3.5" />
       </button>
       {open && (
         <div className="absolute right-0 z-50 mt-2 max-h-[70vh] w-64 overflow-y-auto rounded-2xl border border-line bg-surface p-2 shadow-xl" role="listbox">
