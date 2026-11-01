@@ -15,6 +15,7 @@ import { Suspense } from "react";
 import { searchRow } from "@/app/alerts-actions";
 import { searchHref } from "@/lib/saved-search";
 import { TOWNS } from "@/lib/places";
+import { DISTANCES, findPlace, placesNear } from "@/lib/town-coords";
 import { SaveSearchButton } from "./save-search-button";
 
 export async function SearchResults({
@@ -73,7 +74,10 @@ export async function SearchResults({
   const sub = subcategoryBySlug(filters.category, filters.sub);
   if (sub) chips.push({ label: sub.name, remove: { sub: undefined } });
   if (filters.country) chips.push({ label: countryByCode(filters.country)?.name ?? filters.country, remove: { country: undefined } });
-  if (filters.city) chips.push({ label: filters.city, remove: { city: undefined } });
+  const place = findPlace(filters.country, filters.city);
+  const radius = place && (DISTANCES as readonly number[]).includes(Number(filters.km)) ? Number(filters.km) : 0;
+  if (filters.city) chips.push({ label: radius ? `${filters.city} + ${radius} km` : filters.city, remove: { city: undefined, km: undefined } });
+  const nearby = radius ? (placesNear(filters.country, filters.city, radius) ?? []).slice(1) : [];
   if (filters.min || filters.max)
     chips.push({ label: `Price ${filters.min || "0"} – ${filters.max || "any"}`, remove: { min: undefined, max: undefined } });
   if (filters.condition) chips.push({ label: filters.condition === "new" ? "New" : "Used", remove: { condition: undefined } });
@@ -97,7 +101,7 @@ export async function SearchResults({
             return (
               <Link
                 key={t.label}
-                href={qs({ city: t.name || undefined, page: undefined })}
+                href={qs({ city: t.name || undefined, km: t.name ? filters.km : undefined, page: undefined })}
                 aria-current={on ? "page" : undefined}
                 className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm transition ${
                   on ? "border-lagoon-600 bg-lagoon-600 text-white" : "border-line bg-surface text-ink-2 hover:border-faint hover:text-ink"
@@ -108,6 +112,26 @@ export async function SearchResults({
             );
           })}
         </nav>
+      )}
+      {place && (
+        <div className="-mt-3 mb-6">
+          <nav aria-label="Distance" className="scrollbar-none -mx-4 flex items-center gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+            <span className="shrink-0 text-sm text-muted">Distance:</span>
+            {[{ v: 0, label: `Just ${place.name}` }, ...DISTANCES.map((d) => ({ v: d, label: `+ ${d} km` }))].map((d) => (
+              <Link
+                key={d.v}
+                href={qs({ km: d.v ? String(d.v) : undefined, page: undefined })}
+                aria-current={radius === d.v ? "page" : undefined}
+                className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-sm transition ${
+                  radius === d.v ? "border-lagoon-600 bg-lagoon-600 text-white" : "border-line bg-surface text-ink-2 hover:border-faint hover:text-ink"
+                }`}
+              >
+                {d.label}
+              </Link>
+            ))}
+          </nav>
+          {nearby.length > 0 && <p className="mt-2 text-xs text-muted">Also showing ads from {nearby.join(", ")}.</p>}
+        </div>
       )}
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <SearchFiltersPanel filters={filters} basePath={basePath} lockCategory={lockCategory} />

@@ -7,6 +7,7 @@ import { CATEGORIES, categoryBySlug, COUNTRIES } from "@/lib/constants";
 import { rememberSearchCountry } from "@/lib/search-country";
 import type { SearchFilters } from "@/lib/queries";
 import { TOWNS } from "@/lib/places";
+import { DISTANCES } from "@/lib/town-coords";
 import { CategoryIcon } from "./category-icon";
 import { Dropdown, type DropdownOption } from "./dropdown";
 
@@ -16,7 +17,7 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
 
   function apply(fd: FormData) {
     const params = new URLSearchParams();
-    for (const key of ["q", "category", "sub", "country", "city", "min", "max", "condition", "sort"]) {
+    for (const key of ["q", "category", "sub", "country", "city", "km", "min", "max", "condition", "sort"]) {
       const v = String(fd.get(key) ?? "").trim();
       if (v && !(lockCategory && key === "category")) params.set(key, v);
     }
@@ -52,6 +53,12 @@ export function SearchFiltersPanel({ filters, basePath, lockCategory }: { filter
             <option key={t} value={t} />
           ))}
         </datalist>
+        <select name="km" defaultValue={filters.km ?? ""} className="input mt-2" aria-label="Distance from the town">
+          <option value="">Just this town</option>
+          {DISTANCES.map((d) => (
+            <option key={d} value={d}>Within {d} km</option>
+          ))}
+        </select>
       </div>
       <div>
         <span className="label">Price</span>
