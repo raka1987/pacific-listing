@@ -33,6 +33,24 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const name = business || other?.full_name || "Pacific Listing member";
   const live = listing && ["active", "sold"].includes(listing.status);
 
+  if (chat.is_support) {
+    return (
+      <div className="container-page max-w-3xl sm:py-6">
+        <ChatThread
+          conversationId={chat.id}
+          me={user.id}
+          support="member"
+          other={{ id: "support", name: "Pacific Listing Support", avatarUrl: "/icons/icon-192.png", href: null, role: "Official", verified: true, rating: null }}
+          myReview={null}
+          listing={{ href: null, title: "Pacific Listing Support", image: "/icons/icon-192.png", price: null, sold: false }}
+          initialMessages={(messages ?? []) as ChatMessage[]}
+          blockedBy={null}
+          starter=""
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="container-page max-w-3xl sm:py-6">
       <ChatThread

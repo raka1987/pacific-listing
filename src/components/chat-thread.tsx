@@ -20,6 +20,11 @@ type Props = {
   initialMessages: ChatMessage[];
   blockedBy: string | null;
   starter: string;
+  /** "member": a member reading a chat from Pacific Listing Support. "staff": staff replying in the admin panel. */
+  support?: "member" | "staff";
+  /** In the staff view, messages from anyone but this member count as "ours". */
+  memberId?: string;
+  backHref?: string;
 };
 
 // Times use the reader's own time zone, so they're only filled in on the phone or computer
@@ -38,7 +43,8 @@ function day(iso: string) {
   return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: d.getFullYear() === today.getFullYear() ? undefined : "numeric" });
 }
 
-export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter }: Props) {
+export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter, support, memberId, backHref = "/messages" }: Props) {
+  const isMine = (m: ChatMessage) => (support === "staff" ? m.sender_id !== memberId : m.sender_id === me);
   const supabase = useMemo(() => createClient(), []);
   const onDevice = useOnDevice();
   const [messages, setMessages] = useState(initialMessages);
@@ -192,14 +198,14 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
 
   const blockedByMe = blockedBy === me;
   // Ratings open once both people have said something.
-  const canRate = messages.some((m) => m.sender_id === me) && messages.some((m) => m.sender_id !== me);
+  const canRate = !support && messages.some((m) => m.sender_id === me) && messages.some((m) => m.sender_id !== me);
   const menuItem = "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-ink-2 hover:bg-subtle";
 
   return (
     <div className="chat-page fixed inset-0 z-50 flex flex-col bg-canvas sm:static sm:z-auto sm:h-[calc(100dvh-10rem)] sm:min-h-[480px] sm:overflow-hidden sm:rounded-3xl sm:border sm:border-line sm:bg-surface sm:shadow-sm">
       {/* Top bar */}
       <header className="flex items-center gap-3 border-b border-line bg-surface px-3 pt-[calc(0.6rem+env(safe-area-inset-top))] pb-2.5 sm:px-4 sm:pt-3">
-        <Link href="/messages" className="flex h-9 w-9 items-center justify-center rounded-full text-ink-2 hover:bg-subtle" aria-label="Back to messages">
+        <Link href={backHref} className="flex h-9 w-9 items-center justify-center rounded-full text-ink-2 hover:bg-subtle" aria-label="Back to messages">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <Avatar name={other.name} url={other.avatarUrl} size={40} />
@@ -240,13 +246,17 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
                   </Link>
                 )}
                 {canRate && <RateMember conversationId={conversationId} name={other.name} existing={myReview} className={menuItem} />}
-                <form action={setChatBlocked.bind(null, conversationId, !blockedByMe)} onSubmit={() => setMenu(false)}>
-                  <button className={menuItem} role="menuitem">
-                    <Ban className="h-4 w-4" /> {blockedByMe ? "Unblock" : "Block"} {other.name.split(" ")[0]}
-                  </button>
-                </form>
-                <ReportDialog conversationId={conversationId} triggerClassName={menuItem} />
-                <form
+                {!support && (
+                  <>
+                    <form action={setChatBlocked.bind(null, conversationId, !blockedByMe)} onSubmit={() => setMenu(false)}>
+                      <button className={menuItem} role="menuitem">
+                        <Ban className="h-4 w-4" /> {blockedByMe ? "Unblock" : "Block"} {other.name.split(" ")[0]}
+                      </button>
+                    </form>
+                    <ReportDialog conversationId={conversationId} triggerClassName={menuItem} />
+                  </>
+                )}
+                {support !== "staff" && <form
                   action={deleteChat.bind(null, conversationId)}
                   onSubmit={(e) => {
                     if (!confirm("Delete this chat from your messages? It comes back if they message you again.")) e.preventDefault();
@@ -255,7 +265,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
                   <button className={`${menuItem} text-red-600`} role="menuitem">
                     <Trash2 className="h-4 w-4" /> Delete chat
                   </button>
-                </form>
+                </form>}
               </div>
             </>
           )}
@@ -276,21 +286,23 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
           ) : (
             <p className="truncate font-medium text-ink">{listing.title}</p>
           )}
-          <p className="truncate text-xs text-muted">{listing.sold ? "Sold" : listing.href ? listing.price : "This ad has been removed"}</p>
+          <p className="truncate text-xs text-muted">{support ? "Official messages from the Pacific Listing team" : listing.sold ? "Sold" : listing.href ? listing.price : "This ad has been removed"}</p>
         </div>
       </div>
 
       {/* Messages */}
       <div ref={list} className="flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-5">
         <div>
-        <p className="mx-auto mb-4 flex max-w-sm items-start gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        {!support && (
+          <p className="mx-auto mb-4 flex max-w-sm items-start gap-2 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-900">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
           <span>Meet in a public place and check the item before paying. Never send money in advance.</span>
         </p>
+        )}
         {messages.length === 0 && <p className="mt-10 text-center text-sm text-muted">Say hello and ask about the item.</p>}
         <ul className="space-y-1.5">
           {messages.map((m, i) => {
-            const mine = m.sender_id === me;
+            const mine = isMine(m);
             const prev = messages[i - 1];
             const newDay = !prev || day(prev.created_at) !== day(m.created_at);
             return (

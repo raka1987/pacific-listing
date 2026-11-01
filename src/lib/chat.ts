@@ -18,6 +18,7 @@ export type Conversation = {
   buyer_read_at: string;
   seller_read_at: string;
   blocked_by: string | null;
+  is_support?: boolean;
   buyer: ChatPerson | null;
   seller: ChatPerson | null;
 };
@@ -25,8 +26,9 @@ export type Conversation = {
 export type ChatMessage = { id: number; conversation_id: string; sender_id: string; body: string; created_at: string; edited_at?: string | null };
 
 const PERSON = "id, full_name, avatar_url, business_name, business_until, is_verified";
+// "*" so newer columns (e.g. is_support) come through without breaking older databases.
 export const CONVERSATION_COLUMNS =
-  "id, listing_id, listing_title, listing_image, last_message, last_message_at, last_sender_id, buyer_id, seller_id, buyer_read_at, seller_read_at, blocked_by, " +
+  "*, " +
   `buyer:profiles!conversations_buyer_id_fkey(${PERSON}), seller:profiles!conversations_seller_id_fkey(${PERSON})`;
 
 /** Number of chats with unread messages for the logged-in person (0 when logged out). */

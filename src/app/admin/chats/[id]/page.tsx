@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ShieldAlert } from "lucide-react";
-import { MOD_ROLES, requireStaff } from "@/lib/auth";
+import { MOD_ROLES, requireStaff, STAFF_ROLES } from "@/lib/auth";
+import { ChatThread } from "@/components/chat-thread";
 import { CONVERSATION_COLUMNS, type ChatMessage, type Conversation } from "@/lib/chat";
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,13 +10,45 @@ export const metadata = { title: "Reported chat" };
 
 /** Read-only view of a chat. The database only allows this once someone in the chat has reported it. */
 export default async function AdminChat({ params }: { params: Promise<{ id: string }> }) {
-  await requireStaff(MOD_ROLES);
+  const { user } = await requireStaff(STAFF_ROLES);
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
   const { data } = await supabase.from("conversations").select(CONVERSATION_COLUMNS).eq("id", id).maybeSingle();
   const chat = data as unknown as Conversation | null;
   if (!chat) notFound();
+
+  // A chat from Pacific Listing Support: any staff member can reply here.
+  if (chat.is_support) {
+    const { data: rows } = await supabase.from("messages").select("*").eq("conversation_id", id).order("id").limit(500);
+    const member = chat.buyer;
+    return (
+      <div className="max-w-3xl">
+        <ChatThread
+          conversationId={chat.id}
+          me={user.id}
+          support="staff"
+          memberId={chat.buyer_id}
+          backHref="/admin/chats"
+          other={{
+            id: chat.buyer_id,
+            name: member?.full_name || "Member",
+            avatarUrl: member?.avatar_url ?? null,
+            href: `/admin/users/${chat.buyer_id}`,
+            role: "Member · they see your messages as Pacific Listing Support",
+            verified: !!member?.is_verified,
+            rating: null,
+          }}
+          myReview={null}
+          listing={{ href: null, title: "Pacific Listing Support", image: "/icons/icon-192.png", price: null, sold: false }}
+          initialMessages={(rows ?? []) as ChatMessage[]}
+          blockedBy={null}
+          starter=""
+        />
+      </div>
+    );
+  }
+  await requireStaff(MOD_ROLES);
   const { data: rows } = await supabase
     .from("messages")
     .select("id, conversation_id, sender_id, body, created_at")

@@ -141,6 +141,15 @@ export async function adminHideReportedListing(listingId: string) {
   done("/admin/reports", "/admin/listings");
 }
 
+// Member chats ----------------------------------------------------------------
+export async function adminStartSupportChat(userId: string) {
+  const { supabase, log } = await staff(STAFF_ROLES);
+  const { data, error } = await supabase.rpc("start_support_chat", { p_user: userId });
+  if (error || !data) redirect(`/admin/users/${userId}?chat=${encodeURIComponent(error?.message ?? "failed")}`);
+  await log("member.message", "user", userId);
+  redirect(`/admin/chats/${data}`);
+}
+
 // Phone notifications ---------------------------------------------------------
 export async function adminSendTestPush(userId: string): Promise<string> {
   const { supabase } = await staff(["admin"]);

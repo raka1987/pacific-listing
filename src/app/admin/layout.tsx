@@ -13,13 +13,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { profile } = await requireStaff();
   const supabase = await createClient();
   const head = { count: "exact" as const, head: true };
-  const [pending, reports, messages, payments, verify] = await Promise.all([
+  const [pending, reports, messages, payments, verify, chats] = await Promise.all([
     supabase.from("listings").select("id", head).eq("status", "pending"),
     supabase.from("reports").select("id", head).eq("status", "open"),
     supabase.from("contact_messages").select("id", head).eq("status", "new"),
     supabase.from("orders").select("id", head).eq("status", "awaiting_payment").not("payer_reference", "is", null),
     supabase.from("verification_requests").select("id", head).eq("status", "pending"),
+    supabase.rpc("admin_support_chats"),
   ]);
+  const unreadChats = ((chats.data ?? []) as { unread: boolean }[]).filter((c) => c.unread).length;
 
   return (
     <div className="min-h-screen bg-canvas lg:grid lg:grid-cols-[248px_1fr]">
@@ -30,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         <AdminNav
           role={profile.role}
-          counts={{ pending: pending.count ?? 0, reports: reports.count ?? 0, messages: messages.count ?? 0, payments: payments.count ?? 0, verify: verify.count ?? 0 }}
+          counts={{ pending: pending.count ?? 0, reports: reports.count ?? 0, messages: messages.count ?? 0, payments: payments.count ?? 0, verify: verify.count ?? 0, chats: unreadChats }}
         />
         <div className="mt-auto hidden border-t border-white/10 pt-5 lg:block">
           <p className="truncate text-sm font-medium text-white">{profile.full_name}</p>

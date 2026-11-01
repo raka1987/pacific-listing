@@ -11,6 +11,7 @@ import { formatDate, formatMoney, formatPrice, isBusiness, timeAgo } from "@/lib
 import { createClient } from "@/lib/supabase/server";
 import type { Listing, Order, Plan, Role } from "@/lib/types";
 import {
+  adminStartSupportChat,
   adminAddUserNote,
   adminBanUser,
   adminEndBusiness,
@@ -46,7 +47,8 @@ type Detail = {
   reports_against: number;
 };
 
-export default async function AdminUserPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminUserPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ chat?: string }> }) {
+  const { chat: chatError } = await searchParams;
   const { profile: me } = await requireStaff(["admin"]);
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
@@ -166,6 +168,14 @@ export default async function AdminUserPage({ params }: { params: Promise<{ id: 
         </div>
 
         <div className="space-y-6">
+          {!self && (
+            <form action={adminStartSupportChat.bind(null, u.id)} className="card p-5">
+              <h2 className="font-bold">Message this member</h2>
+              <p className="mt-1 text-sm text-muted">Opens a chat in their Messages from Pacific Listing Support. They get a notification and can reply.</p>
+              {chatError && <p className="mt-2 text-sm text-red-600">{chatError}</p>}
+              <SubmitButton className="btn-primary mt-3 w-full" pendingText="Opening…">Message this member</SubmitButton>
+            </form>
+          )}
           <PushTest userId={u.id} phones={phones} />
           <section className="card space-y-3 p-5">
             <h2 className="font-bold">Role</h2>

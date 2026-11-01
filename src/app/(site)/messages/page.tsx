@@ -33,14 +33,16 @@ export default async function MessagesPage() {
           {chats.map((c) => {
             const selling = c.seller_id === user.id;
             const other = selling ? c.buyer : c.seller;
-            const name = (!selling && isBusiness(other?.business_until) && other?.business_name) || other?.full_name || "Pacific Listing member";
+            const name = c.is_support
+              ? "Pacific Listing Support"
+              : (!selling && isBusiness(other?.business_until) && other?.business_name) || other?.full_name || "Pacific Listing member";
             const unread = isUnread(c, user.id);
             return (
               <li key={c.id}>
                 <Link href={`/messages/${c.id}`} className="flex items-center gap-3 px-4 py-3.5 transition hover:bg-subtle">
                   <div className="relative">
-                    <Avatar name={name} url={other?.avatar_url ?? null} size={48} />
-                    {c.listing_image && (
+                    <Avatar name={name} url={c.is_support ? "/icons/icon-192.png" : (other?.avatar_url ?? null)} size={48} />
+                    {!c.is_support && c.listing_image && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={c.listing_image} alt="" className="absolute -right-1 -bottom-1 h-6 w-6 rounded-md object-cover ring-2 ring-surface" />
                     )}
@@ -51,10 +53,10 @@ export default async function MessagesPage() {
                       <span className={`shrink-0 text-xs ${unread ? "font-semibold text-lagoon-700" : "text-faint"}`}>{timeAgo(c.last_message_at!)}</span>
                     </div>
                     <p className="truncate text-xs text-muted">
-                      <span className={`mr-1.5 rounded px-1 py-px text-[10px] font-semibold uppercase ${selling ? "bg-coral-500/10 text-coral-700" : "bg-lagoon-50 text-lagoon-700"}`}>
-                        {selling ? "Selling" : "Buying"}
+                      <span className={`mr-1.5 rounded px-1 py-px text-[10px] font-semibold uppercase ${c.is_support ? "bg-ocean-900 text-white" : selling ? "bg-coral-500/10 text-coral-700" : "bg-lagoon-50 text-lagoon-700"}`}>
+                        {c.is_support ? "Official" : selling ? "Selling" : "Buying"}
                       </span>
-                      {c.listing_title}
+                      {c.is_support ? "Messages from the Pacific Listing team" : c.listing_title}
                     </p>
                     <div className="mt-0.5 flex items-center gap-2">
                       <p className={`flex-1 truncate text-sm ${unread ? "font-medium text-ink" : "text-muted"}`}>
