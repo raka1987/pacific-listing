@@ -2,11 +2,12 @@
 
 import { BellRing } from "lucide-react";
 import { useState, useTransition } from "react";
-import { adminSendTestPush } from "../../actions";
+import { adminPushCheck, adminSendTestPush } from "../../actions";
 
 /** Shows a member's notification phones and sends them a test notification. */
 export function PushTest({ userId, phones }: { userId: string; phones: { platform: string; updated_at: string }[] | null }) {
   const [result, setResult] = useState("");
+  const [check, setCheck] = useState<string[]>([]);
   const [pending, start] = useTransition();
   return (
     <section className="card space-y-3 p-5">
@@ -35,6 +36,20 @@ export function PushTest({ userId, phones }: { userId: string; phones: { platfor
         </button>
       )}
       {result && <p className="rounded-xl bg-subtle p-3 text-sm text-ink-2">{result}</p>}
+      <button
+        disabled={pending}
+        onClick={() => start(async () => setCheck(await adminPushCheck()))}
+        className="btn-ghost w-full text-sm"
+      >
+        Check notification setup
+      </button>
+      {check.length > 0 && (
+        <ul className="space-y-1 rounded-xl bg-subtle p-3 text-xs break-words text-ink-2">
+          {check.map((l, i) => (
+            <li key={i}>{l}</li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

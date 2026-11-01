@@ -168,6 +168,42 @@ export async function adminSendTestPush(userId: string): Promise<string> {
   }
 }
 
+/** Checks each part of the chat-notification path and explains what's wrong in plain words. */
+export async function adminPushCheck(): Promise<string[]> {
+  const { supabase } = await staff(["admin"]);
+  const { data, error } = await supabase.rpc("admin_push_check");
+  if (error) return [`❌ Run the database update 20261110000000_push_check.sql first (${error.message}).`];
+  const d = data as {
+    push_url: string | null;
+    push_secret_saved: boolean;
+    chat_trigger: boolean;
+    phones: number;
+    recent: { status_code: number | null; content: string; error_msg: string | null; timed_out: boolean | null; created: string }[];
+  };
+  const lines: string[] = [];
+  const expected = "https://www.pacificlisting.com/api/push";
+  if (!d.push_url) lines.push("❌ The database doesn't know where to send notifications (push_url isn't saved).");
+  else if (d.push_url.trim() !== expected) lines.push(`❌ push_url is "${d.push_url}" but should be exactly ${expected}`);
+  else lines.push("✅ push_url is saved correctly.");
+  lines.push(d.push_secret_saved ? "✅ push_secret is saved." : "❌ push_secret isn't saved in the database.");
+  const envSecret = process.env.PUSH_SECRET?.trim();
+  if (!envSecret) lines.push("❌ PUSH_SECRET is missing in Vercel.");
+  else if (d.push_secret_saved) {
+    const { error: e } = await supabase.rpc("remove_dead_push_tokens", { p_secret: envSecret, p_tokens: [] });
+    lines.push(e ? "❌ push_secret in the database doesn't match PUSH_SECRET in Vercel." : "✅ push_secret matches Vercel.");
+  }
+  lines.push(d.chat_trigger ? "✅ New chat messages trigger notifications." : "❌ The chat notification trigger is missing (run 20261108000000_push.sql again).");
+  lines.push(`ℹ️ Phones with notifications on: ${d.phones}.`);
+  if (!d.recent.length) lines.push("ℹ️ The database hasn't called the website yet (no recent attempts recorded).");
+  for (const r of d.recent) {
+    const when = new Date(r.created).toLocaleString();
+    if (r.error_msg || r.timed_out) lines.push(`❌ ${when}: couldn't reach the website: ${r.error_msg ?? "timed out"}`);
+    else if (r.status_code === 401) lines.push(`❌ ${when}: the website refused the password (push_secret doesn't match PUSH_SECRET).`);
+    else lines.push(`${r.status_code && r.status_code < 300 ? "✅" : "❌"} ${when}: website answered ${r.status_code}: ${r.content}`);
+  }
+  return lines;
+}
+
 // Messages ------------------------------------------------------------------
 export async function adminSetMessageStatus(id: string, status: "new" | "read" | "archived") {
   const { supabase } = await staff(STAFF_ROLES);
