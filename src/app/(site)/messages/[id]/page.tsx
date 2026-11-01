@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ChatThread } from "@/components/chat-thread";
 import { requireUser } from "@/lib/auth";
 import { CONVERSATION_COLUMNS, type ChatMessage, type Conversation } from "@/lib/chat";
@@ -15,7 +15,10 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const supabase = await createClient();
   const { data } = await supabase.from("conversations").select(CONVERSATION_COLUMNS).eq("id", id).maybeSingle();
   const chat = data as unknown as Conversation | null;
-  if (!chat || ![chat.buyer_id, chat.seller_id].includes(user.id)) notFound();
+  if (!chat) notFound();
+  // Staff open support chats in the admin panel, where they can see who they're talking to.
+  if (chat.is_support && chat.buyer_id !== user.id) redirect(`/admin/chats/${chat.id}`);
+  if (![chat.buyer_id, chat.seller_id].includes(user.id)) notFound();
 
   const otherId = chat.seller_id === user.id ? chat.buyer_id : chat.seller_id;
   const [{ data: messages }, { data: listing }, { data: rating }, { data: myReview }] = await Promise.all([

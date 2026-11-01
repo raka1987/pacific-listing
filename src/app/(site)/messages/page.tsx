@@ -22,7 +22,8 @@ export default async function MessagesPage() {
     .not("last_message_at", "is", null)
     .order("last_message_at", { ascending: false })
     .limit(200);
-  const chats = (data ?? []) as unknown as Conversation[];
+  // Support chats started by staff live in Admin -> Member chats; members still see theirs here.
+  const chats = ((data ?? []) as unknown as Conversation[]).filter((c) => !(c.is_support && c.buyer_id !== user.id));
 
   return (
     <div className="container-page max-w-3xl py-8">
