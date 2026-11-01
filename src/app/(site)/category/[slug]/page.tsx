@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SearchResults } from "@/components/search-results";
 import { categoryBySlug, countryByCode, subcategoryBySlug } from "@/lib/constants";
+import { landingSubject } from "@/lib/landing";
 import { withPickedCountry } from "@/lib/location";
 import type { SearchFilters } from "@/lib/queries";
 
@@ -16,7 +18,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   if (!category) return {};
   const sub = subcategoryBySlug(slug, (await searchParams).sub);
   return {
-    title: sub ? `${sub.name} · ${category.name}` : `${category.name} for sale`,
+    title: sub ? `${sub.name} · ${category.name}` : landingSubject({ category }),
     description: `Browse ${category.name.toLowerCase()} listings across Fiji, Samoa, Tonga, Vanuatu and the Pacific on Pacific Listing.`,
     alternates: { canonical: `/category/${slug}` },
   };
@@ -36,6 +38,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       basePath={`/category/${slug}`}
       title={country ? `${name} in ${country.name}` : name}
       lockCategory
+      intro={
+        slug === "tours" ? (
+          <>
+            Day trips, island hopping, diving, village visits and more, from local operators.{" "}
+            <span className="text-muted">Run a tour or attraction?</span>{" "}
+            <Link href="/post?category=tours" className="font-semibold text-lagoon-700 hover:underline">
+              List it free
+            </Link>
+          </>
+        ) : undefined
+      }
     />
   );
 }

@@ -1,4 +1,4 @@
-import { Briefcase, Car, Dumbbell, Home, PawPrint, Sailboat, Search, Shirt, Smartphone, Sofa, Tag, Wrench, type LucideProps } from "lucide-react";
+import { Briefcase, Car, Dumbbell, TreePalm, Home, PawPrint, Sailboat, Search, Shirt, Smartphone, Sofa, Tag, Wrench, type LucideProps } from "lucide-react";
 
 const ICONS = {
   car: Car,
@@ -12,6 +12,7 @@ const ICONS = {
   sailboat: Sailboat,
   search: Search,
   dumbbell: Dumbbell,
+  palm: TreePalm,
 };
 
 export function CategoryIcon({ icon, ...props }: { icon: string } & LucideProps) {

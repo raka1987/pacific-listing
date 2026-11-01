@@ -32,6 +32,7 @@ const SALE_WORDING: Record<string, string> = {
   fashion: "Clothes & fashion for sale",
   jobs: "Jobs",
   services: "Local services",
+  tours: "Tours & activities",
   pets: "Pets & animals",
   boats: "Boats & marine for sale",
   sports: "Sports & fitness gear for sale",
@@ -53,6 +54,7 @@ export function landingSubject(l: Pick<Landing, "category" | "sub">) {
   }
   if (c === "jobs") return `${l.sub.name} jobs`;
   if (c === "services") return `${l.sub.name} services`;
+  if (c === "tours") return l.sub.name;
   if (c === "lost-found" || (c === "pets" && ["supplies", "other"].includes(l.sub.slug))) return l.sub.name;
   if (["vehicles", "electronics", "home-garden", "fashion", "boats", "pets", "sports"].includes(c)) return `${l.sub.name} for sale`;
   return l.sub.name;
