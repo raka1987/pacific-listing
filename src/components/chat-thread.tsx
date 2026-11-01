@@ -25,6 +25,8 @@ type Props = {
   /** In the staff view, messages from anyone but this member count as "ours". */
   memberId?: string;
   backHref?: string;
+  /** Staff view: who wrote each team message, for the record. */
+  senderNames?: Record<string, string>;
 };
 
 // Times use the reader's own time zone, so they're only filled in on the phone or computer
@@ -43,7 +45,7 @@ function day(iso: string) {
   return d.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: d.getFullYear() === today.getFullYear() ? undefined : "numeric" });
 }
 
-export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter, support, memberId, backHref = "/messages" }: Props) {
+export function ChatThread({ conversationId, me, other, myReview, listing, initialMessages, blockedBy, starter, support, memberId, backHref = "/messages", senderNames }: Props) {
   const isMine = (m: ChatMessage) => (support === "staff" ? m.sender_id !== memberId : m.sender_id === me);
   const supabase = useMemo(() => createClient(), []);
   const onDevice = useOnDevice();
@@ -317,6 +319,7 @@ export function ChatThread({ conversationId, me, other, myReview, listing, initi
                   >
                     <p className="break-words whitespace-pre-line">{m.body}</p>
                     <p className={`mt-0.5 h-3.5 text-right text-[10px] ${mine ? "text-white/70" : "text-faint"}`}>
+                      {senderNames && mine ? `${senderNames[m.sender_id] ?? "Staff"} · ` : ""}
                       {m.edited_at ? "edited · " : ""}
                       {onDevice ? time(m.created_at) : ""}
                     </p>
