@@ -48,7 +48,7 @@ const PLACES: Record<string, Record<string, [number, number]>> = {
   GU: { "Hagåtña": [13.4757, 144.7489], Tamuning: [13.49, 144.78], Dededo: [13.52, 144.84], Yigo: [13.54, 144.89], Mangilao: [13.45, 144.8], "Santa Rita": [13.39, 144.67] },
 };
 
-export const DISTANCES = [10, 25, 50, 100] as const;
+export const DISTANCES = [10, 25, 50, 100, 200, 300] as const;
 
 const norm = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[’']/g, "'").trim().toLowerCase();
 

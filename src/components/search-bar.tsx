@@ -141,7 +141,7 @@ export function SearchBar({
             aria-valuetext={radius ? `Within ${radius} kilometres` : `Just ${town}`}
             className="h-2 w-full cursor-pointer accent-coral-500"
           />
-          <span className="shrink-0 text-white/60">100 km</span>
+          <span className="shrink-0 text-white/60">{DISTANCES[DISTANCES.length - 1]} km</span>
         </label>
       )}
     </form>
