@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/lib/auth";
 import { isBusiness } from "@/lib/format";
 import { getMyContact } from "@/lib/contact";
+import { getSearchCountry } from "@/lib/location";
 import { createClient } from "@/lib/supabase/server";
 import type { Prices } from "@/lib/types";
 
@@ -21,7 +22,10 @@ export default async function PostPage({ searchParams }: { searchParams: Promise
     );
   }
   const supabase = await createClient();
-  const mine = await getMyContact(supabase, user.id);
+  const [mine, picked] = await Promise.all([getMyContact(supabase, user.id), getSearchCountry()]);
+  // The country they've picked on the site comes first, then the one on their profile.
+  const country = picked ?? profile?.country ?? null;
+  const city = country && country === profile?.country ? (profile?.city ?? null) : null;
   const { data: feeRows } = await supabase.from("category_fees").select("category, prices").eq("is_active", true);
   let fees: Record<string, Prices> = Object.fromEntries((feeRows ?? []).map((r) => [r.category, r.prices as Prices]));
   if (isBusiness(profile?.business_until) && profile?.plan_id) {
@@ -35,8 +39,8 @@ export default async function PostPage({ searchParams }: { searchParams: Promise
         action={createListing}
         userId={user.id}
         defaults={{
-          country: profile?.country ?? null,
-          city: profile?.city ?? null,
+          country,
+          city,
           phone: mine.phone,
           whatsapp: mine.whatsapp,
         }}

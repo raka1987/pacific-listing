@@ -22,24 +22,27 @@ export default async function HomePage() {
   const supabase = await createClient();
   const user = await getAuthUser();
 
-  const [featured, latest, notices, favoriteIds, searchCountry, offer] = await Promise.all([
-    supabase
-      .from("listings")
-      .select(LISTING_CARD_COLUMNS)
-      .eq("status", "active")
-      .eq("is_featured", true)
-      .order("sort_at", { ascending: false })
-      .limit(8),
-    supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active").order("sort_at", { ascending: false }).limit(12),
+  // Featured and latest ads come from the country the visitor picked (All Pacific if none).
+  const searchCountry = await getSearchCountry();
+  let featuredQ = supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active").eq("is_featured", true);
+  let latestQ = supabase.from("listings").select(LISTING_CARD_COLUMNS).eq("status", "active");
+  if (searchCountry) {
+    featuredQ = featuredQ.eq("country", searchCountry);
+    latestQ = latestQ.eq("country", searchCountry);
+  }
+  const [featured, latest, notices, favoriteIds, offer] = await Promise.all([
+    featuredQ.order("sort_at", { ascending: false }).limit(8),
+    latestQ.order("sort_at", { ascending: false }).limit(12),
     supabase.from("notices").select("*").eq("is_published", true).order("created_at", { ascending: false }).limit(3),
     getFavoriteIds(supabase, user?.id),
-    getSearchCountry(),
     supabase.from("site_settings").select("launch_offer_days, free_ad_limit").eq("id", 1).maybeSingle(),
   ]);
   const offerDays = (offer.data as { launch_offer_days?: number } | null)?.launch_offer_days ?? 0;
   // "Free live ads per person" from Admin -> Settings (none set means no limit).
   const freeAds = (offer.data as { free_ad_limit?: number | null } | null)?.free_ad_limit ?? null;
 
+  const countryName = COUNTRIES.find((c) => c.code === searchCountry)?.name ?? null;
+  const searchHref = searchCountry ? `/search?country=${searchCountry}` : "/search";
   const featuredListings = (featured.data ?? []) as ListingCardData[];
   const latestListings = (latest.data ?? []) as ListingCardData[];
   const noticeList = (notices.data ?? []) as Notice[];
@@ -138,7 +141,7 @@ export default async function HomePage() {
       {/* Featured */}
       {featuredListings.length > 0 && (
         <section className="container-page mt-16 sm:mt-24">
-          <SectionTitle title="Featured" href="/search" />
+          <SectionTitle title={countryName ? `Featured in ${countryName}` : "Featured"} href={searchHref} />
           <ListingRail listings={featuredListings.slice(0, 4)} favoriteIds={favoriteIds} />
         </section>
       )}
@@ -149,13 +152,13 @@ export default async function HomePage() {
 
       {/* Latest */}
       <section className="container-page mt-16 sm:mt-24">
-        <SectionTitle title="Latest listings" href="/search" />
+        <SectionTitle title={countryName ? `Latest in ${countryName}` : "Latest listings"} href={searchHref} />
         {latestListings.length ? (
           <ListingGrid listings={latestListings} favoriteIds={favoriteIds} />
         ) : (
           <div className="card flex flex-col items-center px-6 py-14 text-center">
             <Camera className="h-8 w-8 text-faint" />
-            <h3 className="font-display mt-4 text-xl font-semibold">Be one of the first to post</h3>
+            <h3 className="font-display mt-4 text-xl font-semibold">Be one of the first to post{countryName ? ` in ${countryName}` : ""}</h3>
             <p className="mt-1 max-w-sm text-sm text-muted">It takes about a minute and it&apos;s free.</p>
             <Link href="/post" className="btn-accent mt-5">
               Post your first ad
@@ -163,8 +166,8 @@ export default async function HomePage() {
           </div>
         )}
         <div className="mt-10 flex justify-center">
-          <Link href="/search" className="btn-secondary px-6">
-            Browse all listings
+          <Link href={searchHref} className="btn-secondary px-6">
+            {countryName ? `Browse all in ${countryName}` : "Browse all listings"}
           </Link>
         </div>
       </section>
